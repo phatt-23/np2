@@ -8,6 +8,7 @@
     import Renderer3CNF from "$lib/component/Renderer3CNF.svelte";
     import RendererGraph from "$lib/component/RendererGraph.svelte";
     import Spinner from "$lib/component/Spinner.svelte";
+    import type { Id } from "$lib/core/Id";
     import localStorageKeys from "$lib/core/localStorageKeys";
     import { Unsolvable } from "$lib/core/Unsolvable";
     import { useLocalStorage } from "$lib/core/useLocalStorage.svelte";
@@ -19,6 +20,8 @@
     import { Certificate3CG } from "$lib/solve/Certificate3CG";
     import { Certificate3SAT } from "$lib/solve/Certificate3SAT";
     import { ReductionStore } from "$lib/state/ReductionStore.svelte";
+    import type { WorkerRequest3CG } from "$lib/workers/types";
+    import Worker3CGSolver from "$lib/workers/Worker3CGSolver?worker";
 
     let storage = useLocalStorage(
         localStorageKeys.LS_3SAT_3CG, 
@@ -35,9 +38,19 @@
         solve,
     } = useReductionController({ 
         storage: storage,  
-        workerUrl: new URL("$lib/workers/Worker3CGSolver.ts", import.meta.url),
+        workerFactory: () => new Worker3CGSolver(),
         reducerFactory: (inInstance) => new Reducer3SATto3CG(inInstance),
         decoderFactory: () => new Decoder3CGto3SAT(),
+        createWorkerRequest: (outInst) => {
+            const ret: WorkerRequest3CG = { 
+                graph: outInst.toSerializedString(),
+            };
+            return ret;
+        },
+        resolveWorkerResponse: (data) => {
+            const coloring = data.coloring as [Id, number][];
+            return new Certificate3CG(new Map(coloring));
+        },
         onSolveFinished: (outInst, outCert) => {
             if (outCert == Unsolvable) {
                 $redStore.inCert = Unsolvable;

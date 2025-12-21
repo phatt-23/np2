@@ -2,9 +2,7 @@
 
 import { 
     NODE_ID_PREFIX_FALSE,
-    NODE_ID_PREFIX_INBETWEEN,
     NODE_ID_PREFIX_TRUE,
-    SOURCE_NODE_ID,
 } from "$lib/core/Id";
 
 import type { TriBool } from "$lib/core/TriBool";
@@ -15,7 +13,7 @@ import type { CertificateHCYCLE } from "$lib/solve/CertificateHCYCLE";
 import type { Decoder } from "./Decoder";
 
 export class DecoderHCYCLEto3SAT implements Decoder<Graph, CertificateHCYCLE, Certificate3SAT> {
-    decode(outInstance : Graph, outCert : CertificateHCYCLE) : Certificate3SAT {
+    decode(_outInstance : Graph, outCert : CertificateHCYCLE) : Certificate3SAT {
         const { path } = outCert;
 
         const assignment = new Map<VarName, TriBool>();

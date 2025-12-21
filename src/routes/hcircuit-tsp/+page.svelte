@@ -18,6 +18,7 @@
     import type { CertificateTSP } from "$lib/solve/CertificateTSP";
     import RendererEditableGraph from "$lib/component/RendererEditableGraph.svelte";
     import { useReductionController } from "$lib/page/useReductionController.svelte";
+    import WorkerTSPSolver from "$lib/workers/WorkerTSPSolver?worker";
 
     let storage = useLocalStorage(
         localStorageKeys.LS_HCIRCUIT_TSP,
@@ -34,8 +35,8 @@
         solve,
     } = useReductionController({ 
         storage: storage,  
-        workerUrl: new URL("$lib/workers/WorkerTSPSolver.ts", import.meta.url),
-        createWorkerMessage: (outInst) => ({ 
+        workerFactory: () => new WorkerTSPSolver(),
+        createWorkerRequest: (outInst) => ({ 
             graph: outInst.toSerializedString(), 
             maxCost: outInst.nodes.length 
         }),

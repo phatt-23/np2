@@ -8,6 +8,7 @@
     import Renderer3CNF from "$lib/component/Renderer3CNF.svelte";
     import RendererGraph from "$lib/component/RendererGraph.svelte";
     import Spinner from "$lib/component/Spinner.svelte";
+    import { assert } from "$lib/core/assert";
     import localStorageKeys from "$lib/core/localStorageKeys";
     import { Unsolvable } from "$lib/core/Unsolvable";
     import { useLocalStorage } from "$lib/core/useLocalStorage.svelte";
@@ -19,6 +20,7 @@
     import { Certificate3SAT } from "$lib/solve/Certificate3SAT";
     import { CertificateHCYCLE } from "$lib/solve/CertificateHCYCLE";
     import { ReductionStore } from "$lib/state/ReductionStore.svelte";
+    import { WorkerResponseType, type WorkerRequestHCYCLE, type WorkerResponseHCYCLE } from "$lib/workers/types";
     import WorkerHCYCLESolver from "$lib/workers/WorkerHCYCLESolver?worker";
 
     let storage = useLocalStorage(
@@ -39,6 +41,17 @@
         workerFactory: () => new WorkerHCYCLESolver(),  
         reducerFactory: (inInstance) => new Reducer3SATtoHCYCLE(inInstance),
         decoderFactory: () => new DecoderHCYCLEto3SAT(),
+        createWorkerRequest: (outInst) => {
+            const ret: WorkerRequestHCYCLE = {
+                graph: outInst.toSerializedString(),
+            };
+            return ret;
+        },
+        resolveWorkerResponse: (data) => {
+            const res = data as WorkerResponseHCYCLE;
+            assert(res.type == WorkerResponseType.RESULT);
+            return new CertificateHCYCLE(res.path);
+        },
         onSolveFinished: (outInst, outCert) => {
             if (outCert == Unsolvable) {
                 $redStore.inCert = Unsolvable;

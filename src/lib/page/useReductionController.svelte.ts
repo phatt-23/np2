@@ -7,6 +7,7 @@ import type { ProblemInstance } from "$lib/instance/ProblemInstance";
 import type { Reducer } from "$lib/reduction/Reducer";
 import type { Certificate } from "$lib/solve/Certificate";
 import type { ReductionStore } from "$lib/state/ReductionStore.svelte";
+import { WorkerResponseType } from "$lib/workers/types";
 import { onDestroy } from "svelte";
 import { writable, type Writable } from "svelte/store";
 
@@ -20,12 +21,12 @@ type Params<
     OC extends CR,
 > = {
     storage: LocalStorage<I, O, IC, OC>;
-    workerUrl?: URL;
-    workerFactory?: () => Worker;
+    workerFactory: () => Worker;
     reducerFactory: (inInstance: I) => Reducer<I, O>;
     decoderFactory: () => Decoder<O, OC, IC>;
+    createWorkerRequest: (outInst: O) => object;
+    resolveWorkerResponse: (data: any) => Certificate | Unsolvable;
     onSolveFinished?: (outInstance: O, outCert: OC | Unsolvable) => void;
-    createWorkerMessage?: (outInst: O) => object;
 }
 
 type Controller<
@@ -104,9 +105,9 @@ export function useReductionController<
     async function solve(): Promise<void> {
         console.debug('useReductionController::solve()');
 
-        if (!params.workerUrl && !params.workerFactory) {
-            console.debug('Neither worker URL nor workerFactory was provided');
-            throw new Error('Neither worker URL nor workerFactory was provided');
+        if (!params.workerFactory) {
+            console.debug('workerFactory was not provided');
+            throw new Error('workerFactory was not provided');
         }
 
         if (!outInstance) {
@@ -126,20 +127,36 @@ export function useReductionController<
             currentWorker.terminate();
         }
 
-        console.debug('creating new worker with url', params.workerUrl, '...');
-        const worker: Worker = params.workerFactory?.() ?? new Worker(params.workerUrl, { type: 'module' });
+        console.debug('creating new worker...');
+        const worker: Worker = params.workerFactory();
         currentWorker = worker;
         console.debug('new worker created');
 
         console.debug('creating worker message...');
-        const message = params.createWorkerMessage?.(outInstance) ?? outInstance.toSerializedString();
+        const message = params.createWorkerRequest?.(outInstance) ?? outInstance.toSerializedString();
         console.debug('posting  worker message...');
         worker.postMessage(message);
 
         try {
             console.debug('awaiting result...');
             const result = await new Promise<any>((resolve, reject) => {
-                worker.onmessage = (e) => resolve(e.data);
+                worker.onmessage = (e) => {
+                    const data = e.data;
+                    console.debug('worker responded with data', data);
+
+                    switch (data.type) {
+                        case WorkerResponseType.UNSOLVABLE:
+                            resolve(Unsolvable);
+                            break;
+                        case WorkerResponseType.ERROR:
+                            resolve(data.message);
+                            break;
+                        case WorkerResponseType.RESULT:
+                            resolve(params.resolveWorkerResponse(data));
+                            break;
+                    }
+                };
+
                 worker.onerror = (err) => reject(err);
             });
 

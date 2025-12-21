@@ -3,21 +3,28 @@
 import { SolverHCYCLE } from "$lib/solve/SolverHCYCLE";
 import { Unsolvable } from "$lib/core/Unsolvable";
 import { Graph } from "$lib/instance/Graph";
+import { WorkerResponseType, type WorkerRequestHCYCLE, type WorkerResponseHCYCLE } from "./types";
 
-self.onmessage = async (e) => {
-    postMessage('WorkerHCYCLESolver::onmessage');
-
+self.onmessage = async (e: MessageEvent<WorkerRequestHCYCLE>) => {
     try {
         console.debug('WorkerHCYCLESolver::onmessage');
 
-        const instance: Graph = Graph.fromSerializedString(e.data);
+        const instance: Graph = Graph.fromSerializedString(e.data.graph);
         const solver = new SolverHCYCLE(instance);
         const result = solver.solve();
-        postMessage(result || Unsolvable);
+
+        const response: WorkerResponseHCYCLE = (result == Unsolvable)
+            ? ({ type: WorkerResponseType.UNSOLVABLE })
+            : ({ 
+                type: WorkerResponseType.RESULT,
+                path: result.path, 
+            })
+
+        postMessage(response);
     }
     catch (e) {
         postMessage({
-            error: true,
+            type: WorkerResponseType.ERROR,
             message: e instanceof Error ? e.message : String(e)
         });
     }

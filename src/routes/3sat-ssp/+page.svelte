@@ -13,12 +13,14 @@
     import { useLocalStorage } from "$lib/core/useLocalStorage.svelte";
     import { DecoderSSPto3SAT } from "$lib/decode/DecoderSSPto3SAT";
     import { CNF3 } from "$lib/instance/CNF3";
-    import type { SSP } from "$lib/instance/SSP";
+    import { SSPNumber, type SSP } from "$lib/instance/SSP";
     import { useReductionController } from "$lib/page/useReductionController.svelte";
     import { Reducer3SATtoSSP } from "$lib/reduction/Reducer3SATtoSSP";
     import { Certificate3SAT } from "$lib/solve/Certificate3SAT";
     import { CertificateSSP } from "$lib/solve/CertificateSSP";
     import { ReductionStore } from "$lib/state/ReductionStore.svelte";
+    import type { WorkerRequestSSP } from "$lib/workers/types";
+    import WorkerSSPSolver from "$lib/workers/WorkerSSPSolver?worker";
 
     let storage = useLocalStorage(
         localStorageKeys.LS_3SAT_SSP, 
@@ -35,9 +37,19 @@
         solve,
     } = useReductionController({ 
         storage: storage,  
-        workerUrl: new URL("$lib/workers/WorkerSSPSolver.ts", import.meta.url),
+        workerFactory: () => new WorkerSSPSolver(),  
         reducerFactory: (inInstance) => new Reducer3SATtoSSP(inInstance),
         decoderFactory: () => new DecoderSSPto3SAT(),
+        createWorkerRequest: (outInst) => {
+            const ret: WorkerRequestSSP = {
+                ssp: outInst.toSerializedString(),
+            };
+            return ret;
+        },
+        resolveWorkerResponse: (data) => {
+            const numbers: SSPNumber[] = data.numbers.map(n => new SSPNumber(n.id, n.value, n.used, n.classes));
+            return new CertificateSSP(numbers);
+        },
         onSolveFinished: (outInst, outCert) => {
             if (outCert == Unsolvable) {
                 $redStore.inCert = Unsolvable;

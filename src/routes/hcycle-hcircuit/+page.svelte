@@ -18,6 +18,7 @@
     import type { CertificateHCIRCUIT } from "$lib/solve/CertificateHCIRCUIT";
     import type { CertificateHCYCLE } from "$lib/solve/CertificateHCYCLE";
     import { ReductionStore } from "$lib/state/ReductionStore.svelte";
+    import WorkerHCIRCUITSolver from "$lib/workers/WorkerHCIRCUITSolver?worker";
 
     let storage = useLocalStorage(
         localStorageKeys.LS_HCYCLE_HCIRCUIT,
@@ -34,7 +35,7 @@
         solve,
     } = useReductionController({ 
         storage: storage,  
-        workerUrl: new URL("$lib/workers/WorkerHCIRCUITSolver.ts", import.meta.url),
+        workerFactory: () => new WorkerHCIRCUITSolver(),
         reducerFactory: (inInstance) => new ReducerHCYCLEtoHCIRCUIT(inInstance),
         decoderFactory: () => new DecoderHCIRCUITtoHCYCLE(),
         onSolveFinished: (outInst, outCert) => {

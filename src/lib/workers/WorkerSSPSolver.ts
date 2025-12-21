@@ -3,31 +3,37 @@
 import { Unsolvable } from "$lib/core/Unsolvable";
 import { SSP } from "$lib/instance/SSP";
 import { SolverSSP } from "$lib/solve/SolverSSP";
+import { WorkerResponseType, type WorkerRequestSSP, type WorkerResponseSSP } from "./types";
 
-self.onmessage = async (e) => {
+self.onmessage = async (e: MessageEvent<WorkerRequestSSP>) => {
     console.debug('WorkerSSPSolver::onmessage');
-    postMessage('WorkerSSPSolver::onmessage');
 
     try {
-        console.debug('Calling SSP.fromSerializedString method');
-        const ssp = SSP.fromSerializedString(e.data);
-
+        const ssp = SSP.fromSerializedString(e.data.ssp);
         if (typeof ssp == 'string') {
-            postMessage(new Error("SSP couldn't be parsed from string."));
+            postMessage({
+                type: WorkerResponseType.ERROR,
+                message: "SSP couldn't be parsed from string.",
+            });
+
             return;
         }
 
-        console.debug('Creating new solver');
-
         const solver = new SolverSSP(ssp);
-
-        console.debug('solving...');
         const result = solver.solve();
-        postMessage(result || Unsolvable);
+
+        const response: WorkerResponseSSP = (result == Unsolvable) 
+            ? ({ type: WorkerResponseType.UNSOLVABLE })
+            : ({
+                type: WorkerResponseType.RESULT,
+                numbers: result.numbers, 
+            });
+
+        postMessage(response);
     }
     catch (e) {
         postMessage({
-            error: true,
+            type: WorkerResponseType.ERROR,
             message: e instanceof Error ? e.message : String(e)
         });
     }
