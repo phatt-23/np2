@@ -19,7 +19,7 @@ export class Decoder3CGto3SAT implements Decoder<Graph, Certificate3CG, Certific
             const color = value;
             const nodeId = key;
 
-            if (nodeId.startsWith(NODE_ID_PREFIX_TRUE)) {
+            if (nodeId.startsWith(CG3_ID.TRUE_VAR_NODE_PREFIX)) {
                 const id = this.cutTruePrefix(nodeId);
 
                 if (color == CG3_ID.COLOR_TRUE) {
@@ -29,7 +29,7 @@ export class Decoder3CGto3SAT implements Decoder<Graph, Certificate3CG, Certific
                     this.setAssignment(assignment, id, false); 
                 }
             } 
-            else if (nodeId.startsWith(NODE_ID_PREFIX_FALSE)) {
+            else if (nodeId.startsWith(CG3_ID.FALSE_VAR_NODE_PREFIX)) {
                 const id = this.cutFalsePrefix(nodeId);
 
                 if (color == CG3_ID.COLOR_TRUE) {
@@ -57,9 +57,9 @@ export class Decoder3CGto3SAT implements Decoder<Graph, Certificate3CG, Certific
     }
 
     private cutTruePrefix(id: string): string {
-        return id.slice(NODE_ID_PREFIX_TRUE.length);
+        return id.slice(CG3_ID.TRUE_VAR_NODE_PREFIX.length);
     }
     private cutFalsePrefix(id: string): string {
-        return id.slice(NODE_ID_PREFIX_FALSE.length);
+        return id.slice(CG3_ID.FALSE_VAR_NODE_PREFIX.length);
     }
 }
