@@ -75,9 +75,28 @@ Component that renders the graph.
         cy.on('tap', 'node', onNodeTap);
         cy.on('tap', 'edge', onEdgeTap);
 
+
+        // center the nodes
+        const bb = cy.elements().boundingBox();
+
+        const centerX = (bb.x1 + bb.x2) / 2;
+        const centerY = (bb.y1 + bb.y2) / 2;
+
+        cy.nodes().positions(ele => {
+            const pos: cytoscape.Position = {
+                x: ele.position().x - centerX,
+                y: ele.position().y - centerY
+            };
+
+            return pos;
+        });
+
+        // make the whole graph visible
+        cy.fit();
+
         // Restore viewport
-        cy.zoom(currentZoom);
-        cy.pan(currentPan);
+        // cy.zoom(currentZoom);
+        // cy.pan(currentPan);
 
         return () => {
             cy.off('tap', 'node', onNodeTap);
