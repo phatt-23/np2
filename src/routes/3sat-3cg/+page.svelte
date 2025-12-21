@@ -8,6 +8,7 @@
     import Renderer3CNF from "$lib/component/Renderer3CNF.svelte";
     import RendererGraph from "$lib/component/RendererGraph.svelte";
     import Spinner from "$lib/component/Spinner.svelte";
+    import { assert } from "$lib/core/assert";
     import type { Id } from "$lib/core/Id";
     import localStorageKeys from "$lib/core/localStorageKeys";
     import { Unsolvable } from "$lib/core/Unsolvable";
@@ -20,7 +21,7 @@
     import { Certificate3CG } from "$lib/solve/Certificate3CG";
     import { Certificate3SAT } from "$lib/solve/Certificate3SAT";
     import { ReductionStore } from "$lib/state/ReductionStore.svelte";
-    import type { WorkerRequest3CG } from "$lib/workers/types";
+    import { WorkerResponseType, type WorkerRequest3CG, type WorkerResponse3CG } from "$lib/workers/types";
     import Worker3CGSolver from "$lib/workers/Worker3CGSolver?worker";
 
     let storage = useLocalStorage(
@@ -48,8 +49,17 @@
             return ret;
         },
         resolveWorkerResponse: (data) => {
-            const coloring = data.coloring as [Id, number][];
-            return new Certificate3CG(new Map(coloring));
+            const response = data as WorkerResponse3CG;
+            assert(response.type == WorkerResponseType.RESULT);
+            
+            const coloring: Map<Id, number> = new Map();
+            response.coloring.forEach(c => {
+                const id = c[0];
+                const color = c[1];
+                coloring.set(id, color);
+            });
+
+            return new Certificate3CG(coloring);
         },
         onSolveFinished: (outInst, outCert) => {
             if (outCert == Unsolvable) {

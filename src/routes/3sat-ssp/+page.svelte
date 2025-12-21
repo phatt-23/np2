@@ -8,6 +8,7 @@
     import Renderer3CNF from "$lib/component/Renderer3CNF.svelte";
     import RendererSSP from "$lib/component/RendererSSP.svelte";
     import Spinner from "$lib/component/Spinner.svelte";
+    import { assert } from "$lib/core/assert";
     import localStorageKeys from "$lib/core/localStorageKeys";
     import { Unsolvable } from "$lib/core/Unsolvable";
     import { useLocalStorage } from "$lib/core/useLocalStorage.svelte";
@@ -19,7 +20,7 @@
     import { Certificate3SAT } from "$lib/solve/Certificate3SAT";
     import { CertificateSSP } from "$lib/solve/CertificateSSP";
     import { ReductionStore } from "$lib/state/ReductionStore.svelte";
-    import type { WorkerRequestSSP } from "$lib/workers/types";
+    import { WorkerResponseType, type WorkerRequestSSP, type WorkerResponseSSP } from "$lib/workers/types";
     import WorkerSSPSolver from "$lib/workers/WorkerSSPSolver?worker";
 
     let storage = useLocalStorage(
@@ -47,7 +48,10 @@
             return ret;
         },
         resolveWorkerResponse: (data) => {
-            const numbers: SSPNumber[] = data.numbers.map(n => new SSPNumber(n.id, n.value, n.used, n.classes));
+            const res = data as WorkerResponseSSP;
+            assert(res.type == WorkerResponseType.RESULT);
+            
+            const numbers = res.numbers.map(n => new SSPNumber(n.id, n.value, n.used, n.classes));
             return new CertificateSSP(numbers);
         },
         onSolveFinished: (outInst, outCert) => {

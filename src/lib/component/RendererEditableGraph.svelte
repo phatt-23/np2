@@ -7,7 +7,7 @@ Component rendering the graph and allowing the user to add and remove edges.
 <script lang="ts">
     import RendererGraph from '$lib/component/RendererGraph.svelte';
     import type { cytoscapeStyles } from '$lib/core/cytoscapeStyles';
-    import { cutNodeIdPrefix, EDGE_ID_PREFIX, NODE_ID_PREFIX } from '$lib/core/Id';
+    import { EDGE_ID_PREFIX } from '$lib/core/Id';
     import type { Graph, GraphEdge } from '$lib/instance/Graph';
     import type { CytoscapeLayout } from './RendererGraph';
 
@@ -68,8 +68,9 @@ Component rendering the graph and allowing the user to add and remove edges.
             return;
         }
 
-        const fromNodeId = cutNodeIdPrefix(firstNode.id());
-        const toNodeId = cutNodeIdPrefix(node.id());
+        const fromNodeId = firstNode.id();
+        const toNodeId = node.id();
+        
         const edgeId = EDGE_ID_PREFIX + `${fromNodeId}-${toNodeId}`;
 
         const edge: GraphEdge = {

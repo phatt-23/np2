@@ -46,4 +46,25 @@ export type WorkerResponseHCYCLE =
         path: GraphNodePOD[]
     }
 
+export type WorkerRequestTSP = { 
+    graph: string;
+    maxCost: number; 
+};
+
+export type WorkerResponseTSP = 
+    | { type: WorkerResponseType.UNSOLVABLE }
+    | { type: WorkerResponseType.ERROR; message: string }
+    | { 
+        type: WorkerResponseType.RESULT; 
+        path: GraphNodePOD[]
+    }
+    
+export type WorkerRequestHCIRCUIT = { graph: string; }
+export type WorkerResponseHCIRCUIT = 
+    | { type: WorkerResponseType.UNSOLVABLE }
+    | { type: WorkerResponseType.ERROR; message: string }
+    | { 
+        type: WorkerResponseType.RESULT; 
+        path: GraphNodePOD[]
+    }
     

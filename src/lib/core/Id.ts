@@ -55,10 +55,3 @@ export const HCYCLE_HCIRCUIT_ID = {
     GAP_NODE_PREFIX: 'ngap:',
     OUTGOING_NODE_PREFIX: 'nout:',
 };
-
-export const cutNodeIdPrefix = (id: string) => {
-    if (id.startsWith(NODE_ID_PREFIX)) {
-        return id.slice(NODE_ID_PREFIX.length);
-    }
-    return id;
-}

@@ -19,6 +19,8 @@ do not allow reducing nor solving (UI constraint and logic constraint)
 - [ ] - rename asString() to format() as it is formatting the problem instance to a format that the editor accepts, now it's confusing because problem instances have toSerializedString()
 - [ ] - add editor checks for illegal symbols like %#@!-_() and so on
 - [ ] - 3sat to hcycle uses a different edge id naming scheme to the rest, change it (now it's using only the node names in its edge ids, it should use the entire id, including the prefix)
+- [ ] - hcycle to hcircuit has a bug, to reproduce: choose 'compolete' demo instance, add edge from n4 to n0, after solve it's not highlighted
+- [ ] - hcircuit to tsp has a bug, after removing and adding edges, it doesn't consider them when solving TSP
 
 ## 3SAT to 3CG
 

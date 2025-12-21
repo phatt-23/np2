@@ -3,28 +3,32 @@
 import { Unsolvable } from "$lib/core/Unsolvable";
 import { Graph } from "$lib/instance/Graph";
 import { SolverTSP } from "$lib/solve/SolverTSP";
+import { WorkerResponseType, type WorkerRequestTSP, type WorkerResponseTSP } from "./types";
 
-self.onmessage = async (e) => {
+self.onmessage = async (message: MessageEvent<WorkerRequestTSP>) => {
     console.debug('WorkerTSPSolver::onmessage');
-    postMessage('WorkerTSPSolver::onmessage');
 
     try {
-        const serializedGraph: string = e.data.graph;
-        const maxCost: number = e.data.maxCost;
-
-        console.debug(serializedGraph);
-        console.debug(maxCost);
+        const serializedGraph: string = message.data.graph;
+        const maxCost: number = message.data.maxCost;
 
         const instance: Graph = Graph.fromSerializedString(serializedGraph);
 
         const solver = new SolverTSP(instance, maxCost);
         const result = solver.solve();
 
-        postMessage(result || Unsolvable);
+        const response: WorkerResponseTSP = (result == Unsolvable)
+            ? ({ type: WorkerResponseType.UNSOLVABLE })
+            : ({ 
+                type: WorkerResponseType.RESULT,
+                path: result.path, 
+            })
+
+        postMessage(response);
     }
     catch (e) {
         postMessage({
-            error: true,
+            type: WorkerResponseType.ERROR,
             message: e instanceof Error ? e.message : String(e)
         });
     }

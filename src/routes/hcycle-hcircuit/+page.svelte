@@ -8,6 +8,7 @@
     import RendererEditableGraph from "$lib/component/RendererEditableGraph.svelte";
     import RendererGraph from "$lib/component/RendererGraph.svelte";
     import Spinner from "$lib/component/Spinner.svelte";
+    import { assert } from "$lib/core/assert";
     import localStorageKeys from "$lib/core/localStorageKeys";
     import { Unsolvable } from "$lib/core/Unsolvable";
     import { useLocalStorage } from "$lib/core/useLocalStorage.svelte";
@@ -15,9 +16,10 @@
     import type { Graph } from "$lib/instance/Graph";
     import { useReductionController } from "$lib/page/useReductionController.svelte";
     import { ReducerHCYCLEtoHCIRCUIT } from "$lib/reduction/ReducerHCYCLEtoHCIRCUIT";
-    import type { CertificateHCIRCUIT } from "$lib/solve/CertificateHCIRCUIT";
+    import { CertificateHCIRCUIT } from "$lib/solve/CertificateHCIRCUIT";
     import type { CertificateHCYCLE } from "$lib/solve/CertificateHCYCLE";
     import { ReductionStore } from "$lib/state/ReductionStore.svelte";
+    import { WorkerResponseType, type WorkerRequestHCIRCUIT, type WorkerResponseHCIRCUIT } from "$lib/workers/types";
     import WorkerHCIRCUITSolver from "$lib/workers/WorkerHCIRCUITSolver?worker";
 
     let storage = useLocalStorage(
@@ -38,6 +40,17 @@
         workerFactory: () => new WorkerHCIRCUITSolver(),
         reducerFactory: (inInstance) => new ReducerHCYCLEtoHCIRCUIT(inInstance),
         decoderFactory: () => new DecoderHCIRCUITtoHCYCLE(),
+        createWorkerRequest: (outInst) => {
+            const ret: WorkerRequestHCIRCUIT = {
+                graph: outInst.toSerializedString(),
+            };
+            return ret;
+        },
+        resolveWorkerResponse: (data) => {
+            const res = data as WorkerResponseHCIRCUIT;
+            assert(res.type == WorkerResponseType.RESULT);
+            return new CertificateHCIRCUIT(res.path);
+        },
         onSolveFinished: (outInst, outCert) => {
             if (outCert == Unsolvable) {
                 $redStore.inCert = Unsolvable;
@@ -48,7 +61,7 @@
             const inCert = decoder.decode(outInst, outCert);
             const inInst = $redStore.inInstance!;
 
-            inInst.labelSolved({ path: inCert.path, directed: false });
+            inInst.labelSolved({ path: inCert.path, directed: true });
             outInst.labelSolved({ path: outCert.path, directed: false });
 
             redStore.update(rs => {
@@ -197,6 +210,8 @@
                             storage.save();
                         }}
                     />
+                    
+                    <!-- {$redStore.inInstance.toSerializedString()} -->
                 {/if}
                 {#if $redStore.inCert}
                     <CertRendererHCYCLE cert={$redStore.inCert} />
@@ -209,6 +224,8 @@
                         style='HCIRCUIT'
                         layout='preset'
                     />
+
+                    <!-- {$redStore.outInstance.toSerializedString()} -->
                 {/if}
                 {#if $redStore.outCert}
                     <CertRendererHCIRCUIT cert={$redStore.outCert}/>

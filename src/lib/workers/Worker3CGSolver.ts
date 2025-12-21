@@ -3,13 +3,13 @@
 import { Solver3CG } from "$lib/solve/Solver3CG";
 import { Graph } from "$lib/instance/Graph";
 import { Unsolvable } from "$lib/core/Unsolvable";
-import { WorkerResponseType, type WorkerResponse3CG } from "./types";
+import { WorkerResponseType, type WorkerRequest3CG, type WorkerResponse3CG } from "./types";
 
-self.onmessage = async (e) => {
+self.onmessage = async (e: MessageEvent<WorkerRequest3CG>) => {
     console.debug('Worker3CGSolver::onmessage');
 
     try {
-        const instance: Graph = Graph.fromSerializedString(e.data);
+        const instance: Graph = Graph.fromSerializedString(e.data.graph);
         const solver = new Solver3CG(instance);
         const result = solver.solve();
 

@@ -15,10 +15,12 @@
     import { ReductionStore } from "$lib/state/ReductionStore.svelte";
     import type { Graph } from "$lib/instance/Graph";
     import type { CertificateHCIRCUIT } from "$lib/solve/CertificateHCIRCUIT";
-    import type { CertificateTSP } from "$lib/solve/CertificateTSP";
+    import { CertificateTSP } from "$lib/solve/CertificateTSP";
     import RendererEditableGraph from "$lib/component/RendererEditableGraph.svelte";
     import { useReductionController } from "$lib/page/useReductionController.svelte";
     import WorkerTSPSolver from "$lib/workers/WorkerTSPSolver?worker";
+    import { WorkerResponseType, type WorkerRequestTSP, type WorkerResponseTSP } from "$lib/workers/types";
+    import { assert } from "$lib/core/assert";
 
     let storage = useLocalStorage(
         localStorageKeys.LS_HCIRCUIT_TSP,
@@ -36,12 +38,21 @@
     } = useReductionController({ 
         storage: storage,  
         workerFactory: () => new WorkerTSPSolver(),
-        createWorkerRequest: (outInst) => ({ 
-            graph: outInst.toSerializedString(), 
-            maxCost: outInst.nodes.length 
-        }),
         reducerFactory: (outInst) => new ReducerHCIRCUITtoTSP(outInst),
         decoderFactory: () => new DecoderTSPtoHCIRCUIT(),
+        createWorkerRequest: (outInst) => {
+            const ret: WorkerRequestTSP = {
+                graph: outInst.toSerializedString(), 
+                maxCost: outInst.nodes.length, 
+            };
+
+            return ret;
+        }, 
+        resolveWorkerResponse: (data) => {
+            const res = data as WorkerResponseTSP;
+            assert(res.type == WorkerResponseType.RESULT);
+            return new CertificateTSP(res.path);
+        },
         onSolveFinished: (outInst, outCert) => {
             if (outCert == Unsolvable) {
                 $redStore.inCert = Unsolvable;
@@ -198,6 +209,8 @@
                             storage.save();
                         }}
                     />
+                    
+                    <!-- {$redStore.inInstance.toSerializedString()} -->
                 {/if}
                 {#if $redStore.inCert}
                     <CertRendererHCIRCUIT cert={$redStore.inCert} />
@@ -210,6 +223,8 @@
                         style='TSP'
                         layout='circle'
                     />
+                    
+                <!-- {$redStore.outInstance.toSerializedString()} -->
                 {/if}
                 {#if $redStore.outCert}
                     <CertRendererTSP cert={$redStore.outCert}/>

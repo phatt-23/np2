@@ -10,6 +10,7 @@ self.onmessage = async (e: MessageEvent<WorkerRequestSSP>) => {
 
     try {
         const ssp = SSP.fromSerializedString(e.data.ssp);
+        
         if (typeof ssp == 'string') {
             postMessage({
                 type: WorkerResponseType.ERROR,

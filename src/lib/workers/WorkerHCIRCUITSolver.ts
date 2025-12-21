@@ -3,20 +3,28 @@
 import { Unsolvable } from "$lib/core/Unsolvable";
 import { Graph } from "$lib/instance/Graph";
 import { SolverHCIRCUIT } from "$lib/solve/SolverHCIRCUIT";
+import { WorkerResponseType, type WorkerRequestHCIRCUIT, type WorkerResponseHCIRCUIT } from "./types";
 
-self.onmessage = async (e) => {
-    postMessage('WorkerHCIRCUITSolver::onmessage');
+self.onmessage = async (message: MessageEvent<WorkerRequestHCIRCUIT>) => {
+    console.debug('WorkerHCIRCUITSolver::onmessage');
 
     try {
-        console.debug('WorkerHCIRCUITSolver::onmessage');
-        const instance : Graph = Graph.fromSerializedString(e.data);
+        const instance : Graph = Graph.fromSerializedString(message.data.graph);
         const solver = new SolverHCIRCUIT(instance);
         const result = solver.solve();
-        postMessage(result || Unsolvable);
+
+        const response: WorkerResponseHCIRCUIT = (result == Unsolvable)
+            ? ({ type: WorkerResponseType.UNSOLVABLE })
+            : ({ 
+                type: WorkerResponseType.RESULT,
+                path: result.path, 
+            })
+
+        postMessage(response);
     }
     catch (e) {
         postMessage({
-            error: true,
+            type: WorkerResponseType.ERROR,
             message: e instanceof Error ? e.message : String(e)
         });
     }
