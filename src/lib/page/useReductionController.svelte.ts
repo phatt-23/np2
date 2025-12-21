@@ -104,9 +104,9 @@ export function useReductionController<
     async function solve(): Promise<void> {
         console.debug('useReductionController::solve()');
 
-        if (!params.workerUrl) {
-            console.debug('Worker URL not provided');
-            throw new Error('Worker URL not provided');
+        if (!params.workerUrl && !params.workerFactory) {
+            console.debug('Neither worker URL nor workerFactory was provided');
+            throw new Error('Neither worker URL nor workerFactory was provided');
         }
 
         if (!outInstance) {
