@@ -7,7 +7,7 @@ import { Unsolvable } from "$lib/core/Unsolvable";
 self.onmessage = async (e) => {
     console.debug('Worker3CGSolver::onmessage');
     console.debug('e.data', e.data);
-    postMessage('Worker3CGSolver::onmessage');
+    // postMessage('Worker3CGSolver::onmessage');
 
     try {
         const instance: Graph = Graph.fromSerializedString(e.data);

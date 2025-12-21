@@ -19,6 +19,7 @@
     import { Certificate3SAT } from "$lib/solve/Certificate3SAT";
     import { CertificateHCYCLE } from "$lib/solve/CertificateHCYCLE";
     import { ReductionStore } from "$lib/state/ReductionStore.svelte";
+    import WorkerHCYCLESolver from "$lib/workers/WorkerHCYCLESolver?worker";
 
     let storage = useLocalStorage(
         localStorageKeys.LS_3SAT_HCYCLE, 
@@ -34,8 +35,8 @@
         reduce,
         solve,
     } = useReductionController({ 
-        storage: storage,  
-        workerUrl: new URL("$lib/workers/WorkerHCYCLESolver.ts", import.meta.url),
+        storage: storage,
+        workerFactory: () => new WorkerHCYCLESolver(),  
         reducerFactory: (inInstance) => new Reducer3SATtoHCYCLE(inInstance),
         decoderFactory: () => new DecoderHCYCLEto3SAT(),
         onSolveFinished: (outInst, outCert) => {

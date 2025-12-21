@@ -21,6 +21,7 @@ type Params<
 > = {
     storage: LocalStorage<I, O, IC, OC>;
     workerUrl?: URL;
+    workerFactory?: () => Worker;
     reducerFactory: (inInstance: I) => Reducer<I, O>;
     decoderFactory: () => Decoder<O, OC, IC>;
     onSolveFinished?: (outInstance: O, outCert: OC | Unsolvable) => void;
@@ -125,8 +126,8 @@ export function useReductionController<
             currentWorker.terminate();
         }
 
-        console.debug('creating new worker...');
-        const worker = new Worker(params.workerUrl, { type: 'module' });
+        console.debug('creating new worker with url', params.workerUrl, '...');
+        const worker: Worker = params.workerFactory?.() ?? new Worker(params.workerUrl, { type: 'module' });
         currentWorker = worker;
         console.debug('new worker created');
 
