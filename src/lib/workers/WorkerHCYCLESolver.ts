@@ -5,6 +5,8 @@ import { Unsolvable } from "$lib/core/Unsolvable";
 import { Graph } from "$lib/instance/Graph";
 
 self.onmessage = async (e) => {
+    postMessage('WorkerHCYCLESolver::onmessage');
+
     try {
         console.debug('WorkerHCYCLESolver::onmessage');
 

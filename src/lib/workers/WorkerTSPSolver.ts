@@ -6,6 +6,7 @@ import { SolverTSP } from "$lib/solve/SolverTSP";
 
 self.onmessage = async (e) => {
     console.debug('WorkerTSPSolver::onmessage');
+    postMessage('WorkerTSPSolver::onmessage');
 
     try {
         const serializedGraph: string = e.data.graph;

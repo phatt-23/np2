@@ -6,6 +6,7 @@ import { SolverSSP } from "$lib/solve/SolverSSP";
 
 self.onmessage = async (e) => {
     console.debug('WorkerSSPSolver::onmessage');
+    postMessage('WorkerSSPSolver::onmessage');
 
     try {
         console.debug('Calling SSP.fromSerializedString method');

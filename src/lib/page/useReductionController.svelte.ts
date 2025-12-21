@@ -142,6 +142,8 @@ export function useReductionController<
                 worker.onerror = (err) => reject(err);
             });
 
+            console.debug("worker's result", result);
+
             console.debug('updating reduction store...');
             redStore.update(rs => {
                 rs.outCert = result;
