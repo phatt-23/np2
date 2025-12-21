@@ -7,12 +7,16 @@ import { Graph } from "$lib/instance/Graph";
 self.onmessage = async (e) => {
     try {
         console.debug('WorkerHCYCLESolver::onmessage');
-        const instance : Graph = Graph.fromSerializedString(e.data);
+
+        const instance: Graph = Graph.fromSerializedString(e.data);
         const solver = new SolverHCYCLE(instance);
         const result = solver.solve();
         postMessage(result || Unsolvable);
     }
     catch (e) {
-        postMessage(e);
+        postMessage({
+            error: true,
+            message: e instanceof Error ? e.message : String(e)
+        });
     }
 };

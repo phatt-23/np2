@@ -25,6 +25,9 @@ self.onmessage = async (e) => {
         postMessage(result || Unsolvable);
     }
     catch (e) {
-        postMessage(e);
+        postMessage({
+            error: true,
+            message: e instanceof Error ? e.message : String(e)
+        });
     }
 };
