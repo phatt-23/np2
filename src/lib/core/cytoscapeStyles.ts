@@ -144,6 +144,16 @@ export const cytoscapeStyles: Record<string, StylesheetStyle[]> = {
                 'line-color': 'red',
             },
         },
+        {
+            selector: 'edge.target-to-source',
+            style: {
+                "curve-style": "round-segments",
+                "segment-distances": 'data(controlPointDistances)', 
+                "segment-weights": [0.0, 1.0],
+                // "control-point-distances": 'data(controlPointDistances)',
+                // "control-point-weights": [0.0, 0.1, 0.99, 1.0],
+            },
+        },
         ...solvedNode,
         selectedNode,
     ],

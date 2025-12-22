@@ -31,7 +31,21 @@ Component that renders the graph.
 
     let moveEnabled = $state(false);
 
+    function enableMovement(v: boolean) {
+        cy.panningEnabled(v);
+        cy.userZoomingEnabled(v);
+
+        if (v) {
+            cy.nodes().grabify();
+        }
+        else {
+            cy.nodes().ungrabify();
+        }
+    }
+
     $effect(() => {
+        console.debug('running effect');
+
         const nodes: ElementDefinition[] = graph.nodes.map(n => ({
             data: { id: n.id, label: n.id },
             position: n.position,
@@ -49,10 +63,6 @@ Component that renders the graph.
             classes: e.classes,
         }));
 
-        // Save current viewport if cytoscape instance already exists
-        const currentPan = cy ? cy.pan() : { x: 0, y: 0 };
-        const currentZoom = cy ? cy.zoom() : 1;
-
         // Initialize cytoscape only once
         if (!cy) {
             cy = cytoscape({
@@ -60,53 +70,37 @@ Component that renders the graph.
                 wheelSensitivity: 5.0,
                 style: cytoscapeStyles[style],
             });
+
+            // handle adding of edges when clicking consecutivelly on two nodes
+            cy.on('tap', 'node', onNodeTap);
+            cy.on('tap', 'edge', onEdgeTap);
         } else {
             cy.elements().remove();
         }
 
         cy.add([...nodes, ...edges]);
         cy.style(cytoscapeStyles[style]);
-        cy.layout({ name: layout }).run();
 
-        // cy.nodes().ungrabify();
-        cy.nodes().grabify();
+        const layoutInstance = cy.layout({ name: layout, });
 
-        // handle adding of edges when clicking consecutivelly on two nodes
-        cy.on('tap', 'node', onNodeTap);
-        cy.on('tap', 'edge', onEdgeTap);
-
-
-        // center the nodes
-        const bb = cy.elements().boundingBox();
-
-        const centerX = (bb.x1 + bb.x2) / 2;
-        const centerY = (bb.y1 + bb.y2) / 2;
-
-        cy.nodes().positions(ele => {
-            const pos: cytoscape.Position = {
-                x: ele.position().x - centerX,
-                y: ele.position().y - centerY
-            };
-
-            return pos;
+        layoutInstance.pon('layoutstop').then(() => {
+            console.log('layoutstop promise fulfilled');
+            cy.resize();
+            cy.reset();
+            cy.fit(cy.elements(), 20);
+           
+            // restore
+            enableMovement(moveEnabled);
         });
 
-        // make the whole graph visible
-        cy.fit();
+        // i don't why, but without this enabled the fitting won't take effect
+        enableMovement(true);
 
-        // Restore viewport
-        // cy.zoom(currentZoom);
-        // cy.pan(currentPan);
-
-        return () => {
-            cy.off('tap', 'node', onNodeTap);
-            cy.off('tap', 'edge', onEdgeTap);
-        }
+        layoutInstance.run();
     });
 
     $effect(() => {
-        cy.panningEnabled(moveEnabled);
-        cy.userZoomingEnabled(moveEnabled);
+        enableMovement(moveEnabled);
     });
 </script>
 

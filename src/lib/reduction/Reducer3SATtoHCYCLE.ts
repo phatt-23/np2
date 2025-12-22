@@ -51,11 +51,9 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
         let steps : ReductionStep<CNF3, Graph>[] = [];
 
         const step1 = this.createVarGadgets();
-
-        steps.push(...step1.interSteps);
-
         const step2 = this.createClauseGadgets(step1.graph.copy());
 
+        steps.push(...step1.interSteps);
         steps.push(...step2.interSteps);
 
         return {
@@ -78,71 +76,6 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
         // represents the graph with only the clause nodes added
         // with no edges yet
         let firstGraph = graph.copy();
-
-        interSteps.push({
-            id: `create-clause-gadget-nodes`,
-            title: `Create clause nodes`,
-            description: `
-                <p>
-                    For every clause, create one clause node 
-                    (this node must be visited exactly once).
-                    There are ${this.clauseCount} clause nodes.
-                </p>
-                <p>
-                    For each of the clause, create edges to or from the variable row nodes
-                    based on these rules:
-                </p>
-                <ul>
-                    <li>
-                        If the literal <b>isn't negated</b>, 
-                        pick a free (one that hasn't been used yet in this step) 
-                        row node <i>r</i> and connect it to the clause node.
-
-                        The selected node is an <u>out-going</u> node.
-
-                        Then connect the clause node back to a row node <i>r + 1</i> 
-                        (adjacent on the right of it).
-
-                        This node is an <u>in-coming</u> node.
-                    </li>
-                    <li>
-                        If the literal <b>is negated</b>, 
-                        pick a free row node <i>r</i> 
-                        and connect it to the clause node.
-
-                        The selected node is an <u>out-going</u> node.
-
-                        Then connect the clause node back to a row node <i>r - 1</i> 
-                        (adjacent on the left of it).
-
-                        This node is an <u>in-coming</u> node.
-                    </li>
-                </ul>
-                <p>
-                    This way we gaurantee for each clause that:
-                    <ul>
-                        <li>
-                            If the literal <i>L</i> of some variable <i>X</i> 
-                            <b>wasn't negated</b> in the clause, 
-                            then we can reach it from an <i>X</i> variable row node 
-                            and come back to an <i>X</i> variable row node on the right of it,
-                            when we approach it from the left (we assinged X to be True).
-                        </li>
-                        <li>
-                            If the literal <i>L</i> of some variable <i>X</i> 
-                            <b>was negated</b> in the clause, 
-                            then we can reach it from an <i>X</i> variable row node 
-                            and come back to an <i>X</i> variable row node on the left of it,
-                            when we approach it from the right (we assigned X to be False).
-                        </li>
-                    </ul>
-                </p>
-            `,
-            inSnapshot: this.inInstance,
-            // btw this graph is modified later by the code below
-            outSnapshot: firstGraph,  
-            mapping: {},
-        });
 
         /**
          * For each clause, create a node 
@@ -245,8 +178,74 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                 `,
                 inSnapshot: this.inInstance,
                 outSnapshot: graph.copy(),
-                mapping: {},
             });
+        });
+
+        /*
+         * Add the first step.
+         */
+        interSteps.unshift({
+            id: `create-clause-gadget-nodes`,
+            title: `Create clause nodes`,
+            description: `
+                <p>
+                    For every clause, create one clause node 
+                    (this node must be visited exactly once).
+                    There are ${this.clauseCount} clause nodes.
+                </p>
+                <p>
+                    For each of the clause, create edges to or from the variable row nodes
+                    based on these rules:
+                </p>
+                <ul>
+                    <li>
+                        If the literal <b>isn't negated</b>, 
+                        pick a free (one that hasn't been used yet in this step) 
+                        row node <i>r</i> and connect it to the clause node.
+
+                        The selected node is an <u>out-going</u> node.
+
+                        Then connect the clause node back to a row node <i>r + 1</i> 
+                        (adjacent on the right of it).
+
+                        This node is an <u>in-coming</u> node.
+                    </li>
+                    <li>
+                        If the literal <b>is negated</b>, 
+                        pick a free row node <i>r</i> 
+                        and connect it to the clause node.
+
+                        The selected node is an <u>out-going</u> node.
+
+                        Then connect the clause node back to a row node <i>r - 1</i> 
+                        (adjacent on the left of it).
+
+                        This node is an <u>in-coming</u> node.
+                    </li>
+                </ul>
+                <p>
+                    This way we gaurantee for each clause that:
+                    <ul>
+                        <li>
+                            If the literal <i>L</i> of some variable <i>X</i> 
+                            <b>wasn't negated</b> in the clause, 
+                            then we can reach it from an <i>X</i> variable row node 
+                            and come back to an <i>X</i> variable row node on the right of it,
+                            when we approach it from the left (we assinged X to be True).
+                        </li>
+                        <li>
+                            If the literal <i>L</i> of some variable <i>X</i> 
+                            <b>was negated</b> in the clause, 
+                            then we can reach it from an <i>X</i> variable row node 
+                            and come back to an <i>X</i> variable row node on the left of it,
+                            when we approach it from the right (we assigned X to be False).
+                        </li>
+                    </ul>
+                </p>
+            `,
+            inSnapshot: this.inInstance,
+            // btw this graph is modified later by the code below
+            outSnapshot: firstGraph.copy(),
         });
 
         return {
@@ -461,11 +460,15 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                 /**
                  * Connect the target node to source node to close the loop.
                  */
+
+                const dist = -( ( this.rowNodeCount / 2 + 1 ) * this.xDist );
+
                 secondGraph.addEdge({
                     id:     EDGE_ID_PREFIX + `${TARGET_NODE_ID}-${SOURCE_NODE_ID}`,
                     from:   NODE_ID_PREFIX_SPECIAL + `${TARGET_NODE_ID}`,
                     to:     NODE_ID_PREFIX_SPECIAL + `${SOURCE_NODE_ID}`,
-                    classes: 'muted',
+                    classes: 'muted target-to-source',
+                    controlPointDistances: [ dist, dist ],
                 });
 
             }  
@@ -507,8 +510,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                 </p>
             `,
             inSnapshot: this.inInstance,
-            outSnapshot: firstGraph,
-            mapping: {}
+            outSnapshot: firstGraph.copy(),
         });
 
         interSteps.push({
@@ -570,8 +572,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                 </p>
             `,
             inSnapshot: this.inInstance,
-            outSnapshot: secondGraph,
-            mapping: {}
+            outSnapshot: secondGraph.copy(),
         });
 
         return { 

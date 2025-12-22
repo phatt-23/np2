@@ -9,6 +9,8 @@ Also the file must have .svelte.ts extension.
 
 ## TODO
 
+- [ ] - implement for each problem (3SAT, 3CG, HCYCLE, HCIRCUIT, TSP, SSP) its page where the user can enter an instance and solve it, show the result (certificate or say its onsolvable)
+- [ ] - add intersteps for 3sat to 3cg, add clause gadgets one by one, not all at once
 - [ ] - decide on the final UI layout
 - [ ] - style the components
 - [ ] - rename asString() to format() as it is formatting the problem instance to a format that the editor accepts, now it's confusing because problem instances have toSerializedString()
@@ -77,6 +79,5 @@ union { {c1,c4}, {c2,c5}, {c3,c6},
         {T,c1}, {T,c2}, {T,c3},  
         {T,c4}, {c4,c5}, {c5,c6}, {c6,F} | for each clause c }
 ```
-
 
 

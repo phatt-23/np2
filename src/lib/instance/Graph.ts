@@ -19,7 +19,7 @@ export type GraphEdge = {
     to: Id;
     weight?: number;
     classes?: string;
-    controlPointDistances?: number[];  // pair of control points distances from the tangent of an edge
+    controlPointDistances?: number[];  
 }
 
 export type GraphNode = {
@@ -57,11 +57,12 @@ export class Graph extends ProblemInstance {
             edge.classes = '';
         }
 
-        if (edge.controlPointDistances == undefined) {
-            edge.controlPointDistances = [0,0];
-        }
-        assert(edge.controlPointDistances.length == 2, 
-            "There must be 2 control points.");
+        // doesn't matter how many control points
+        // if (edge.controlPointDistances == undefined) {
+        //     edge.controlPointDistances = [0,0];
+        // }
+        // assert(edge.controlPointDistances.length == 2, 
+        //     "There must be 2 control points.");
 
         // if there's an edge with the same id, don't add it
         if (this.edges.find(e => e.id == edge.id)) 
