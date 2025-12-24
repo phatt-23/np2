@@ -61,14 +61,14 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
 
             xCurrent += (this.sc + this.wc) * xStep;
 
-            ([ 
+            [ 
                 // connect the clause nodes vertically
                 [0,3], [1,4], [2,5], 
                 // connect T to top line
                 [this.coreNodes.T, 0], [this.coreNodes.T, 1], [this.coreNodes.T, 2],
                 // connect the bottom line
                 [this.coreNodes.T, 3], [3,4], [4,5], [5,this.coreNodes.F]
-            ]).forEach(c => {
+            ].forEach(c => {
                 const from = typeof(c[0]) == "number" ? nodes[c[0]] : c[0];
                 const to = typeof(c[1]) == "number" ? nodes[c[1]] : c[1];
 
