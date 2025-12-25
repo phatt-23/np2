@@ -29,7 +29,7 @@
 </script>
 
 <main>
-    <h2>SSP Editor</h2>
+    <h2 class="dev">SSP Editor</h2>
 
     <div>
         <label for="targetTextInput"></label>

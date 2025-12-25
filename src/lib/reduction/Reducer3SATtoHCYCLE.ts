@@ -286,6 +286,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                  */
                 secondGraph.addNode({ 
                     id: NODE_ID_PREFIX_SPECIAL + SOURCE_NODE_ID, 
+                    label: 'source',
                     position: { x: 0, y: i * this.yDist - this.yDist/2 },
                     classes: 'source'
                 }); 
@@ -318,6 +319,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                  */
                 secondGraph.addNode({ 
                     id: NODE_ID_PREFIX_INBETWEEN + `${inbetweenNode}`, 
+                    label: 'inbetween',
                     position: { x: 0, y: i * this.yDist - this.yDist/2 },
                     classes: 'inbetween'
                 }); 

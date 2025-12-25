@@ -12,7 +12,7 @@
 </script>
 
 <main>
-    <h2>CertRenderer HCIRCUIT</h2>
+    <h2 class="dev">CertRenderer HCIRCUIT</h2>
 
     {#if cert == Unsolvable}
         <p>The graph doesn't contain a Hamiltonian circuit.</p>

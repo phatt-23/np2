@@ -12,7 +12,7 @@
 </script>
 
 <main>
-    <h2>CertRenderer 3SAT</h2>
+    <h2 class="dev">CertRenderer 3SAT</h2>
 
     {#if cert == Unsolvable}
         <p>The 3CNF formula is unsatisfiable.</p>

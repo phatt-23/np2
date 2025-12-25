@@ -104,19 +104,23 @@ Component that renders the graph.
     });
 </script>
 
-<section>
-    <h2>Graph Renderer</h2>
+<main>
+    <h2 class="dev">Graph Renderer</h2>
 
     <label for="moveEnabledCheckbox">Move Enabled</label>
     <input type="checkbox" bind:checked={moveEnabled} name="moveEnabledCheckbox">
 
     <div bind:this={graphContainer} id="cy"></div>
-</section>
+</main>
 
 <style>
+    main {
+        height: 100%;
+    }
+
     #cy {
         width: 1fr;
         height: 40em;
-        border: solid black;
+        border: 1px solid black;
     }
 </style>

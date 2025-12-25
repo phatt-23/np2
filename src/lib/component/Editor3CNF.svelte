@@ -54,12 +54,13 @@
     })
 </script>
 
-<div class="cnf-editor">
-    <h2>CNF Editor</h2>
+<div class="editor">
+    <h2 class="dev">CNF Editor</h2>
     <p><i>Removes duplicate clauses automatically.</i></p>
 
-    <textarea bind:value={text} onchange={onTextChange}>
-    </textarea>
+    <div>
+        <textarea bind:value={text} onchange={onTextChange}></textarea>
+    </div>
 
     <select onchange={handleSelect} bind:value={selectedDemo}>
         <option value="">--Choose a demo--</option>
@@ -71,5 +72,13 @@
 </div>
 
 <style>
-    textarea { width: 100%; height: 20em; }
+    .editor {
+        display: block;
+        width: 100%;
+    }
+
+    textarea { 
+        width: 90%;
+        height: 20em; 
+    }
 </style>

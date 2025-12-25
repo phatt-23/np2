@@ -14,7 +14,7 @@
 </script>
 
 <main>
-    <h2>CertRenderer TSP</h2>
+    <h2 class="dev">CertRenderer TSP</h2>
 
     {#if cert == Unsolvable}
         <p>The graph doesn't contain a Hamiltonian cycle with the given cost.</p>

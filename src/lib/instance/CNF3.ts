@@ -38,6 +38,10 @@ export class Literal {
     public asHtmlString() : string {
         return (this.negated ? '&not;' : '') + this.varName;
     }
+
+    public toTexString(): string {
+        return (this.negated ? ' \\lnot ' : "") + this.varName;
+    }
 }
 
 @Serializer.SerializableClass("Clause")
@@ -67,6 +71,10 @@ export class Clause {
             id: this.id,
             literals: this.literals,
         }
+    }
+
+    public toTexString(): string {
+        return '(' + this.literals.map(l => l.toTexString()).join(' \\lor ') + ')';
     }
 }
 
@@ -175,5 +183,9 @@ export class CNF3 extends ProblemInstance {
 
     public static fromSerializedString(_serialized: string): CNF3 {
         throw 'Not implemented';
+    }
+
+    public toTexString(): string {
+        return this.clauses.map(c => c.toTexString()).join(' \\land ');
     }
 }

@@ -12,7 +12,7 @@
 </script>
 
 <main>
-    <h2>CertRenderer SSP</h2>
+    <h2 class="dev">CertRenderer SSP</h2>
 
     {#if cert == Unsolvable}
         <p>SSP doesn't have a solution.</p>

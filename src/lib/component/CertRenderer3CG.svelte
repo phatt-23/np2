@@ -22,7 +22,7 @@
 </script>
 
 <main>
-    <h2>CertRenderer 3CG</h2>
+    <h2 class="dev">CertRenderer 3CG</h2>
 
     {#if cert == Unsolvable}
         <p>The graph can't be colored by 3 colors.</p>

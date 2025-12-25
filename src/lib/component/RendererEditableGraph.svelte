@@ -98,14 +98,15 @@ Component rendering the graph and allowing the user to add and remove edges.
     }
 </script>
 
-<h2>Renderer Editable Graph</h2>
+<main>
+    <h2 class="dev">Renderer Editable Graph</h2>
 
-<RendererGraph
-    {graph}
-    {style}
-    {layout}
-    {onNodeTap}
-    {onEdgeTap}
->
-</RendererGraph>
-
+    <RendererGraph
+        {graph}
+        {style}
+        {layout}
+        {onNodeTap}
+        {onEdgeTap}
+    >
+    </RendererGraph>
+</main>

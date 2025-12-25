@@ -24,7 +24,7 @@
 </script>
 
 <main>
-    <h2>SSP Renderer</h2>
+    <h2 class="dev">SSP Renderer</h2>
 
     {#if style == 'none'}
         <p>Target: {ssp.target.join('')}</p>

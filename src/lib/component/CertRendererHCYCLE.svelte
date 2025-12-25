@@ -14,7 +14,7 @@
 </script>
 
 <main>
-    <h2>CertRenderer HCYCLE</h2>
+    <h2 class="dev">CertRenderer HCYCLE</h2>
 
     {#if cert == Unsolvable}
         <p>The graph doesn't contain a Hamiltonian cycle.</p>

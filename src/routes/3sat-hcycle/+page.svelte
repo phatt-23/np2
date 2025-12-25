@@ -80,117 +80,147 @@
 </svelte:head>
 
 <main>
-    <h1>3SAT to HCYCLE reduction</h1>
+    <h1>3-SAT to HCYCLE reduction</h1>
 
-    <Editor3CNF
-        cnf={$redStore.inInstance} 
-        onChange={(cnf) => editorChanged(cnf)}
-        onWrongFormat={(msg) => alert("From editor: " + msg)}
-    />
+    <div class="card">
 
-    <div class="controls">
-        <button 
-            disabled={!$redStore.hasInInstance() 
-                || $redStore.hasOutInstance() 
-                || $redStore.inInstance?.isEmpty()
-                || $isSolving} 
-            onclick={reduce}
-        >
-            Reduce
-        </button>
+        <div class="card-header">
+            <h2>3-SAT Editor</h2>
+        </div>
 
-        <button
-            disabled={!$redStore.hasInstances() 
-                || $redStore.hasOutCertificate()
-                || $redStore.inInstance?.isEmpty()
-                || $isSolving}
-            onclick={solve}
-        >
+        <Editor3CNF
+            cnf={$redStore.inInstance} 
+            onChange={(cnf) => editorChanged(cnf)}
+            onWrongFormat={(msg) => alert("From editor: " + msg)}
+        />
+
+        <div class="controls">
+            <button 
+                disabled={!$redStore.hasInInstance() 
+                    || $redStore.hasOutInstance() 
+                    || $redStore.inInstance?.isEmpty()
+                    || $isSolving} 
+                onclick={reduce}
+            >
+                Reduce
+            </button>
+
+            <button
+                class="btn"
+                disabled={!$redStore.hasInstances() 
+                    || $redStore.hasOutCertificate()
+                    || $redStore.inInstance?.isEmpty()
+                    || $isSolving}
+                onclick={solve}
+            >
+                {#if $isSolving}
+                    Solving...
+                {:else}
+                    Solve
+                {/if}
+            </button>
+
+            <input type="checkbox" bind:checked={$showStepper} name="showStepperCheckbox">
+            <label for="showStepperCheckbox">Show steps</label>
+
             {#if $isSolving}
-                Solving...
-            {:else}
-                Solve
+                <Spinner>{$solveMessage}</Spinner>
             {/if}
-        </button>
-
-        <input type="checkbox" bind:checked={$showStepper} name="showStepperCheckbox">
-        <label for="showStepperCheckbox">Show steps</label>
+        </div>
     </div>
 
-    {#if $isSolving}
-        <Spinner>{$solveMessage}</Spinner>
-    {/if}
+    <div class="card">
+        <div class="card-header">
+            <h2>Input 3-SAT Instance</h2>
+        </div>
 
-    {#if $showStepper}
-        {@const steps = $redStore.steps}
-        {@const stepIndex = $redStore.stepIndex}
-        {#if steps.length}
-            <div>
-                {#if stepIndex < steps.length &&
-                    steps[stepIndex].inSnapshot && 
-                    !steps[stepIndex].inSnapshot.isEmpty()
-                }
-                    <Renderer3CNF cnf={steps[stepIndex].inSnapshot!} />
-                {/if}
-            </div>
+        {#if $redStore.inInstance && !$redStore.inInstance.isEmpty()}
+            <Renderer3CNF cnf={$redStore.inInstance} />
+            {#if $redStore.inCert && !$showStepper}
 
-            <ReductionStepper 
-                steps={$redStore.steps} 
-                stepIndex={$redStore.stepIndex}
-                onPrevClick={() => {
-                    redStore.update(rs => { 
-                        rs.prevStep();
-                        return rs;
-                    });
-                    storage.save();
-                }}
-                onNextClick={() => { 
-                    redStore.update(rs => { 
-                        rs.nextStep();
-                        return rs;
-                    });
-                    storage.save();
-                }}
-            />
-
-            <div>
-                {#if $redStore.stepIndex < $redStore.steps.length && 
-                    $redStore.steps[$redStore.stepIndex].outSnapshot}
-                    <RendererGraph 
-                        graph={$redStore.steps[$redStore.stepIndex].outSnapshot!} 
-                        style={'3SAT-HCYCLE'}
-                    />
-                {/if}
-            </div>
-        {:else}
-            <span>There are no steps to step through.</span>
-        {/if}
-    {:else}
-        <div class="panes">
-            <div>
-                {#if $redStore.inInstance && !$redStore.inInstance.isEmpty()}
-                    <Renderer3CNF cnf={$redStore.inInstance} />
-                {/if}
-                {#if $redStore.inCert}
+                <div class="card-footer">
+                    <h3>Certificate</h3>
                     <CertRenderer3SAT cert={$redStore.inCert} />
-                {/if}
-            </div>
+                </div>
+            {/if}
+        {/if}
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2>Output HCYCLE Instance</h2>
+        </div>
+
+        {#if $showStepper}
+            {#if $redStore.steps.length}
+
+                <ReductionStepper 
+                    steps={$redStore.steps} 
+                    stepIndex={$redStore.stepIndex}
+                    onPrevClick={() => {
+                        redStore.update(rs => { 
+                            rs.prevStep();
+                            return rs;
+                        });
+                        storage.save();
+                    }}
+                    onNextClick={() => { 
+                        redStore.update(rs => { 
+                            rs.nextStep();
+                            return rs;
+                        });
+                        storage.save();
+                    }}
+                >
+                    {#if $redStore.stepIndex < $redStore.steps.length && 
+                        $redStore.steps[$redStore.stepIndex].outSnapshot}
+                        <RendererGraph 
+                            graph={$redStore.steps[$redStore.stepIndex].outSnapshot!} 
+                            style={'3SAT-HCYCLE'}
+                        />
+                    {:else}
+                        <span>Step index is out of bounds</span>
+                    {/if}
+                </ReductionStepper>
+
+            {:else}
+                <span>There are no steps to step through.</span>
+            {/if}
+        {:else}
             <div>
                 {#if $redStore.outInstance && !$redStore.outInstance.isEmpty()}
                     <RendererGraph graph={$redStore.outInstance} style={'3SAT-HCYCLE'}/>
-                {/if}
-                {#if $redStore.outCert}
-                    <CertRendererHCYCLE cert={$redStore.outCert}/>
+                    {#if $redStore.outCert}
+                        <div class="card-footer">
+                            <h3>Certificate</h3>
+                            <CertRendererHCYCLE cert={$redStore.outCert}/>
+                        </div>
+                    {/if}
+                {:else}
+                    <span>Reduced instance will appear here.</span>
                 {/if}
             </div>
-        </div>
-    {/if}
+        {/if}
+    </div>
+
 </main>
 
 <style>
-.panes {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-}
+    main {
+        align-items: center;
+    }
+
+    .card {
+        padding: 16px;
+        align-content: center;
+        width: 100%;
+        border-radius: 4pt;
+        border-color: rgba(0.8, 0.8, 0.8, 0.2);
+        border-width: 1px;
+        border-style: solid;
+    }
+
+    .card + .card {
+        margin-top: 8px;
+    }
 </style>

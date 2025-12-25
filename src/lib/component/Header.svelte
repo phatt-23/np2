@@ -1,28 +1,45 @@
 <script lang="ts">
 	import { page } from '$app/state';
+    import { ROUTES } from '$lib/page/routes';
 </script>
 
 <header>
 	<nav>
-		<ul>
-			<li aria-current={page.url.pathname === '/' ? 'page' : undefined}>
-				<a href="/">Home</a>
+		<ul class="nav-item-list">
+			<li class="nav-item" aria-current={page.url.pathname === ROUTES['HOME'] ? 'page' : undefined}>
+				<a href={ROUTES['HOME']}>Home</a>
 			</li>
-			<li aria-current={page.url.pathname === '/3sat-hcycle' ? 'page' : undefined}>
-				<a href="/3sat-hcycle">3SAT to HCYCLE</a>
+			<li class="nav-item" aria-current={page.url.pathname === ROUTES['3SAT_HCYCLE'] ? 'page' : undefined}>
+				<a href={ROUTES['3SAT_HCYCLE']}>3SAT to HCYCLE</a>
 			</li>
-			<li aria-current={page.url.pathname === '/hcycle-hcircuit' ? 'page' : undefined}>
-				<a href="/hcycle-hcircuit">HCYCLE to HCIRCUIT</a>
+			<li class="nav-item" aria-current={page.url.pathname === ROUTES['HCYCLE_HCIRCUIT'] ? 'page' : undefined}>
+				<a href={ROUTES['HCYCLE_HCIRCUIT']}>HCYCLE to HCIRCUIT</a>
 			</li>
-			<li aria-current={page.url.pathname === '/hcircuit-tsp' ? 'page' : undefined}>
-				<a href="/hcircuit-tsp">HCIRCUIT to TSP</a>
+			<li class="nav-item" aria-current={page.url.pathname === ROUTES['HCIRCUIT_TSP'] ? 'page' : undefined}>
+				<a href={ROUTES['HCIRCUIT_TSP']}>HCIRCUIT to TSP</a>
 			</li>
-			<li aria-current={page.url.pathname === '/3sat-ssp' ? 'page' : undefined}>
-				<a href="/3sat-ssp">3SAT to SSP</a>
+			<li class="nav-item" aria-current={page.url.pathname === ROUTES['3SAT_SSP'] ? 'page' : undefined}>
+				<a href={ROUTES['3SAT_SSP']}>3SAT to SSP</a>
 			</li>
-			<li aria-current={page.url.pathname === '/3sat-3cg' ? 'page' : undefined}>
-				<a href="/3sat-3cg">3SAT to 3CG</a>
+			<li class="nav-item" aria-current={page.url.pathname === ROUTES['3SAT_3CG'] ? 'page' : undefined}>
+				<a href={ROUTES['3SAT_3CG']}>3SAT to 3CG</a>
 			</li>
 		</ul>
 	</nav>
 </header>
+
+<style>
+	.nav-item-list {
+		display: flex;
+		list-style: none;
+		justify-content: center;
+	}
+
+	/* .nav-item {
+		border: 1pt solid black;
+	} */
+
+	.nav-item + .nav-item {
+		margin-left: 10px;
+	}
+</style>
