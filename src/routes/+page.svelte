@@ -1,11 +1,7 @@
 <!-- Created by phatt-23 on 12/10/2025 -->
 
 <script>
-    import { getMathjaxSVG } from "$lib/core/svg";
-
 	const reducesInPolyTimeTo = '&le;<sub>p</sub>';
-
-	let foo = getMathjaxSVG("x_{10}^{e}");
 </script>
 
 <svelte:head>
@@ -48,15 +44,6 @@
 		</p>
 	</div>
 
-	<div>
-		<div>
-			{@html foo}
-		</div>
-
-		<div>
-			{foo}
-		</div>
-	</div>
 </main>
 
 <style lang="sass">

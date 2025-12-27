@@ -76,6 +76,8 @@ Created by phatt-23 on 12/10/2025
 
     import { List } from 'svelte-virtual'
 
+    
+
 </script>
 
 {#snippet controls()}
@@ -109,6 +111,8 @@ Created by phatt-23 on 12/10/2025
 
     {#if showAll}
         <!-- Lazy loading list -->
+        <!--
+
         <List itemCount={steps.length} itemSize={ 1200 } height={ 1000 } style="border: 1px solid black;">
             {#snippet item({ index, style })}
                 <div {style}>
@@ -119,8 +123,9 @@ Created by phatt-23 on 12/10/2025
             {/snippet}
         </List>    
         
+        -->
+        
         <!-- Loads everything (slow) -->
-        <!--
         {#each steps as step, stepIndex}
             <h3>Step #{stepIndex + 1}: {step.title}</h3>
             
@@ -128,7 +133,6 @@ Created by phatt-23 on 12/10/2025
             
             <Katex inline html text={step.description}></Katex>
         {/each}
-        -->
     {:else}
         {#if stepIndex < steps.length}
             {@const step = steps[stepIndex]}

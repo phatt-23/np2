@@ -21,22 +21,26 @@
         <label for="viewAsColumnCheckbox">View as column</label>
     </div>
 
-    {#key cnf}
-        {#if viewAsColumn}
-            <Katex displayMode text={
-                `\\begin{aligned}` +
-                cnf.clauses.map(c => c.toTexString()).map(s => `&${s}`).join(String.raw` \\ `) +
-                `\\end{aligned}`
-            }>
-            </Katex>
-        {:else}
-            <Katex text={cnf.toTexString()}>
-            </Katex>
-        {/if}
-    {/key}
+    <div class="katex-wrapper">
+        {#key cnf}
+            {#if viewAsColumn}
+                <Katex displayMode text={
+                    `\\begin{aligned}` +
+                    cnf.clauses.map(c => c.toTexString()).map(s => `&${s}`).join(String.raw` \\ `) +
+                    `\\end{aligned}`
+                }>
+                </Katex>
+            {:else}
+                <Katex text={cnf.clauses.map(c => c.toTexString()).map(s => `${s}`).join('\\allowbreak\\land')}>
+                </Katex>
+            {/if}
+        {/key}
+    </div>
 
 </div>
 
 <style>
-/* .clause { margin: 0.0em 0; } */
+.katex-wrapper {
+    padding: 8px;
+}
 </style>

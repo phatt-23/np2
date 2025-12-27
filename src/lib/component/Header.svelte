@@ -24,9 +24,6 @@
 			<li class="nav-item" aria-current={page.url.pathname === ROUTES['3SAT_3CG'] ? 'page' : undefined}>
 				<a href={ROUTES['3SAT_3CG']}>3SAT to 3CG</a>
 			</li>
-			<li class="nav-item" aria-current={page.url.pathname === 'sandbox' ? 'page' : undefined}>
-				<a href='sandbox'>Sandbox</a>
-			</li>
 		</ul>
 	</nav>
 </header>

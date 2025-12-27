@@ -33,6 +33,7 @@ Component that renders the graph.
     let cy: cytoscape.Core; 
     let graphContainer: HTMLElement;
     let mathLabelLayer: HTMLElement; // layer with the svg labels
+    // let overlayCanvas: HTMLCanvasElement;
     
     let moveEnabled = $state(false);
     const labelCache = new Map<string, HTMLElement>(); 
@@ -55,6 +56,43 @@ Component that renders the graph.
 
         console.debug('render');
 
+        /*
+        const overlayContext = overlayCanvas.getContext('2d')!
+        overlayContext.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
+
+        cy.nodes().forEach(node => {
+            const label = node.data('label');
+            if (!label) {
+                return;
+            }
+
+            const nodePos = node.renderedPosition();
+            const zoom = cy.zoom();
+
+            const texSVG = getMathjaxSVG(label);
+            const svgBlob = new Blob([texSVG], {type: "image/svg+xml"})
+            const url = URL.createObjectURL(svgBlob)
+            const img = new Image();
+     
+            if (overlayContext) {
+                console.debug(overlayCanvas.width, overlayCanvas.height)
+
+                img.onload = () => {
+                    overlayContext.drawImage(
+                        img, 
+                        nodePos.x, 
+                        nodePos.y, 
+                        20 * zoom, 
+                        20 * zoom
+                    )
+
+                    URL.revokeObjectURL(url)
+                }
+                img.src = url
+            }
+        })
+        */
+
         cy.nodes().forEach(node => {
             const label = node.data('label');
             if (!label) {
@@ -72,11 +110,7 @@ Component that renders the graph.
                 elem.style.position = 'absolute';
                 // elem.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
                 const texHtml = katex.renderToString(label);
-                // const texHtml = getMathjaxSVG(label);
                 elem.innerHTML = texHtml; 
-
-                // const svg = elem.getElementsByTagName('svg')[0];
-                // svg.style.padding = '0px';
 
                 labelCache!.set(label, elem);         
                 mathLabelLayer.append(elem);
@@ -98,7 +132,6 @@ Component that renders the graph.
                 translate(${-elemBox.width/2}px, ${-elemBox.height/2}px)
                 scale(${zoom})
             `;
-
         });
 
     }
@@ -111,6 +144,15 @@ Component that renders the graph.
 
         mathLabelLayer.style.width = cy.width() + 'px';
         mathLabelLayer.style.height = cy.height() + 'px';
+
+        // overlayCanvas.width = cy.width()
+        // overlayCanvas.height = cy.height()
+        
+        // const context = overlayCanvas.getContext('2d')
+        // if (context) {
+        //     context.fillStyle = "#ff0000";
+        //     context.fillRect(0,0, cy.width(), cy.height());
+        // }
     }
 
     function onCytoRemove(event: cytoscape.EventObject) {
@@ -197,6 +239,12 @@ Component that renders the graph.
             <div bind:this={mathLabelLayer} id="math-label-layer">
             </div>
         
+            <!-- <canvas 
+                bind:this={overlayCanvas} 
+                id="overlay-canvas"
+                width="800" height="600"
+                >
+            </canvas> -->
         </div>
 
         
@@ -246,4 +294,11 @@ Component that renders the graph.
         position: absolute
         top: 0
         left: 0
+
+    // #overlay-canvas
+    //     z-index: 10
+    //     position: absolute
+    //     top: 0
+    //     left: 0
+    //     background-color: color.scale(red, $alpha: -80%)
 </style>
