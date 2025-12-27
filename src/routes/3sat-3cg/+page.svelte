@@ -140,9 +140,14 @@
             {/if}
         </button>
 
-        <input type="checkbox" bind:checked={$showStepper} name="showStepperCheckbox">
-        <label for="showStepperCheckbox">Show steps</label>
+        <div class="checkbox-wrapper">
+            <input type="checkbox" bind:checked={$showStepper} id="showStepperCheckbox">
+            <label for="showStepperCheckbox">Show steps</label>
+        </div>
+
     </div>
+
+
 
     {#if $isSolving}
         <Spinner>{$solveMessage}</Spinner>

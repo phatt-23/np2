@@ -3,6 +3,7 @@
 <script lang="ts">
     import { Unsolvable } from "$lib/core/Unsolvable";
     import type { CertificateHCYCLE } from "$lib/solve/CertificateHCYCLE";
+    import Katex from "./Katex.svelte";
 
     type Props = {
         cert : CertificateHCYCLE | Unsolvable;
@@ -10,7 +11,7 @@
 
     const { cert } : Props = $props();
 
-    let showAsList = $state(true);
+    let showAsList = $state(false);
 </script>
 
 <main>
@@ -24,23 +25,62 @@
             <label for="showAsListCheckbox">Show as list</label>
         </div>
 
-        {#if showAsList}
-            <ol>
-                {#each cert.path as node, i}
-                    <li>
-                        {node.id}
-                    </li>
-                {/each}
-            </ol>
-        {:else}
-            <div>
-                {#each cert.path as node, i}
-                    <span>{@html i != 0 ? '&ThinSpace;&LongRightArrow;&ThinSpace;' : ''} {node.id}</span>
-                {/each}
-            </div>
-        {/if}
+        <div class='sol'>
+            {#if showAsList}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                step
+                            </th>
+                            <th>
+                                node
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each cert.path as node, i}
+                            <tr>
+                                <td>
+                                    {i}
+                                </td>    
+                                <td>
+                                    <Katex text={node.label ?? node.id}></Katex>
+                                </td>
+                            </tr>
+                        {/each}
+                    </tbody>
+                </table>
+            {:else}
+                <Katex
+                    text={
+                        'P = (' +
+                        cert.path.map(x => x.label).join(' ,\\allowbreak\\mathbin{} ') +
+                        ')'
+                    }
+                >
+                </Katex>    
+            {/if}
+        </div>
     {/if}
 </main>
 
 <style>
+table {
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+table th, 
+table td {
+    padding: 4px 8px;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
+.sol {
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+}
 </style>

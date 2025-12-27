@@ -63,7 +63,6 @@ export class ReducerHCIRCUITtoTSP extends Reducer<Graph, Graph> {
 
         // fast cache of edgeIds (for checking if they exist)
         const edgeIds = new Set<Id>(this.inInstance.edges.map(e => e.id));
-        console.debug('idgeIds.values()', [...edgeIds.values()]);
 
         const nodeIds = this.inInstance.nodes.map(n => {
             graph.addNode(n);
@@ -78,8 +77,6 @@ export class ReducerHCIRCUITtoTSP extends Reducer<Graph, Graph> {
                 const edgeId = EDGE_ID_PREFIX + `${ni}-${nj}`;
                 const edgeIdMirror = EDGE_ID_PREFIX + `${nj}-${ni}`;
                 const edgeExists = edgeIds.has(edgeId) || edgeIds.has(edgeIdMirror);
-
-                console.debug('check existence of', edgeId, edgeIdMirror);
 
                 if (!edgeExists) {
                     graph.addEdge({

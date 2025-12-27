@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '../app.scss';
+	import '../styles/app.sass';
     import { onMount } from 'svelte';
 	import Header from '../lib/component/Header.svelte';
 	import cyCanvas from 'cytoscape-canvas';
@@ -34,33 +34,35 @@
 	</footer>
 </div>
 
-<style>
+<style lang="sass">
+	.app
+		display: flex
+		flex-direction: column
+		min-height: 100vh
 
-	.app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-	}
+	main
+		flex: 1
+		display: flex
+		flex-direction: column
+		width: 100%
+		max-width: 1000px  
+		min-width: 600px   
+		margin: 0 auto     // center horizontally
+		padding-inline: 2rem
+		box-sizing: border-box
 
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding-inline: 16rem;
-		width: 100%;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
+	@media (max-width: 650px)
+		main
+			min-width: 100%
+			padding-inline: 1rem
 
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
+	footer
+		display: flex
+		flex-direction: column
+		justify-content: center
+		align-items: center
+		padding: 12px
 
-	footer a {
-		font-weight: bold;
-	}
+	footer a
+		font-weight: bold
 </style>

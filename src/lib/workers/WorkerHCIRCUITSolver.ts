@@ -6,8 +6,6 @@ import { SolverHCIRCUIT } from "$lib/solve/SolverHCIRCUIT";
 import { WorkerResponseType, type WorkerRequestHCIRCUIT, type WorkerResponseHCIRCUIT } from "./types";
 
 self.onmessage = async (message: MessageEvent<WorkerRequestHCIRCUIT>) => {
-    console.debug('WorkerHCIRCUITSolver::onmessage');
-
     try {
         const instance : Graph = Graph.fromSerializedString(message.data.graph);
         const solver = new SolverHCIRCUIT(instance);

@@ -6,8 +6,6 @@ import { SolverSSP } from "$lib/solve/SolverSSP";
 import { WorkerResponseType, type WorkerRequestSSP, type WorkerResponseSSP } from "./types";
 
 self.onmessage = async (e: MessageEvent<WorkerRequestSSP>) => {
-    console.debug('WorkerSSPSolver::onmessage');
-
     try {
         const ssp = SSP.fromSerializedString(e.data.ssp);
         

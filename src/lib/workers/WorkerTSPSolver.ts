@@ -6,8 +6,6 @@ import { SolverTSP } from "$lib/solve/SolverTSP";
 import { WorkerResponseType, type WorkerRequestTSP, type WorkerResponseTSP } from "./types";
 
 self.onmessage = async (message: MessageEvent<WorkerRequestTSP>) => {
-    console.debug('WorkerTSPSolver::onmessage');
-
     try {
         const serializedGraph: string = message.data.graph;
         const maxCost: number = message.data.maxCost;

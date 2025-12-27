@@ -72,8 +72,6 @@
             const decoder = new DecoderSSPto3SAT();
             const inCert = decoder.decode(outInst, outCert);
 
-            console.debug("Done decoding...");
-
             redStore.update(rs => {
                 rs.inCert = inCert;
                 rs.outCert = outCert;

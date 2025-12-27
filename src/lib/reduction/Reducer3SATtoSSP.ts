@@ -209,8 +209,6 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
                                 accumString += `<li>${ssp.numbers[i].value.join('')}</li>`;
                             }
 
-                            console.debug('accumString', accumString);
-
                             return accumString;
                         })()}
                     </ul>

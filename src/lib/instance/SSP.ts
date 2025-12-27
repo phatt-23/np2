@@ -59,7 +59,6 @@ export class SSP extends ProblemInstance {
             const target = Array(targetText).map(c => Number.parseInt(c));
             ssp.setTarget(target);
         } catch (e) {
-            console.error(e);
             return `Couldn't parse the target number: ${targetText}`;
         }
 
@@ -68,7 +67,6 @@ export class SSP extends ProblemInstance {
                 const numArray = Array.from(line).map(c => Number.parseInt(c));
                 ssp.addNumber(new SSPNumber(`${i}`, numArray));
             } catch (e) {
-                console.error(e);
                 return `Couldn't parse the number on the line ${i}: ${line}.`;
             }
         });

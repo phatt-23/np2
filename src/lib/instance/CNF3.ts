@@ -122,8 +122,7 @@ export class CNF3 extends ProblemInstance {
             const words = line.split(" ").map(word => word.trim()).filter(word => word.length);
 
             if (words.length != 3) {
-                return `Clause number ${i + 1} (${line}) doesn't have exactly 3 literals.` +
-                       `Instead it has ${words.length} literals.`;
+                return `The clause number ${i + 1} doesn't have exactly 3 literals, instead it has ${words.length} literals: "${line}"`;
             }
            
             const clauseId = CNF3_ID.CLAUSE_PREFIX + i;

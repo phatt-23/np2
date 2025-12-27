@@ -19,7 +19,18 @@ export class DemoProvider {
         BASIC:
             'x y z\n' +
             'a b c\n',
-    };
+        FALSE: `
+            !x !x !x
+            !y !y x
+            !x !x y
+            `,
+        FALSE_NOSOL: `
+            !x !x !x
+            !y !y x
+            !x !x y
+            x x x
+            `
+        };
 
     private static graphTextInput : Record<string, string> = {
         CYCLE: 

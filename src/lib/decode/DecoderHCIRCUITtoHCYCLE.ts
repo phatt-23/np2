@@ -9,8 +9,6 @@ import type { Decoder } from "./Decoder";
 export class DecoderHCIRCUITtoHCYCLE implements Decoder<Graph, CertificateHCIRCUIT, CertificateHCYCLE> {
 
     decode(_outInstance: Graph, outCert: CertificateHCIRCUIT): CertificateHCYCLE {
-        console.debug(outCert.path);
-
         const path = new Array<Id>();
 
         outCert.path.forEach(node => {

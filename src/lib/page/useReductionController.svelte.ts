@@ -67,7 +67,6 @@ export function useReductionController<
     });
 
     function editorChanged(i: I) {
-        console.debug("editorChanged");
         // terminate the solver if running
         if (currentWorker) {
             currentWorker.terminate();
@@ -103,8 +102,6 @@ export function useReductionController<
     }
 
     async function solve(): Promise<void> {
-        console.debug('useReductionController::solve()');
-
         if (!params.workerFactory) {
             console.debug('workerFactory was not provided');
             throw new Error('workerFactory was not provided');
@@ -127,22 +124,16 @@ export function useReductionController<
             currentWorker.terminate();
         }
 
-        console.debug('creating new worker...');
         const worker: Worker = params.workerFactory();
         currentWorker = worker;
-        console.debug('new worker created');
 
-        console.debug('creating worker message...');
         const message = params.createWorkerRequest?.(outInstance) ?? outInstance.toSerializedString();
-        console.debug('posting  worker message...');
         worker.postMessage(message);
 
         try {
-            console.debug('awaiting result...');
             const result = await new Promise<any>((resolve, reject) => {
                 worker.onmessage = (e) => {
                     const data = e.data;
-                    console.debug('worker responded with data', data);
 
                     switch (data.type) {
                         case WorkerResponseType.UNSOLVABLE:
@@ -160,32 +151,22 @@ export function useReductionController<
                 worker.onerror = (err) => reject(err);
             });
 
-            console.debug("worker's result", result);
-
-            console.debug('updating reduction store...');
             redStore.update(rs => {
                 rs.outCert = result;
                 if (result != Unsolvable) {
-                    console.debug('creating decoder factory...');
                     const decoder = params.decoderFactory();
 
-                    console.debug('decoding...');
                     rs.inCert = decoder.decode(rs.outInstance!, result);
                 }
 
                 return rs;
             });
 
-            console.debug('calling onSolveFinished callback...');
             params.onSolveFinished?.(outInstance, result);
 
-            console.debug('saving to local storage...');
             params.storage.save();
 
-            console.debug('unset the solve message...');
             solveMessage.set('');
-
-            console.debug('success');
         } catch (exception) {
             console.error('Error occured while solving:', exception);
             solveMessage.set(`Error occured while solving: ${exception}`);

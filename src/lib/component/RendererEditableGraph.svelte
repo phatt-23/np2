@@ -31,15 +31,12 @@ Component rendering the graph and allowing the user to add and remove edges.
 
     let firstNode: any = null;
 
+    // handle adding of edges when clicking consecutivelly on two nodes
     const onNodeTap = (event: cytoscape.EventObject) => {
         const node = event.target;
 
-        console.debug('firstNode id:', firstNode?.id());
-        console.debug('tapped node id:', node.id());
-
         // first node selected
         if (firstNode == null) {
-            console.debug('firstNode selected');
             firstNode = node;
             node.addClass('selected-node');
             return;
@@ -47,7 +44,6 @@ Component rendering the graph and allowing the user to add and remove edges.
 
         // same node clicked twice, then reset
         if (firstNode.id() == node.id()) {
-            console.debug('Same node clicked twice');
             firstNode.removeClass('selected-node');
             firstNode = null;
             return;
@@ -58,8 +54,6 @@ Component rendering the graph and allowing the user to add and remove edges.
             (e.from == firstNode.id() && e.to == node.id()) ||
             (!directed && (e.from == node.id() && e.to == firstNode.id()))
         );
-
-        console.debug('Existing edge:', existingEdge);
 
         // Reset selection even if edge exists
         if (existingEdge) {
@@ -88,6 +82,7 @@ Component rendering the graph and allowing the user to add and remove edges.
         firstNode = null;
     }
 
+    // handle removing edges
     const onEdgeTap = (event: cytoscape.EventObject) => {
         event.stopPropagation();
         const edge = event.target;

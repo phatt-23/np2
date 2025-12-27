@@ -7,8 +7,6 @@ import { WorkerResponseType, type WorkerRequestHCYCLE, type WorkerResponseHCYCLE
 
 self.onmessage = async (e: MessageEvent<WorkerRequestHCYCLE>) => {
     try {
-        console.debug('WorkerHCYCLESolver::onmessage');
-
         const instance: Graph = Graph.fromSerializedString(e.data.graph);
         const solver = new SolverHCYCLE(instance);
         const result = solver.solve();

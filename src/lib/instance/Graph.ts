@@ -25,6 +25,7 @@ export type GraphEdge = {
 export type GraphNode = {
     id: Id;
     label?: string;
+    texLabel?: string;
     color?: number;  
     position?: Position;
     classes?: string;
@@ -42,13 +43,22 @@ export class Graph extends ProblemInstance {
     }
 
     public addNode(node: GraphNode) {
-        if (node.classes == undefined) {
-            node.classes = '';
-        }
 
         // if there's a node with the same id, don't add it
         if (this.nodes.find(n => n.id == node.id)) 
             return;
+
+        if (node.classes == undefined) {
+            node.classes = '';
+        }
+
+        if (!node.label) {
+            node.label = node.id;
+        }
+
+        if (!node.texLabel) {
+            node.texLabel = node.label;
+        }
 
         this._nodes.add(node);
     }
@@ -91,11 +101,7 @@ export class Graph extends ProblemInstance {
     public removeEdgeById(id: string) { 
         const edge = this.edges.find(e => e.id == id);
         if (edge) {
-            console.log('deleting edge with id', id);
             this._edges.delete(edge);
-        }
-        else {
-            console.log('edge with id', id, 'not found');
         }
     }
     public isEmpty() : boolean {
@@ -111,6 +117,7 @@ export class Graph extends ProblemInstance {
             newGraph.addNode({
                 id: node.id,
                 label: node.label,
+                texLabel: node.texLabel,
                 color: node.color,
                 position: node.position ? { ...node.position } : undefined,
                 classes: node.classes,
@@ -144,8 +151,6 @@ export class Graph extends ProblemInstance {
 
         const lines = text.split('\n').map(x => x.trim()).filter(x => x.length).filter(onlyUnique);
         let graph = new Graph();
-
-        console.debug("LINES", lines);
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
@@ -198,6 +203,7 @@ export class Graph extends ProblemInstance {
             nodes: this.nodes.map(n => ({
                 id: n.id,
                 label: n.label ?? null,
+                texLabel: n.texLabel ?? null,
                 color: n.color ?? null,
                 position: n.position ?? null,
                 classes: n.classes ?? '',
@@ -223,6 +229,7 @@ export class Graph extends ProblemInstance {
                 graph.addNode({
                     id: node.id,
                     label: node.label ?? undefined,
+                    texLabel: node.texLabel ?? undefined,
                     color: node.color ?? undefined,
                     position: node.position ?? undefined,
                     classes: node.classes ?? '',
@@ -250,7 +257,7 @@ export class Graph extends ProblemInstance {
      * Labels the edges used in the path.
      * It adds classes 'solved' and 'used'.
      */
-     public labelSolved({
+    public labelSolved({
         path = [],
         directed = false,
         edgeIdUsesNodeIds = true,  // todo: remove this, all reductions should use the same edge naming scheme (use the whole node ids, don't cut the prefix)
@@ -259,7 +266,6 @@ export class Graph extends ProblemInstance {
         directed?: boolean
         edgeIdUsesNodeIds?: boolean
     } = {}) {
-        console.debug('edgeIdUsesNodeIds', edgeIdUsesNodeIds);
         const preprocess = edgeIdUsesNodeIds 
             ? ( (id: string) => id )  // id function
             : ( (id: string) => id.slice(id.search(PREFIX_AND_ID_DELIM) + 1) ); // cuts the prefix
@@ -273,8 +279,6 @@ export class Graph extends ProblemInstance {
             const edgeId = EDGE_ID_PREFIX + `${from}-${to}`;
             const edgeIdMirror = EDGE_ID_PREFIX + `${to}-${from}`;
             const edge = this.edges.find(e => (e.id == edgeId) || (!directed && e.id == edgeIdMirror));
-
-            console.debug('edgeId', edgeId, 'edgeIdMirror', edgeIdMirror, 'edge found', edge != undefined);
 
             if (edge) {
                 edge.classes += ' used';

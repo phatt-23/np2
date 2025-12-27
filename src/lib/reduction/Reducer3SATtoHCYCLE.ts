@@ -25,7 +25,8 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
     private rowXOffset: number;
     private varCount: number;
     private clauseCount: number;
-    private height: number;
+    private clauseHeight: number;
+    private varHeight: number;
     private yStep: number;
     private yOffset: number;
     private xDist = 50;
@@ -35,13 +36,14 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
         super(inInstance);
         const { variables, clauses } = this.inInstance;
 
-        this.yOffset = this.yDist / 2;
 
         this.varCount = variables.length;
         this.clauseCount = clauses.length;
 
-        this.height = (this.varCount - 1) * this.yDist;
-        this.yStep = (this.height - this.yDist) / (this.clauseCount - 1 == 0 ? 1 : this.clauseCount - 1); 
+        this.clauseHeight = (this.clauseCount - 0.5) * (this.yDist);
+        this.varHeight = (this.varCount - 1) * this.yDist;
+        this.yStep = (this.clauseHeight) / Math.max( 1, this.clauseCount - 1 ); 
+        this.yOffset = (this.varHeight - this.clauseHeight) / 2;
 
         this.rowNodeCount = 3 * clauses.length + 3;
         this.rowXOffset = (this.rowNodeCount - 1)/2 * this.xDist;
@@ -91,6 +93,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
             // Create clause node
             const node : GraphNode = {
                 id: NODE_ID_PREFIX_CLAUSE + `${clauseId}`,
+                label: `\\kappa_{${idx}}`, // `clause_${clauseId}`,
                 position: {
                     x: 2 * this.rowXOffset,
                     y: i * this.yStep + this.yOffset,
@@ -268,7 +271,6 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
          *     2. Create the source, inbetween and target nodes and connect the row ends.
          */
 
-
         let firstGraph = new Graph();
         let secondGraph = new Graph();
 
@@ -286,7 +288,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                  */
                 secondGraph.addNode({ 
                     id: NODE_ID_PREFIX_SPECIAL + SOURCE_NODE_ID, 
-                    label: 'source',
+                    label: `\\alpha`,
                     position: { x: 0, y: i * this.yDist - this.yDist/2 },
                     classes: 'source'
                 }); 
@@ -319,7 +321,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                  */
                 secondGraph.addNode({ 
                     id: NODE_ID_PREFIX_INBETWEEN + `${inbetweenNode}`, 
-                    label: 'inbetween',
+                    label: `(${variables[i - 1]}, ${v})`,
                     position: { x: 0, y: i * this.yDist - this.yDist/2 },
                     classes: 'inbetween'
                 }); 
@@ -363,7 +365,9 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
              */
             for (let j = 1; j <= this.rowNodeCount - 1; j++) {
                 const current = `${v}_${j}`;
+                const currentLabel = `${v}_{${j}}`;
                 const next = `${v}_${j + 1}`;
+                const nextLabel = `${v}_{${j + 1}}`;
 
                 let classes = ''; 
                 let currentPrefix = NODE_ID_PREFIX;
@@ -382,7 +386,8 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                 }
 
                 const node: GraphNode = { 
-                    id: currentPrefix + `${current}`, 
+                    id: currentPrefix + current, 
+                    label: currentLabel,
                     position: { 
                         x: (j - 1) * this.xDist - this.rowXOffset,
                         y: i * this.yDist 
@@ -396,7 +401,8 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                 // last is 'false'
                 if (j == this.rowNodeCount - 1) {
                     const node : GraphNode = { 
-                        id: nextPrefix + `${next}`, 
+                        id: nextPrefix + next, 
+                        label: nextLabel,
                         position: { 
                             x: j * this.xDist - this.rowXOffset,
                             y: i * this.yDist 
@@ -435,6 +441,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                  */
                 secondGraph.addNode({ 
                     id: NODE_ID_PREFIX_SPECIAL + TARGET_NODE_ID,
+                    label: `\\beta`,
                     position: { 
                         x: 0, 
                         y: i * this.yDist + this.yDist/2
@@ -484,15 +491,15 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                     For every variable, create a row variable gadget.
                 </p>
                 <p>
-                    This gadget consists of ${this.rowNodeCount} row nodes.
+                    This gadget consists of $ ${this.rowNodeCount} $ row nodes.
                     They are all connected birectinally.
                 </p>
                 <p>
                     The number of row nodes it derived as follows: 
                 </p>
                 <p>
-                    For every clause we need 2 nodes - an <i>out-going</i> and <i>in-coming</i> node.
-                    Each of these 2 nodes must be padded a <i>pad</i> node (at least one).
+                    For every clause we need $2$ nodes - an <i>out-going</i> and <i>in-coming</i> node.
+                    Each of these $2$ nodes must be padded a <i>pad</i> node (at least one).
                     The rows themselves also need <i>true</i> and and <i>false</i> ends.
                 </p>
                 <p>
@@ -502,13 +509,13 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                     }
                     Therefore we need: 
                     <ul>
-                        <li>2 * ${this.clauseCount} out-going and in-coming nodes</li>
-                        <li>${this.clauseCount} + 1 pad nodes</li>
-                        <li>1 true and 1 false nodes at the row ends</li>
+                        <li>$ 2 \\cdot ${this.clauseCount} $ out-going and in-coming nodes</li>
+                        <li>$ ${this.clauseCount} + 1 $ pad nodes</li>
+                        <li>$1$ true and $1$  false nodes at the row ends</li>
                     </ul>
                 </p>
                 <p>
-                    (2 * ${this.clauseCount}) + (${this.clauseCount} + 1) + 1 + 1 = ${this.rowNodeCount} nodes per variable row.
+                    $ (2 \\cdot ${this.clauseCount}) + (${this.clauseCount} + 1) + 1 + 1 = ${this.rowNodeCount} $ nodes per variable row.
                 </p>
             `,
             inSnapshot: this.inInstance,
@@ -520,14 +527,14 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
             title: `Create inbetween nodes`,
             description: `
                 <p>
-                    Create the <i>source</i> node, the <i>inbetween</i> nodes that lie
-                    between the variable rows and <i>target</i> node. 
+                    Create the $source$ node, the $inbetween$ nodes that lie
+                    between the variable rows and $target$ node. 
                 </p>
                 <p>
-                    Connect the <i>source</i> node 
-                    to the row ends of the first variable "${this.inInstance.variables[0]}".
-                    After that connect its row ends to the inbetween/target node below.
-                    Finally connect the <i>target</i> node to <i>source</i> node to close the loop.
+                    Connect the $source$ node 
+                    to the row ends, $ ${this.inInstance.variables[0]}_1 $ and $ ${this.inInstance.variables[0]}_{${this.rowNodeCount + 1}} $, of the first variable $ ${this.inInstance.variables[0]} $.
+                    After that connect its row ends to the $inbetween$/$target$ node below.
+                    Finally connect the $target$ node to $source$ node to close the loop.
                 </p>
                 <p>Why did we do this?</p>
                 <p>

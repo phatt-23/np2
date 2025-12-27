@@ -13,8 +13,6 @@ export class SolverSSP implements Solver<SSP, CertificateSSP> {
     }
 
     solve(): CertificateSSP | Unsolvable {
-        console.debug('SolverSSP::solve()');
-
         const numbers = this.instance.numbers;
         const targetValue = parseInt(this.instance.target.join(''));
 

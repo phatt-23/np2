@@ -2,8 +2,7 @@
 
 <script lang="ts">
     import type { CNF3 } from "$lib/instance/CNF3";
-    import katex from "katex";
-    import { onMount } from "svelte";
+    import Katex from "./Katex.svelte";
 
     type Props = {
         cnf: CNF3;
@@ -12,23 +11,6 @@
     const { cnf }: Props = $props();
 
     let viewAsColumn = $state(false)
-
-    let katexElement: HTMLElement|undefined = $state(undefined);
-    let katexElementColumn: HTMLElement |undefined= $state(undefined);
-    
-    $effect(() => {
-        if (katexElement) {
-            const tex = cnf.toTexString(); 
-            katex.render(tex, katexElement, { throwOnError: false });
-        }
-    });
-
-    $effect(() => {
-        if (katexElementColumn) {
-            const tex = cnf.clauses.map(c => c.toTexString()).join(String.raw` \newline `);
-            katex.render(tex, katexElementColumn, { throwOnError: false });
-        }
-    });
 </script>
 
 <div class="cnf-renderer">
@@ -39,11 +21,19 @@
         <label for="viewAsColumnCheckbox">View as column</label>
     </div>
 
-    {#if viewAsColumn}
-        <div bind:this={katexElementColumn}></div>
-    {:else}
-        <div bind:this={katexElement}></div>
-    {/if}
+    {#key cnf}
+        {#if viewAsColumn}
+            <Katex displayMode text={
+                `\\begin{aligned}` +
+                cnf.clauses.map(c => c.toTexString()).map(s => `&${s}`).join(String.raw` \\ `) +
+                `\\end{aligned}`
+            }>
+            </Katex>
+        {:else}
+            <Katex text={cnf.toTexString()}>
+            </Katex>
+        {/if}
+    {/key}
 
 </div>
 

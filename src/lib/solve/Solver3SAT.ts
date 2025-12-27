@@ -22,7 +22,6 @@ export class Solver3SAT implements Solver<CNF3, Certificate3SAT> {
         const vars = this.instance.variables;
 
         const result = this.dpll(clauses, {}, vars);
-        console.log('3SAT SOLUTION', result);
 
         if (result) {
             const assignment = new Map<VarName, TriBool>(); 

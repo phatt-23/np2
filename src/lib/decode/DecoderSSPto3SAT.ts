@@ -10,11 +10,7 @@ import type { Decoder } from "./Decoder";
 
 export class DecoderSSPto3SAT implements Decoder<SSP, CertificateSSP, Certificate3SAT> {
     decode(outInstance: SSP, outCert: CertificateSSP): Certificate3SAT {
-        console.debug("DecoderSSPto3SAT::decode");
-
         const assignment = new Map<VarName, TriBool>()
-
-        console.debug('decode from this SSP certificate', outCert);
 
         for (const sspNumber of outCert.numbers) {
             const n = sspNumber.id;
@@ -23,7 +19,6 @@ export class DecoderSSPto3SAT implements Decoder<SSP, CertificateSSP, Certificat
                 const varName = n.substring(VARIABLE_TRUE_PREFIX.length);
 
                 if (!assignment.has(varName)) {
-                    console.debug(`setting variable ${n} to TRUE`)
                     assignment.set(varName, true);
                 }
             }
@@ -31,7 +26,6 @@ export class DecoderSSPto3SAT implements Decoder<SSP, CertificateSSP, Certificat
                 const varName = n.substring(VARIABLE_FALSE_PREFIX.length);
 
                 if (!assignment.has(varName)) {
-                    console.debug(`setting variable ${n} to FALSE`)
                     assignment.set(varName, false);
                 }
             }

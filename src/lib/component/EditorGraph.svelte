@@ -16,10 +16,6 @@
 
     let text = $state(graph?.asString() ?? '');
 
-    onMount(() => {
-        console.debug('editor text:', graph?.asString(), text);
-    });
-
     let selectedDemo = $state('');
     const demos = DemoProvider.getTextInputs(Graph);
 
@@ -48,7 +44,7 @@
 
 <main class='graph-editor'>
     <h2 class="dev">Graph Editor</h2>
-    <p class="reminder"><i>Removes duplicate entries automatically.</i></p>
+    <p class="comment">Removes duplicate entries automatically.</p>
 
     <textarea bind:value={text} onchange={onTextChange}></textarea>
 
