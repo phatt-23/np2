@@ -76,7 +76,7 @@
             </div>
 
             <!-- TODO: DEBUG ONLY, REMOVE IN RELEASE -->
-            <div>
+            <div class="debug">
                 <button onclick={() => { 
                     reduce();
 

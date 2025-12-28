@@ -35,13 +35,9 @@
 	<div class="notes">
 		<h4>Notes</h4>
 		<ul>
-			<li>HCYCLE - here means "hamiltonovsky cyklus"</li>
-			<li>HCIRCUIT - here means "hamiltonovska kruznice"</li>
+			<li>HCYCLE - "hamiltonovský cyklus", hamiltonian cycle in a <b>directed</b> graph</li>
+			<li>HCIRCUIT - "hamiltonovská kruznice", hamiltonian cycle in an <b>undirected</b> graph</li>
 		</ul>
-		<p>
-			HCYCLE is asking whether there is a hamiltonian cycle in a <b>directed</b> graph.
-			HCIRCUIT is asking whether there is a hamiltonian cycle in an <b>undirected</b> graph.
-		</p>
 	</div>
 
 </main>

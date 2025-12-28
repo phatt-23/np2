@@ -3,27 +3,21 @@
     import { ROUTES } from '$lib/page/routes';
 </script>
 
+{#snippet navItem(route: string, name: string)}
+    <li class="nav-item" aria-current={page.url.pathname === route ? 'page' : undefined}>
+        <a href={route}>{name}</a>
+    </li>
+{/snippet}
+
 <header>
 	<nav>
 		<ul class="nav-item-list">
-			<li class="nav-item" aria-current={page.url.pathname === ROUTES['HOME'] ? 'page' : undefined}>
-				<a href={ROUTES['HOME']}>Home</a>
-			</li>
-			<li class="nav-item" aria-current={page.url.pathname === ROUTES['3SAT_HCYCLE'] ? 'page' : undefined}>
-				<a href={ROUTES['3SAT_HCYCLE']}>3SAT to HCYCLE</a>
-			</li>
-			<li class="nav-item" aria-current={page.url.pathname === ROUTES['HCYCLE_HCIRCUIT'] ? 'page' : undefined}>
-				<a href={ROUTES['HCYCLE_HCIRCUIT']}>HCYCLE to HCIRCUIT</a>
-			</li>
-			<li class="nav-item" aria-current={page.url.pathname === ROUTES['HCIRCUIT_TSP'] ? 'page' : undefined}>
-				<a href={ROUTES['HCIRCUIT_TSP']}>HCIRCUIT to TSP</a>
-			</li>
-			<li class="nav-item" aria-current={page.url.pathname === ROUTES['3SAT_SSP'] ? 'page' : undefined}>
-				<a href={ROUTES['3SAT_SSP']}>3SAT to SSP</a>
-			</li>
-			<li class="nav-item" aria-current={page.url.pathname === ROUTES['3SAT_3CG'] ? 'page' : undefined}>
-				<a href={ROUTES['3SAT_3CG']}>3SAT to 3CG</a>
-			</li>
+            {@render navItem(ROUTES['HOME'],            'Home')}
+            {@render navItem(ROUTES['3SAT_HCYCLE'],     '3SAT to HCYCLE')}
+            {@render navItem(ROUTES['HCYCLE_HCIRCUIT'], 'HCYCLE to HCIRCUIT')}
+            {@render navItem(ROUTES['HCIRCUIT_TSP'],    'HCIRCUIT to TSP')}
+            {@render navItem(ROUTES['3SAT_SSP'],        '3SAT to SSP')}
+            {@render navItem(ROUTES['3SAT_3CG'],        '3SAT to 3CG')}
 		</ul>
 	</nav>
 </header>
@@ -33,9 +27,28 @@
 		display: flex;
 		list-style: none;
 		justify-content: center;
+        margin: 10 0;
+        padding: 0 0;
 	}
+
 
 	.nav-item + .nav-item {
 		margin-left: 10px;
 	}
+
+    @media screen and (max-width: 650px) {
+        .nav-item-list {
+            display: block;
+            float: none;
+            width: 100%;
+		    box-sizing: border-box;
+			min-width: 100%;
+			padding-inline: 1rem;
+        }
+
+        .nav-item + .nav-item {
+            margin-left: 0px;
+        }
+    }
+
 </style>
