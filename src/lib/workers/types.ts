@@ -3,6 +3,7 @@
 import type { Id } from "$lib/core/Id";
 import type { GraphNode, Position } from "$lib/instance/Graph";
 import type { SSPNumber } from "$lib/instance/SSP";
+import type { Coloring } from "$lib/solve/Certificate3CG";
 
 export enum WorkerResponseType {
     UNSOLVABLE = "unsolvable",
@@ -14,7 +15,7 @@ export type WorkerRequest3CG = { graph: string };
 export type WorkerResponse3CG =
     | { type: WorkerResponseType.UNSOLVABLE }
     | { type: WorkerResponseType.ERROR; message: string }
-    | { type: WorkerResponseType.RESULT; coloring: [Id, number][] }
+    | { type: WorkerResponseType.RESULT; coloring: [Id, Coloring][] }
 
 export type WorkerRequestSSP = { ssp: string };
 export type WorkerResponseSSP = 

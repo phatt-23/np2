@@ -34,6 +34,10 @@ export class SSP extends ProblemInstance {
         }
     }
 
+    public getNumber(id: string): SSPNumber | undefined {
+        return this.numbers.find(x => x.id == id)
+    }
+
     public setTarget(target: number[]) {
         this.target = target;
     }

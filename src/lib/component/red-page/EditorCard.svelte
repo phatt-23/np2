@@ -1,8 +1,24 @@
 <!-- Created by phatt-23 on 27/12/2025 -->
 
 <script lang="ts">
+    import type { Snippet } from "svelte";
     import Card from "../Card.svelte";
     import Spinner from "../Spinner.svelte";
+    import type { ReductionStore } from "$lib/state/ReductionStore.svelte";
+    import type { Writable } from "svelte/store";
+    import type { ProblemInstance } from "$lib/instance/ProblemInstance";
+    import type { Certificate } from "$lib/solve/Certificate";
+
+    type Props<I extends ProblemInstance,O extends ProblemInstance,IC extends Certificate,OC extends Certificate> = {
+        title: () => ReturnType<Snippet>,
+        editor: () => ReturnType<Snippet>,
+        redStore: Writable<ReductionStore<I,O,IC,OC>>,
+        isSolving: Writable<boolean>,
+        solveMessage: Writable<string>,
+        reduce: () => void,
+        solve: () => void,
+        showStepper: Writable<boolean>,
+    };
 
     let { 
         title,
@@ -13,7 +29,7 @@
         reduce,
         solve,
         showStepper,
-    } = $props();
+    }: Props<any,any,any,any> = $props();
 
 </script>
 
@@ -51,6 +67,7 @@
                     {/if}
                 </button>
 
+
                 <div>
                     {#if $isSolving}
                         <Spinner>{$solveMessage}</Spinner>
@@ -58,6 +75,27 @@
                 </div>
             </div>
 
+            <!-- TODO: DEBUG ONLY, REMOVE IN RELEASE -->
+            <div>
+                <button onclick={() => { 
+                    reduce();
+
+                    showStepper.update(s => { 
+                        s = true; 
+                        return s; 
+                    });
+                }}>
+                    Reduce and Show steps
+                </button>
+
+                <button onclick={() => { 
+                    reduce(); 
+                    solve();
+                }}>
+                    Reduce and Solve
+                </button>
+            </div>
+            
             <div class="right-controls">
                 <label class="checkbox-wrapper">
                     <input type="checkbox" bind:checked={$showStepper}>

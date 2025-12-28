@@ -73,11 +73,6 @@ Created by phatt-23 on 12/10/2025
     onDestroy(() => {
         window.removeEventListener('keydown', handleKeydown);
     });
-
-    import { List } from 'svelte-virtual'
-
-    
-
 </script>
 
 {#snippet controls()}
@@ -110,21 +105,6 @@ Created by phatt-23 on 12/10/2025
 
 
     {#if showAll}
-        <!-- Lazy loading list -->
-        <!--
-
-        <List itemCount={steps.length} itemSize={ 1200 } height={ 1000 } style="border: 1px solid black;">
-            {#snippet item({ index, style })}
-                <div {style}>
-                    <h3>Step #{index + 1}: {steps[index].title}</h3>
-                    <Katex inline html text={steps[index].description}></Katex>
-                    {@render outInstRender(index)}
-                </div>
-            {/snippet}
-        </List>    
-        
-        -->
-        
         <!-- Loads everything (slow) -->
         {#each steps as step, stepIndex}
             <h3>Step #{stepIndex + 1}: {step.title}</h3>

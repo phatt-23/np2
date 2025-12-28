@@ -81,6 +81,13 @@ export class Graph extends ProblemInstance {
         this._edges.add(edge);
     }
 
+    assignEdgeWeight(edgeId: string, weight: number) {
+        const e = this.edges.find(x => x.id == edgeId)
+        if (e) {
+            e.weight = weight;
+        }
+    }
+
     public get nodes() : Array<GraphNode> {
         return Array.from(this._nodes.values());
     }

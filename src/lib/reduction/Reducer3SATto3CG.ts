@@ -1,7 +1,7 @@
 // Created by phatt-23 on 20/12/2025
 
 import { CG3_ID, CNF3_ID, EDGE_ID_PREFIX } from "$lib/core/Id";
-import type { CNF3 } from "$lib/instance/CNF3";
+import type { Clause, CNF3 } from "$lib/instance/CNF3";
 import { Graph, type GraphEdge, type GraphNode } from "$lib/instance/Graph";
 import { Reducer, type ReductionResult } from "./Reducer";
 import type { ReductionStep } from "./ReductionStep";
@@ -10,6 +10,26 @@ type ReductionPart = {
     graph: Graph, 
     step: ReductionStep<CNF3, Graph> 
 };
+
+const RED = `\\color{red}{red}`
+const GREEN = `\\color{green}{green}`
+const BLUE = `\\color{blue}{blue}`
+
+const clauseToTriplet = (c: Clause) => `( ${c.literals.map(l => (l.negated ? '\\lnot{}' : '') + l.varName).join(',')} )`;
+
+function chunkBy<T>(x: T[], chunkSize: number) {
+    let currentX = x.slice(0);
+    const chunks: T[][] = [];
+
+    while (currentX.length > chunkSize) {
+        const chunk = currentX.slice(0, chunkSize);
+        chunks.push(chunk);
+        currentX = currentX.slice(chunkSize);
+    }
+
+    chunks.push(currentX);
+    return chunks;
+}
 
 export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
 
@@ -33,6 +53,251 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
         };
     }
 
+    createCoreGadget(graph: Graph): ReductionPart {
+
+        // add core nodes and join them together
+        const coreNodeValues = Object.values(this.coreNodes);
+
+        const angleStep = 360 / coreNodeValues.length;
+        const radStep = angleStep * Math.PI / 180;
+        let radCurrent = Math.PI / 6;
+
+        coreNodeValues.forEach(n => {
+            n.position = { 
+                x: Math.cos(radCurrent) * this.unit,
+                y: Math.sin(radCurrent) * this.unit,
+            };
+
+            graph.addNode(n);
+
+            radCurrent += radStep;
+        });
+
+        [ ['F', 'T'], ['B', 'F'], ['T', 'B'] ].forEach(([x,y]) => {
+            const from = this.coreNodes[x];
+            const to = this.coreNodes[y];
+
+            graph.addEdge({
+                id: EDGE_ID_PREFIX + `${from.label}-${to.label}`,
+                from: from.id,
+                to: to.id,
+                classes: 'muted core'
+            });
+        });
+
+        graph.edges.forEach(e => {
+            e.classes += ' outer-circle';
+
+            const m = this.unit;
+            e.controlPointDistances = [-m, -m];
+        });
+
+
+        const step: ReductionStep<CNF3, Graph> = {
+            id: 'add-core',
+            title: 'Create the core gadget',
+            description: `
+                <p>
+                    Let's assume that the 3 colors are 
+                        $${RED}$, 
+                        $${GREEN}$ 
+                        and $${BLUE}$.
+                </p>
+                <p>
+                    The colors hold some semantic meaning:
+
+                    <ul>
+                        <li>
+                            $${GREEN}$ represents $True$ values
+                        </li>
+                        <li>
+                            $${RED}$ represents $False$ values 
+                        </li>
+                        <li>
+                            and $${BLUE}$ is a buffer color.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    We start by creating the core gadget $G_C = (V_C,E_C)$. 
+                    The core gadget has three nodes and they are all connected to one another.
+                    $$ 
+                        \\begin{aligned}
+
+                        V_C &= \\{ T, F, B \\} \\\\
+                        E_C &= \\{ \\{T,F\\}, \\{F,B\\}, \\{B,T\\} \\} \\\\
+
+                        \\end{aligned}
+
+                    $$
+
+                </p>
+                <p>
+                    The coloring for these nodes is the following:
+
+                    $$
+                        \\begin{aligned}
+
+                        color(T) &= ${GREEN} \\\\
+                        color(F) &= ${RED}    \\\\
+                        color(B) &= ${BLUE}   \\\\
+
+                        \\end{aligned}
+                    $$
+                </p>
+            `,
+            inSnapshot: this.inInstance,
+            outSnapshot: graph.copy(),
+        }
+
+        graph.nodes.forEach(n => {
+            n.position!.x *= this.d * 0.8;
+            n.position!.y *= this.d * 0.8;
+        });
+
+        graph.edges.forEach(e => {
+            const m = this.r * this.unit;
+            e.controlPointDistances = [-m, -m];
+        });
+
+        
+        return { graph, step };
+    }
+
+    createVariableGadgets(graph: Graph): ReductionPart {
+        
+        // just before doing anything, update the control points for edges
+        graph.edges.forEach(e => {
+            const m = this.r * this.unit;
+            e.controlPointDistances = [-m, -m];
+        });
+
+        const theta = -45 * Math.PI / 180;
+        const cosTheta = Math.cos(theta);
+        const sinTheta = Math.sin(theta);
+
+        const y = this.r * sinTheta;       
+        const diameter = this.d * cosTheta;
+        const radius = diameter / 2;
+
+        let xCurrent = 0;
+        const xStep = diameter / this.dv;
+        const xShift = -radius;
+
+        // add variable nodes
+        this.inInstance.variables.forEach(v => {
+            const trueNode: GraphNode = {
+                id: CG3_ID.TRUE_VAR_NODE_PREFIX + v,
+                label: `${v}`,
+                position: {
+                    x: (xCurrent + xShift) * this.unit, 
+                    y: (y) * this.unit,
+                },
+            };
+
+            const falseNode: GraphNode = {
+                id: CG3_ID.FALSE_VAR_NODE_PREFIX + v,
+                label: `\\lnot{${v}}`,
+                position: {
+                    x: (xCurrent + xStep + xShift) * this.unit,
+                    y: (y) * this.unit,
+                },
+            };
+
+            xCurrent += (this.sv + this.wv) * xStep;
+
+            graph.addNode(trueNode);
+            graph.addNode(falseNode);
+
+            const edges: GraphEdge[] = [
+                {
+                    id: EDGE_ID_PREFIX + v + 'true-false',
+                    from: trueNode.id,
+                    to: falseNode.id,
+                    classes: 'muted'
+                },
+                {
+                    id: EDGE_ID_PREFIX + v + 'true-B',
+                    from: trueNode.id,
+                    to: CG3_ID.CORE.B,
+                    classes: 'muted'
+                },
+                {
+                    id: EDGE_ID_PREFIX + v + 'false-B',
+                    from: falseNode.id,
+                    to: CG3_ID.CORE.B,
+                    classes: 'muted'
+                },
+            ];
+
+            edges.forEach(e => graph.addEdge(e));
+        });
+
+        const step: ReductionStep<CNF3, Graph> = {
+            id: 'add-vars',
+            title: 'Create variable gadgets',
+            description: `
+                <p>
+                    Create a variable gadget for each variable $\\nu \\in \\Nu$ of the boolean formula $\\Phi = (\\Nu, \\Kappa)$, 
+                    where $\\Nu$ is the set of variables
+
+                    $$
+                        \\Nu = \\{ ${this.inInstance.variables.join(',')} \\}
+                    $$
+
+                    and $\\Kappa$ is the set of clauses
+
+                    $$
+                    \\begin{aligned}
+                        \\Kappa = \\{ ${ chunkBy(this.inInstance.clauses.map(c => clauseToTriplet(c)), 3).map(x => `& ${x.join(',')}`).join('\\\\') } \\} \\\\
+                    \\end{aligned}
+                    $$
+
+                    There will be $|\\Nu| = ${this.inInstance.variables.length}$ variable gadgets.
+                </p>
+                <p>
+                    A variable gadget $ G_{\\nu} = (V_{\\nu},E_{\\nu}) $ for a variable $\\nu$ 
+                    consists of three nodes,
+
+                    $$
+                        V_{\\nu} = \\{ \\nu, \\lnot{\\nu}, B \\}
+                    $$
+
+                    where the node $B$ is the blue "buffer" node.
+
+                    These nodes are each connected to one another,  
+                    $$ 
+                        E = \\{ \\{ \\nu, \\lnot{\\nu} \\}, \\{ \\nu, B \\}, \\{ \\lnot{\\nu}, B \\} \\}
+                    $$
+
+                    making it a complete graph.
+                </p>
+                <p>
+                    Since the nodes $\\nu$ and $\\lnot{\\nu}$ are connected to the $B$ node that is colored $${BLUE}$, 
+                    they themselves can only be colored either $${GREEN}$, or $${RED}$. 
+
+                    This encodes the truth assignment for the variable $\\nu$, because only these 2 cases can occur.
+                    <ul>
+                        <li>
+                            If the node $\\nu$ is $${GREEN}$
+                            then the node $\\lnot{\\nu}$ must be $${RED}$, 
+                            meaning $\\nu = True$.
+                        </li>
+                        <li>
+                            If the node $\\nu$ is $${RED}$
+                            then the node $\\lnot{\\nu}$ must be $${GREEN}$, 
+                            meaning $\\nu = False$.
+                        </li>
+                    </ul>
+                </p>
+            `,
+            inSnapshot: this.inInstance,
+            outSnapshot: graph.copy(),
+        };
+
+        return { graph, step };
+    }
+
     private createClauseGadgets(graph: Graph): ReductionPart {
         const xShift = -this.r;
         const xStep = this.d / this.dc;
@@ -41,7 +306,7 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
         const cutClausePrefix = (id: string) => id.slice(CNF3_ID.CLAUSE_PREFIX.length)
 
         // add clause nodes
-        this.inInstance.clauses.forEach(c => {
+        this.inInstance.clauses.forEach((c,cindex) => {
             const nodes: GraphNode[] = [];
             const edges: GraphEdge[] = [];
 
@@ -51,7 +316,7 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
 
                 nodes.push({
                     id: CG3_ID.CLAUSE_NODE_PREFIX + label,
-                    label: label,
+                    label: `\\kappa_{${cindex},${i}}`,
                     position: {
                         x: (xCurrent + ((i % 3) * xStep) + xShift) * this.unit,
                         y: ((i < 3) ? 0 : 1) * this.unit,
@@ -105,46 +370,67 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
                 title: 'Add clause gadgets',
                 description: `
                     <p>
-                        Create a clause gadget for each clause in the formula 
-                        <span>${this.inInstance.asHtmlString()}</span>, namely:
+                        Create a clause gadget for each clause $\\kappa \\in \\Kappa$ in the formula $\\Phi$, namely:
 
-                        <ul>
-                            ${this.inInstance.clauses.map(x => {
-                                return `
-                                    <li>
-                                        <span>${x.asHtmlString()}</span>
-                                    </li>
-                                `;
-                            }).join('')}
-                        </ul>
-                    </p>
-                    <p>
-                        For some clause <i>C = (X &or; Y &or; Z)</i>, 
-                        where <i>X,Y,Z</i> are it's literals (they can be negated) 
-                        and <i>x,y,z</i> are the variables,
-                        a clause gadget G = (V,E) consists of nodes: <br>
-                        <p>
-                            <i>V = {X,Y,Z,c0,c1,c2,c3,c4,c5,T,F}</i> <br>
-                        </p>
-                        and edges: <br>
-                        <p>
-                            <i>
-                                E = { {X,c0}, {Y,c1}, {Z,c2} } &cup; <br>
-                                    { {c0,c3}, {c1,c4}, {c2,c5} } &cup; <br>
-                                    { {T,c0}, {T,c1}, {T,c2} } &cup; <br>
-                                    { {T,c3}, {c3,c4}, {c4,c5}, {c5,F} }
-                            </i>
-                        </p>
-                    </p>
-                    <p>
-                        The nodes <i>c0,c1,...,c5</i> are unique for each clause gadget.
-                    </p>
-                    <p>
-                        This newly created clause gadget ensures that there exists a valid 3-coloring 
-                        iff at least one of the literal nodes <i>X,Y,Z</i> is green, 
-                        which would mean that the clause C evaluates to True. 
+                        $$
+                        \\begin{aligned}
+                            ${this.inInstance.clauses.map((c, i) => `
+                                \\kappa_{${i}} &= ${clauseToTriplet(c)} \\\\
+                            `).join('')}
+                        \\end{aligned}
+                        $$
 
-                        If all of the literal nodes are red, then a valid 3-coloring of the gadget <i>G</i> doesn't exist.
+                        There will be $|\\Kappa| = ${this.inInstance.clauses.length}$ clause gadgets.
+                    </p>
+                    <p>
+                        For some clause $\\kappa = (\\Alpha, \\Beta, \\Gamma)$, 
+                        where $\\Alpha$, $\\Beta$ and $\\Gamma$ are it's literals (they can be negated) 
+                        and $\\alpha$, $\\beta$ and $\\gamma$ are the variables,
+                        a clause gadget $G_{\\kappa} = (V_{\\kappa},E_{\\kappa})$ is defined as:
+
+                        $$
+                            V_{\\kappa} = \\{ \\Alpha, \\Beta, \\Gamma, \\kappa_0, \\kappa_1, \\kappa_2, \\kappa_3, \\kappa_4, \\kappa_5, T, F \\}
+                        $$
+
+                        $$
+                        \\begin{aligned}
+                            E_{\\kappa} = \\{
+                                &{ 
+                                    \\{\\Alpha,\\kappa_0\\}, 
+                                    \\{\\Beta,\\kappa_1\\}, 
+                                    \\{\\Gamma,\\kappa_2\\} 
+                                } \\\\
+                                &{ 
+                                    \\{\\kappa_0,\\kappa_3\\}, 
+                                    \\{\\kappa_1,\\kappa_4\\}, 
+                                    \\{\\kappa_2,\\kappa_5\\} 
+                                } \\\\
+                                &{ 
+                                    \\{T,\\kappa_0\\}, 
+                                    \\{T,\\kappa_1\\}, 
+                                    \\{T,\\kappa_2\\} 
+                                } \\\\
+                                &{ 
+                                    \\{T,\\kappa_3\\}, 
+                                    \\{\\kappa_3,\\kappa_4\\}, 
+                                    \\{\\kappa_4,\\kappa_5\\}, 
+                                    \\{\\kappa_5,F\\} 
+                                }
+                            \\}
+                        \\end{aligned}
+                        $$
+                    </p>
+                    <p>
+                        Note that the nodes $\\kappa_0,\\kappa_1,\\ldots,\\kappa_5$ are unique for each clause gadget.
+                    </p>
+                    <p>
+                        A valid 3-coloring for the gadget $G_{\\kappa}$ exist,
+                        iff at least one of the literal nodes, $\\Alpha$, $\\Beta$ or $\\Gamma$, is $${GREEN}$,
+                        This would correspond to the clause $\\kappa$ being satisfied, because at least one of its literals is evaluated to $True$.
+                    </p>
+                    <p>
+                        However, if all the 3 literal nodes are $${RED}$, then a valid 3-coloring for the gadget $G_{\\kappa}$ doesn't exist.
+                        Since all 3 literals nodes are $${RED}$, this means that they all evaluate to $False$ and the clause $\\kappa$ is not satisfied.
                     </p>
                 `,
                 inSnapshot: this.inInstance,
@@ -153,208 +439,6 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
         };
     }
 
-    createVariableGadgets(graph: Graph): ReductionPart {
-        
-        // just before doing anything, update the control points for edges
-        graph.edges.forEach(e => {
-            const m = this.r * this.unit;
-            e.controlPointDistances = [-m, -m];
-        });
-
-        const theta = -45 * Math.PI / 180;
-        const cosTheta = Math.cos(theta);
-        const sinTheta = Math.sin(theta);
-
-        const y = this.r * sinTheta;       
-        const diameter = this.d * cosTheta;
-        const radius = diameter / 2;
-
-        let xCurrent = 0;
-        const xStep = diameter / this.dv;
-        const xShift = -radius;
-
-        // add variable nodes
-        this.inInstance.variables.forEach(v => {
-            const trueNode: GraphNode = {
-                id: CG3_ID.TRUE_VAR_NODE_PREFIX + v,
-                position: {
-                    x: (xCurrent + xShift) * this.unit, 
-                    y: (y) * this.unit,
-                },
-            };
-
-            const falseNode: GraphNode = {
-                id: CG3_ID.FALSE_VAR_NODE_PREFIX + v,
-                position: {
-                    x: (xCurrent + xStep + xShift) * this.unit,
-                    y: (y) * this.unit,
-                },
-            };
-
-            xCurrent += (this.sv + this.wv) * xStep;
-
-            graph.addNode(trueNode);
-            graph.addNode(falseNode);
-
-            const edges: GraphEdge[] = [
-                {
-                    id: EDGE_ID_PREFIX + v + 'true-false',
-                    from: trueNode.id,
-                    to: falseNode.id,
-                    classes: 'muted'
-                },
-                {
-                    id: EDGE_ID_PREFIX + v + 'true-B',
-                    from: trueNode.id,
-                    to: CG3_ID.CORE.B,
-                    classes: 'muted'
-                },
-                {
-                    id: EDGE_ID_PREFIX + v + 'false-B',
-                    from: falseNode.id,
-                    to: CG3_ID.CORE.B,
-                    classes: 'muted'
-                },
-            ];
-
-            edges.forEach(e => graph.addEdge(e));
-        });
-
-        const step: ReductionStep<CNF3, Graph> = {
-            id: 'add-vars',
-            title: 'Add variable gadgets',
-            description: `
-                <p>
-                    Create a variable gadget for each variable in the formula 
-                    <span>${this.inInstance.asHtmlString()}</span>, namely:
-
-                    <ul>
-                        ${this.inInstance.variables.map(v => {
-                            return `
-                                <li>
-                                    ${v}
-                                </li>
-                            `;
-                        }).join('')}
-                    </ul>
-                    There will be ${this.inInstance.variables.length} variable gadgets, 
-                    because there are ${this.inInstance.variables.length} variables.
-                </p>
-                <p>
-                    A variable gadget <i>G = (V,E)</i> for a variable <i>x</i> consists 
-                    of three nodes, 
-                    <i>V = {x, &not;x, B}</i>, 
-                    where the node <i>B</i> is the blue "buffer" node.
-                    These nodes nodes are connected in such a way 
-                    that makes this gadget <i>G</i> a complete graph, 
-                    <i>E = { {x, &not;x}, {x, B}, {&not;x, B} }</i>.
-                </p>
-                <p>
-                    Since the nodes <i>x</i> and <i>&not;x</i> are connected to the B node that is colored blue, 
-                    they themselves can only be colored either green, or red. 
-                    This encodes the truth assignment for the variable <i>x</i>.
-                </p>
-                <p>
-                    If the node <i>x</i> is green 
-                    then the node <i>&not;x</i> must be red, 
-                    meaning <i>x &coloneq; True</i>.
-
-                    However, if the node <i>x</i> is red 
-                    then the node <i>&not;x</i> must be green, 
-                    meaning <i>x &coloneq; False</i>.
-                </p>
-            `,
-            inSnapshot: this.inInstance,
-            outSnapshot: graph.copy(),
-        };
-
-        return { graph, step };
-    }
-
-    createCoreGadget(graph: Graph): ReductionPart {
-
-        // add core nodes and join them together
-        const coreNodeValues = Object.values(this.coreNodes);
-
-        const angleStep = 360 / coreNodeValues.length;
-        const radStep = angleStep * Math.PI / 180;
-        let radCurrent = Math.PI / 6;
-
-        coreNodeValues.forEach(n => {
-            n.position = { 
-                x: Math.cos(radCurrent) * this.unit,
-                y: Math.sin(radCurrent) * this.unit,
-            };
-
-            graph.addNode(n);
-
-            radCurrent += radStep;
-        });
-
-        [ ['F', 'T'], ['B', 'F'], ['T', 'B'] ].forEach(([x,y]) => {
-            const from = this.coreNodes[x];
-            const to = this.coreNodes[y];
-
-            graph.addEdge({
-                id: EDGE_ID_PREFIX + `${from.label}-${to.label}`,
-                from: from.id,
-                to: to.id,
-                classes: 'muted core'
-            });
-        });
-
-        graph.edges.forEach(e => {
-            e.classes += ' outer-circle';
-
-            const m = this.unit;
-            e.controlPointDistances = [-m, -m];
-        });
-
-        const step: ReductionStep<CNF3, Graph> = {
-            id: 'add-core',
-            title: 'Create the core',
-            description: `
-                <p>
-                    Let's assume that the 3 colors are: red, green and blue.
-                    The meaning for these colors is that green represents "True" values, 
-                    red represents "False" values and blue is a buffer color.
-                </p>
-                <p>
-                    Start by creating the "core" gadget. 
-                    The core gadget has three nodes - T, F, B - and they are connected to one another.
-                </p>
-                <p>
-                    The coloring for these nodes is as follows:
-                    <ul>
-                        <li>
-                            T node - green,
-                        </li>
-                        <li>
-                            F node - red,
-                        </li>
-                        <li>
-                            B node - blue.
-                        </li>
-                    </ul>
-                </p>
-            `,
-            inSnapshot: this.inInstance,
-            outSnapshot: graph.copy(),
-        }
-
-        graph.nodes.forEach(n => {
-            n.position!.x *= this.d * 0.8;
-            n.position!.y *= this.d * 0.8;
-        });
-
-        graph.edges.forEach(e => {
-            const m = this.r * this.unit;
-            e.controlPointDistances = [-m, -m];
-        });
-
-        
-        return { graph, step };
-    }
 
     private get wv() { return 1; } // how big is the gap between variable gadgets
     private get sv() { return 1; } // CONST: how much space does one clause take up

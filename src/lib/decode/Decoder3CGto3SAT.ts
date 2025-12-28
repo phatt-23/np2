@@ -14,7 +14,7 @@ export class Decoder3CGto3SAT implements Decoder<Graph, Certificate3CG, Certific
         const assignment = new Map<VarName, TriBool>();
 
         outCert.coloring.forEach((value, key) => {
-            const color = value;
+            const color = value.colorNumber;
             const nodeId = key;
 
             if (nodeId.startsWith(CG3_ID.TRUE_VAR_NODE_PREFIX)) {

@@ -1,8 +1,9 @@
 import { type Id } from "$lib/core/Id";
 import { Unsolvable } from "$lib/core/Unsolvable";
 import type { Graph, GraphNode } from "$lib/instance/Graph";
-import { Certificate3CG } from "./Certificate3CG";
+import { Certificate3CG, type Coloring } from "./Certificate3CG";
 import type { Solver } from "./Solver";
+
 
 export class Solver3CG implements Solver<Graph, Certificate3CG> {
     constructor(public instance: Graph) {
@@ -14,12 +15,15 @@ export class Solver3CG implements Solver<Graph, Certificate3CG> {
         const nodes = graph.nodes;
 
         const adjacency = this.buildAdjacency(graph);
-        const coloring = new Map<Id, number>();
+        const coloring = new Map<Id,Coloring>();
 
         // initial coloring
         nodes.forEach(n => {
             if (n.color) {
-                coloring.set(n.id, n.color);
+                coloring.set(n.id, { 
+                    label: n.label ?? 'UNKNOWN',
+                    colorNumber: n.color,
+                });
             }
         })
         // coloring.set(CG3_ID.CORE.T, 1);
@@ -54,7 +58,7 @@ export class Solver3CG implements Solver<Graph, Certificate3CG> {
         index: number,
         nodes: GraphNode[],
         adj: Map<Id, Set<Id>>,
-        coloring: Map<Id, number>
+        coloring: Map<Id, Coloring>
     ): boolean {
         if (index == nodes.length) {
             return true; // all nodes colored
@@ -69,7 +73,7 @@ export class Solver3CG implements Solver<Graph, Certificate3CG> {
 
             // local change
             if (!alreadyColored)
-                coloring.set(node.id, color);
+                coloring.set(node.id, { label: node.label ?? 'Unknown', colorNumber: color });
 
             // recurse
             if (this.backtrackColor(index + 1, nodes, adj, coloring)) {
@@ -88,10 +92,10 @@ export class Solver3CG implements Solver<Graph, Certificate3CG> {
         nodeId: Id,
         color: number,
         adj: Map<Id, Set<Id>>,
-        coloring: Map<Id, number>
+        coloring: Map<Id, Coloring>
     ): boolean {
         for (const neighbor of adj.get(nodeId)!) {
-            if (coloring.get(neighbor) == color) {
+            if (coloring.get(neighbor)?.colorNumber == color) {
                 return false;
             }
         }

@@ -15,7 +15,9 @@ Also the file must have .svelte.ts extension.
 - [ ] - style the components
 - [ ] - rename asString() to format() as it is formatting the problem instance to a format that the editor accepts, now it's confusing because problem instances have toSerializedString()
 - [ ] - add editor checks for illegal symbols like %#@!-_() and so on
-- [ ] - 3sat to hcycle uses a different edge id naming scheme to the rest, change it (now it's using only the node names in its edge ids, it should use the entire id, including the prefix)
+- [ ] - 3sat to hcycle uses a different edge id naming scheme to the rest, change it (now it's using only the node names in its edge ids, it should use the entire 
+id, including the prefix)
+- [ ] - in graph editor, when i chose a node, but then click away, it should reset
 - [x] - center cytoscape around 0,0 and make the whole graph visible
 - [x] - if inInstance is empty, could be different for each problem (add a pure virtual function)
 do not allow reducing nor solving (UI constraint and logic constraint)

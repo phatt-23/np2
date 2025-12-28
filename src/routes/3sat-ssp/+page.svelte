@@ -149,6 +149,7 @@
                             ssp={inst} 
                             style='3sat'
                             cnfInstance={$redStore.inInstance}
+                            trimLeadingZeros
                         />
                     {:else}
                         <span>Cannot render this SSP isntance without providing CNF instance.</span>

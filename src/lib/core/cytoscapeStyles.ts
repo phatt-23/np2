@@ -277,8 +277,8 @@ export const cytoscapeStyles: Record<string, StylesheetStyle[]> = {
                 'curve-style': 'bezier',
                 'line-color': 'black',
                 'text-background-color': '#fff',
-                'text-background-opacity': 1,
-                'text-background-padding': '4',
+                'text-background-opacity': 0.95,
+                'text-background-padding': '2',
                 'width': 2
             }
         },
@@ -322,19 +322,19 @@ export const cytoscapeStyles: Record<string, StylesheetStyle[]> = {
         {
             selector: 'node.green, node.T',
             style: {
-                'background-color': 'green',
+                'background-color': '#9bff9b',
             }
         },
         {
             selector: 'node.red, node.F',
             style: {
-                'background-color': 'red',
+                'background-color': '#ff7272',
             }
         },
         {
             selector: 'node.blue, node.B',
             style: {
-                'background-color': 'blue',
+                'background-color': '#74a4ff',
             }
         },
         {
@@ -351,7 +351,7 @@ export const cytoscapeStyles: Record<string, StylesheetStyle[]> = {
                 "curve-style": "unbundled-bezier",
                 "control-point-distances": 'data(controlPointDistances)',
                 "control-point-weights": [0.250, 0.75],
-                "width": 8,
+                "width": 4,
             }
         },
         ...solvedNode,

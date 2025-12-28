@@ -32,6 +32,16 @@
         return x;
     }
 
+    function leadingZerosToEmptyString(value: number[]) {
+        if (trimLeadingZeros) {
+            const nonZero = value.findIndex(v => v !== 0)
+            if (nonZero == 0) 
+                return value;
+            return [...value.slice(0, nonZero).map(v => ''), ...value.slice(nonZero)]
+        }
+        return value;
+    }
+
     let useCnfFormat = $state(false)
 </script>
 
@@ -69,7 +79,14 @@
 {/snippet}
 
 {#snippet cnfFormatView(cnfInstance: CNF3)}
-    <div class="table-wrapper">
+    <div>
+        {#each cnfInstance.clauses as clause, i}
+            <Katex text={`\\kappa_{${i}} = ` + clause.toTexString()}>
+            </Katex>
+        {/each}
+    </div>
+
+    <div class="sat-table-wrapper">
         <table class="sat-ssp-table">
             <thead>
                 <tr>
@@ -84,7 +101,7 @@
 
                     {#each cnfInstance.clauses as clause, i}
                         <th class='clause-col'>
-                            <Katex displayMode style="font-size:1em;" text={clause.toTexString()}>
+                            <Katex text={`\\kappa_{${i}}`}>
                             </Katex>
                         </th>
                     {/each}
@@ -92,75 +109,27 @@
             </thead>
 
             <tbody>
-                {#each cnfInstance.variables as variable, i}
-                    <tr class="var-row" class:ssp-used={ssp.numbers[2 * i].used}>
+                {#each ssp.numbers as num, i}
+                    <tr class="var-row" class:ssp-used={num.used}>
                         <td>
-                            <Katex text={`${variable} = T`}>
-                            </Katex>
+                            <Katex text={num.label ?? 'NULL'}></Katex>
                         </td>
-
-                        {#each ssp.numbers[2 * i].value as digit, j}
-                            <td>{digit}</td>
+                        {#each leadingZerosToEmptyString(num.value) as digit}
+                            <td>
+                                {digit}
+                            </td>
                         {/each}
-                    </tr>
-
-                    <tr class="var-row var-row-false" class:ssp-used={ssp.numbers[2 * i + 1].used}>
-                        <td>
-                            <Katex text={`${variable} = F`}>
-                            </Katex>
-                        </td>
-
-                        {#each ssp.numbers[2 * i + 1].value as digit, j}
-                            <td>{digit}</td>
-                        {/each}
-                    </tr>
-
-                    <!-- Horizontal separator after each variable pair -->
-                    <tr class="section-sep">
-                        <td colspan="999">
-                        </td>
                     </tr>
                 {/each}
 
-                {#each cnfInstance.clauses as clause, i}
-                    <tr class="clause-row" class:ssp-used={ssp.numbers[(2 * i) + (2 * cnfInstance.variables.length)].used}>
-                        <td>
-                            <Katex text={clause.toTexString()}>
-                            </Katex>
-                        </td>
-
-                        {#each ssp.numbers[(2 * i) + (2 * cnfInstance.variables.length)].value as digit, j}
-                            <td>{digit}</td>
-                        {/each}
-                    </tr>
-
-                    <tr class={"clause-row clause-row-fill"} class:ssp-used={ssp.numbers[(2 * i + 1) + (2 * cnfInstance.variables.length)].used}>
-                        <td>
-                            <Katex text={clause.toTexString()}>
-                            </Katex>
-                        </td>
-
-                        {#each ssp.numbers[(2 * i + 1) + (2 * cnfInstance.variables.length)].value as digit, j}
-                            <td>{digit}</td>
-                        {/each}
-                    </tr>
-
-                    <!-- Horizontal separator after each clause pair -->
-                    <tr class="section-sep">
-                        <td colspan="999">
-                        </td>
-                    </tr>
-                {/each}
-            </tbody>
-
-            <tfoot>
                 <tr>
                     <td>Target:</td>
                     {#each ssp.target as digit, j}
                         <td>{digit}</td>
                     {/each}
                 </tr>
-            </tfoot>
+            </tbody>
+
         </table>
     </div>
 {/snippet}
@@ -186,7 +155,6 @@
             {#if !useCnfFormat}
                 {@render classicView()}    
             {:else}
-                <p>Each row represents one number.</p>
                 {@render cnfFormatView(cnfInstance)}                
             {/if}
         
@@ -199,7 +167,29 @@
 
 .center {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
+}
+
+.sat-table-wrapper {
+    overflow-x: auto;
+    max-width: 100%;
+    padding-bottom: 24px;
+}
+
+.sat-ssp-table {
+    width: max-content;
+    /* min-width: 100%; */
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+
+.sat-ssp-table th, 
+.sat-ssp-table td {
+    padding: 4px 8px;
+    text-align: center;
+    border: 1px solid #ccc;
 }
 
 .table-wrapper {
@@ -224,24 +214,6 @@
 
 
 
-.sat-ssp-table {
-    border-collapse: collapse;
-    margin-top: 1rem;
-}
-
-.sat-ssp-table th, 
-.sat-ssp-table td {
-    padding: 4px 8px;
-    text-align: center;
-    border: 1px solid #ccc;
-}
-
-.section-sep td {
-    border: none;
-    height: 0px;
-    background-color: #fff;
-}
-
 /* visually distinguish variable and clause zones */
 .var-col {
     background-color: #f9f9f9;
@@ -251,7 +223,6 @@
     background-color: #f0f8ff;
 }
 
-.clause-row td,
 .var-row td {
     border-color: #ddd;
 }
@@ -259,20 +230,5 @@
 .ssp-used {
     background-color: rgb(256, 240, 240);
 }
-
-
-
-/* th {
-    position: sticky;
-    top: 0;
-    background: white;
-}
-
-td:first-child,
-th:first-child {
-    position: sticky;
-    left: 0;
-    background: white;
-} */
 
 </style>

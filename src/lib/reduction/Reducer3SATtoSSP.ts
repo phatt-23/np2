@@ -285,23 +285,35 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
     }
 
     createBufferNumbers(ssp: SSP): ReductionPart {
+        const buffers = new Array<SSPNumber>();
+
         this.inInstance.clauses.forEach((c,i) => {
             const val = new Array(this.K).fill(0);
             val[i + this.V] = 1;
 
-            ssp.addNumber({
-                id: CLAUSE_FILLER_PREFIX_ONE + c.id,
+            const buffer0 = CLAUSE_FILLER_PREFIX_ONE + c.id
+            const buffer1 = CLAUSE_FILLER_PREFIX_TWO + c.id
+
+            const b0 = {
+                id: buffer0,
                 label: `\\kappa_{${i}, 0}`,
                 value: [...val],
                 used: false,
-            });
+            }
             
-            ssp.addNumber({
-                id: CLAUSE_FILLER_PREFIX_TWO + c.id,
+            const b1 = {           
+                id: buffer1,
                 label: `\\kappa_{${i}, 1}`,
                 value: [...val],
                 used: false,
-            });
+            }
+
+            ssp.addNumber(b0);
+            ssp.addNumber(b1);
+
+            this.lookup.set(buffer0, [...val]) 
+            this.lookup.set(buffer1, [...val]) 
+            buffers.push(b0, b1)
         });
 
         const step: ReductionStep<CNF3, SSP> = {
@@ -324,11 +336,21 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
                     On the otherhand, we must prohibit $j$-th digit that's currently zero from being able to become $3$.  
                 </p>
                 <p>
-                    To achieve this, we add two buffer numbers, $\\kappa_{i,0}$ and $\\kappa_{i,1}$, for each clause, where
+                    To achieve this, we add two buffer numbers, $\\kappa_{i,0}$ and $\\kappa_{i,1}$, for each clause $\\kappa_i$.
                     
                     $$
                         \\kappa_{i,0} = \\kappa_{i,1} = 10^{i}
-                    $$.
+                    $$
+                </p>
+                <p>
+                    In this case:
+                    
+                    $$
+                    \\begin{aligned}
+                        ${buffers.map(b => `${b.label} &= ${b.value.join('')} \\\\`).join('')}
+                    \\end{aligned}
+                    $$
+
                 </p>
 
             `,  

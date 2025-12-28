@@ -25,7 +25,7 @@
     import { Graph } from "$lib/instance/Graph";
     import { useReductionController } from "$lib/page/useReductionController.svelte";
     import { Reducer3SATto3CG } from "$lib/reduction/Reducer3SATto3CG";
-    import { Certificate3CG } from "$lib/solve/Certificate3CG";
+    import { Certificate3CG, type Coloring } from "$lib/solve/Certificate3CG";
     import { Certificate3SAT } from "$lib/solve/Certificate3SAT";
     import { ReductionStore } from "$lib/state/ReductionStore.svelte";
     import { WorkerResponseType, type WorkerRequest3CG, type WorkerResponse3CG } from "$lib/workers/types";
@@ -59,11 +59,9 @@
             const response = data as WorkerResponse3CG;
             assert(response.type == WorkerResponseType.RESULT);
             
-            const coloring: Map<Id, number> = new Map();
-            response.coloring.forEach(c => {
-                const id = c[0];
-                const color = c[1];
-                coloring.set(id, color);
+            const coloring: Map<Id, Coloring> = new Map();
+            response.coloring.forEach(([k,v]) => {
+                coloring.set(k,v);
             });
 
             return new Certificate3CG(coloring);
@@ -75,7 +73,7 @@
             }
 
             outInst.nodes.forEach(n => {
-                n.color = outCert.coloring.get(n.id);
+                n.color = outCert.coloring.get(n.id)?.colorNumber;
                 switch (n.color) {
                     case 0: 
                         n.classes += ' red'

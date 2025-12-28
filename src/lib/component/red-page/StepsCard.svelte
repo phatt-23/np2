@@ -56,7 +56,9 @@
                 }}
             >
                 {#snippet outInstRender(stepIndex)}
-                    {@render instance($redStore.steps[stepIndex].outSnapshot!, stepIndex)}
+                    {#if $redStore.steps[stepIndex].outSnapshot}
+                        {@render instance($redStore.steps[stepIndex].outSnapshot, stepIndex)}
+                    {/if}
                 {/snippet}
             </ReductionStepper>
 
