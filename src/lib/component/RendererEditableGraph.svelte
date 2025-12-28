@@ -102,6 +102,7 @@ Component rendering the graph and allowing the user to add and remove edges.
         {layout}
         {onNodeTap}
         {onEdgeTap}
+        editable
     >
     </RendererGraph>
 </main>

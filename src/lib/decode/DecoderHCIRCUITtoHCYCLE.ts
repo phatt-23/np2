@@ -9,11 +9,11 @@ import type { Decoder } from "./Decoder";
 export class DecoderHCIRCUITtoHCYCLE implements Decoder<Graph, CertificateHCIRCUIT, CertificateHCYCLE> {
 
     decode(_outInstance: Graph, outCert: CertificateHCIRCUIT): CertificateHCYCLE {
-        const path = new Array<Id>();
+        const path: { id: string; label: string }[] = [];
 
         outCert.path.forEach(node => {
-            const nodeName = this.getNodeName(node.id);
-            path.push(nodeName);
+            const { id, label } = this.getNodeId(node);
+            path.push({ id, label });
         });
 
         // remove duplicate occurences that are next to each other
@@ -21,14 +21,14 @@ export class DecoderHCIRCUITtoHCYCLE implements Decoder<Graph, CertificateHCIRCU
 
         let p = undefined;
         for (let i = 0; i < path.length; i++) {
-            if (p == path[i]) {
+            if (p && p.id == path[i].id) {
                 continue;
             }
 
             p = path[i];
             reconstructed.push({
-                id: NODE_ID_PREFIX + p,
-                label: p,
+                id: p.id,
+                label: p.label,
             });
         }
 
@@ -36,17 +36,22 @@ export class DecoderHCIRCUITtoHCYCLE implements Decoder<Graph, CertificateHCIRCU
     }
 
     private nodePrefixes = [
-        HCYCLE_HCIRCUIT_ID.INCOMING_NODE_PREFIX, 
-        HCYCLE_HCIRCUIT_ID.OUTGOING_NODE_PREFIX, 
-        HCYCLE_HCIRCUIT_ID.GAP_NODE_PREFIX
+        [HCYCLE_HCIRCUIT_ID.INCOMING_NODE_PREFIX, '_{i}'], 
+        [HCYCLE_HCIRCUIT_ID.OUTGOING_NODE_PREFIX, '_{o}'], 
+        [HCYCLE_HCIRCUIT_ID.GAP_NODE_PREFIX, '_{b}']
     ];
 
-    private getNodeName(nodeId: string): string {
+    private getNodeId(node: GraphNode) {
+        const nodeId: string = node.id;
+        
         for (let i = 0; i < this.nodePrefixes.length; i++) {
             const prefix = this.nodePrefixes[i];
 
-            if (nodeId.startsWith(prefix)) {
-                return nodeId.slice(prefix.length);
+            if (nodeId.startsWith(prefix[0])) {
+                return {
+                    id: nodeId.slice(prefix[0].length),
+                    label: node.label!.slice(0, node.label!.length - prefix[1].length)
+                } 
             }
         }
 

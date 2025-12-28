@@ -1,5 +1,6 @@
 // Created by phatt-23 on 20/12/2025
 
+import { chunkBy } from "$lib/core/filters";
 import { CG3_ID, CNF3_ID, EDGE_ID_PREFIX } from "$lib/core/Id";
 import type { Clause, CNF3 } from "$lib/instance/CNF3";
 import { Graph, type GraphEdge, type GraphNode } from "$lib/instance/Graph";
@@ -16,20 +17,6 @@ const GREEN = `\\color{green}{green}`
 const BLUE = `\\color{blue}{blue}`
 
 const clauseToTriplet = (c: Clause) => `( ${c.literals.map(l => (l.negated ? '\\lnot{}' : '') + l.varName).join(',')} )`;
-
-function chunkBy<T>(x: T[], chunkSize: number) {
-    let currentX = x.slice(0);
-    const chunks: T[][] = [];
-
-    while (currentX.length > chunkSize) {
-        const chunk = currentX.slice(0, chunkSize);
-        chunks.push(chunk);
-        currentX = currentX.slice(chunkSize);
-    }
-
-    chunks.push(currentX);
-    return chunks;
-}
 
 export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
 
@@ -249,7 +236,13 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
 
                     $$
                     \\begin{aligned}
-                        \\Kappa = \\{ ${ chunkBy(this.inInstance.clauses.map(c => clauseToTriplet(c)), 3).map(x => `& ${x.join(',')}`).join('\\\\') } \\} \\\\
+                        \\Kappa = \\{ 
+                            ${ 
+                                chunkBy(this.inInstance.clauses.map(c => clauseToTriplet(c)), 3)
+                                    .map(x => `& ${x.join(',')}`)
+                                    .join('\\\\') 
+                            } 
+                        \\}
                     \\end{aligned}
                     $$
 

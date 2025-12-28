@@ -18,6 +18,7 @@ Component that renders the graph.
         layout?: CytoscapeLayout; 
         onNodeTap?: (event: cytoscape.EventObject) => void,
         onEdgeTap?: (event: cytoscape.EventObject) => void,
+        editable?: boolean;
     }
 
     let { 
@@ -26,6 +27,7 @@ Component that renders the graph.
         layout = 'preset',
         onNodeTap = () => {},
         onEdgeTap = () => {},
+        editable = false,
     }: Props = $props();
 
 
@@ -243,7 +245,7 @@ Component that renders the graph.
 
     <div class="graph-wrapper">
         
-        <div bind:this={graphContainer} id="cy">
+        <div bind:this={graphContainer} id="cy" class:no-events={!editable && !moveEnabled}>
         
             <div bind:this={mathLabelLayer} id="math-label-layer">
             </div>
@@ -271,6 +273,7 @@ Component that renders the graph.
 <style lang="sass">
     @use "sass:color"
 
+
     main 
         height: 100%
 
@@ -282,6 +285,9 @@ Component that renders the graph.
         border-radius: 4pt
         border-color: global.$border-color
         overflow: hidden
+
+        &.no-events
+            pointer-events: none
 
     .graph-wrapper
         position: relative
