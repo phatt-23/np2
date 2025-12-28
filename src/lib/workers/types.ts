@@ -1,7 +1,8 @@
 // Created by phatt-23 on 21/12/2025
 
 import type { Id } from "$lib/core/Id";
-import type { Position } from "$lib/instance/Graph";
+import type { GraphNode, Position } from "$lib/instance/Graph";
+import type { SSPNumber } from "$lib/instance/SSP";
 
 export enum WorkerResponseType {
     UNSOLVABLE = "unsolvable",
@@ -21,21 +22,8 @@ export type WorkerResponseSSP =
     | { type: WorkerResponseType.ERROR; message: string }
     | { 
         type: WorkerResponseType.RESULT; 
-        numbers: { 
-            id: string;
-            value: number[];
-            used: boolean;
-            classes?: string;
-        }[] 
+        numbers: SSPNumber[] 
     }
-
-type GraphNodePOD = {
-    id: Id;
-    label?: string;
-    color?: number;  
-    position?: Position;
-    classes?: string;
-}
 
 export type WorkerRequestHCYCLE = { graph: string; };
 export type WorkerResponseHCYCLE = 
@@ -43,7 +31,7 @@ export type WorkerResponseHCYCLE =
     | { type: WorkerResponseType.ERROR; message: string }
     | { 
         type: WorkerResponseType.RESULT; 
-        path: GraphNodePOD[]
+        path: GraphNode[]
     }
 
 export type WorkerRequestTSP = { 
@@ -56,7 +44,7 @@ export type WorkerResponseTSP =
     | { type: WorkerResponseType.ERROR; message: string }
     | { 
         type: WorkerResponseType.RESULT; 
-        path: GraphNodePOD[]
+        path: GraphNode[]
     }
     
 export type WorkerRequestHCIRCUIT = { graph: string; }
@@ -65,6 +53,6 @@ export type WorkerResponseHCIRCUIT =
     | { type: WorkerResponseType.ERROR; message: string }
     | { 
         type: WorkerResponseType.RESULT; 
-        path: GraphNodePOD[]
+        path: GraphNode[]
     }
     

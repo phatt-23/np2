@@ -4,23 +4,12 @@ import type { ErrorMessage } from "$lib/core/assert";
 import Serializer from "$lib/core/Serializer";
 import { ProblemInstance } from "./ProblemInstance";
 
-@Serializer.SerializableClass("SSPNumber")
-export class SSPNumber {
+export type SSPNumber = {
     id: string;
+    label?: string;
     value: number[];
     used: boolean;
     classes?: string;
-    
-    constructor(id: string, value: number[], used: boolean = false, classes?: string) {
-        this.id = id;
-        this.value = value;
-        this.used = used;
-        this.classes = classes;
-    }
-
-    public asString(): string {
-        return this.value.join('');
-    }
 };
 
 @Serializer.SerializableClass("SSP")
@@ -36,6 +25,13 @@ export class SSP extends ProblemInstance {
 
     public addNumber(x: SSPNumber) {
         this.numbers.push(x);
+    }
+
+    public setNumberValue(id: string, val: number[]) {
+        const x = this.numbers.find(x => x.id === id)
+        if (x) {
+            x.value = val;
+        }
     }
 
     public setTarget(target: number[]) {
@@ -65,7 +61,13 @@ export class SSP extends ProblemInstance {
         lines.forEach((line, i) => {
             try {
                 const numArray = Array.from(line).map(c => Number.parseInt(c));
-                ssp.addNumber(new SSPNumber(`${i}`, numArray));
+                const sspNumber: SSPNumber = {
+                    id: `${i}`,
+                    value: numArray,
+                    used: false,
+                };
+
+                ssp.addNumber(sspNumber);
             } catch (e) {
                 return `Couldn't parse the number on the line ${i}: ${line}.`;
             }
@@ -74,11 +76,11 @@ export class SSP extends ProblemInstance {
         return ssp;
     }
 
-
     public toSerializedString(): string {
         const data = {
             numbers: this.numbers.map(n => ({
                 id: n.id,
+                label: n.label ?? null,
                 value: n.value,
                 used: n.used,
                 classes: n.classes ?? null,
@@ -93,11 +95,19 @@ export class SSP extends ProblemInstance {
         const ssp = new SSP();
         const data = JSON.parse(serialized);
 
-        ssp.setTarget(data.target)
+        ssp.setTarget(data.target);
 
         if (Array.isArray(data.numbers)) {
             for (const n of data.numbers) {
-                ssp.addNumber(new SSPNumber(n.id, n.value, n.used, n.classes));
+                const sspNumber: SSPNumber = {
+                    id: n.id,
+                    label: n.label ?? undefined,
+                    value: n.value,
+                    used: n.used,
+                    classes: n.classes ?? undefined,
+                };
+
+                ssp.addNumber(sspNumber);
             }
         }
 
@@ -112,16 +122,15 @@ export class SSP extends ProblemInstance {
 
         // Copy all SSPNumbers
         this.numbers.forEach(n => {
-            const nCopy = new SSPNumber(
-                n.id,
-                [...n.value], // copy the value array
-                n.used,
-                n.classes
-            );
-            copy.addNumber(nCopy);
+            copy.addNumber({
+                id: n.id,
+                label: n.label,
+                value: [...n.value],
+                used: n.used,
+                classes: n.classes,
+            });
         });
 
         return copy;
     }
-
 }

@@ -1,20 +1,28 @@
 <!-- Created by phatt-23 on 22/10/2025 -->
 
+
+<svelte:head>
+    <title>3SAT to SSP</title>
+	<meta name="description" content="Redcution from 3SAT to SSP" />
+</svelte:head>
+
 <script lang="ts">
     import CertRenderer3SAT from "$lib/component/CertRenderer3SAT.svelte";
     import CertRendererSSP from "$lib/component/CertRendererSSP.svelte";
     import Editor3CNF from "$lib/component/Editor3CNF.svelte";
-    import ReductionStepper from "$lib/component/ReductionStepper.svelte";
+    import EditorCard from "$lib/component/red-page/EditorCard.svelte";
+    import InputInstanceCard from "$lib/component/red-page/InputInstanceCard.svelte";
+    import OutputInstanceCard from "$lib/component/red-page/OutputInstanceCard.svelte";
+    import StepsCard from "$lib/component/red-page/StepsCard.svelte";
     import Renderer3CNF from "$lib/component/Renderer3CNF.svelte";
     import RendererSSP from "$lib/component/RendererSSP.svelte";
-    import Spinner from "$lib/component/Spinner.svelte";
     import { assert } from "$lib/core/assert";
     import localStorageKeys from "$lib/core/localStorageKeys";
     import { Unsolvable } from "$lib/core/Unsolvable";
     import { useLocalStorage } from "$lib/core/useLocalStorage.svelte";
     import { DecoderSSPto3SAT } from "$lib/decode/DecoderSSPto3SAT";
     import { CNF3 } from "$lib/instance/CNF3";
-    import { SSPNumber, type SSP } from "$lib/instance/SSP";
+    import { type SSP } from "$lib/instance/SSP";
     import { useReductionController } from "$lib/page/useReductionController.svelte";
     import { Reducer3SATtoSSP } from "$lib/reduction/Reducer3SATtoSSP";
     import { Certificate3SAT } from "$lib/solve/Certificate3SAT";
@@ -23,10 +31,12 @@
     import { WorkerResponseType, type WorkerRequestSSP, type WorkerResponseSSP } from "$lib/workers/types";
     import WorkerSSPSolver from "$lib/workers/WorkerSSPSolver?worker";
 
+
     let storage = useLocalStorage(
         localStorageKeys.LS_3SAT_SSP, 
         new ReductionStore<CNF3, SSP, Certificate3SAT, CertificateSSP>()
     );
+
 
     let {
         redStore,
@@ -50,9 +60,7 @@
         resolveWorkerResponse: (data) => {
             const res = data as WorkerResponseSSP;
             assert(res.type == WorkerResponseType.RESULT);
-            
-            const numbers = res.numbers.map(n => new SSPNumber(n.id, n.value, n.used, n.classes));
-            return new CertificateSSP(numbers);
+            return new CertificateSSP(res.numbers);
         },
         onSolveFinished: (outInst, outCert) => {
             if (outCert == Unsolvable) {
@@ -80,127 +88,116 @@
             });
         }
     });
+
+    let target = $state(0);
+
+    $effect(() => {
+        if ($redStore.outInstance) {
+            target = Number.parseInt($redStore.outInstance.target.join('')); 
+        }
+    });
 </script>
 
-<svelte:head>
-    <title>3SAT to SSP</title>
-	<meta name="description" content="Redcution from 3SAT to SSP" />
-</svelte:head>
+
 
 <main>
-    <h1>3SAT to SSP reduction</h1>
+    <h1>3-SAT to SSP reduction</h1>
 
-    <Editor3CNF
-        cnf={$redStore.inInstance} 
-        onChange={(cnf) => editorChanged(cnf)}
-        onWrongFormat={(msg) => alert("From editor: " + msg)}
-    />
+    <div class="card-list">
+        
+        <EditorCard {redStore} {isSolving} {solveMessage} {showStepper} {reduce} {solve}>
+            {#snippet title()}
+                <h2>3-CNF Editor</h2>
+            {/snippet}
+            
+            {#snippet editor()}
+                <Editor3CNF
+                    cnf={$redStore.inInstance} 
+                    onChange={(cnf) => editorChanged(cnf)} 
+                    displayErrorMessages
+                />
+            {/snippet}
+        </EditorCard>
 
-    <div class="controls">
-        <button 
-            disabled={!$redStore.hasInInstance() 
-                || $redStore.hasOutInstance() 
-                || $isSolving} 
-            onclick={reduce}
-        >
-            Reduce
-        </button>
 
-        <button
-            disabled={!$redStore.hasInstances() 
-                || $redStore.hasOutCertificate()
-                || $isSolving}
-            onclick={solve}
-        >
-            {#if $isSolving}
-                Solving...
-            {:else}
-                Solve
-            {/if}
-        </button>
-
-        <input type="checkbox" bind:checked={$showStepper} name="showStepperCheckbox">
-        <label for="showStepperCheckbox">Show steps</label>
-    </div>
-
-    {#if $isSolving}
-        <Spinner>{$solveMessage}</Spinner>
-    {/if}
-
-    {#if $showStepper}
-        {@const steps = $redStore.steps}
-        {@const stepIndex = $redStore.stepIndex}
-        {#if steps.length}
-            <div>
-                {#if stepIndex < steps.length &&
-                    steps[stepIndex].inSnapshot && 
-                    !steps[stepIndex].inSnapshot.isEmpty()
-                }
-                    <Renderer3CNF cnf={steps[stepIndex].inSnapshot!} />
-                {/if}
-            </div>
-
-            <ReductionStepper 
-                steps={$redStore.steps} 
-                stepIndex={$redStore.stepIndex}
-                onPrevClick={() => {
-                    redStore.update(rs => { 
-                        rs.prevStep();
-                        return rs;
-                    });
-                    storage.save();
-                }}
-                onNextClick={() => { 
-                    redStore.update(rs => { 
-                        rs.nextStep();
-                        return rs;
-                    });
-                    storage.save();
-                }}
-            />
-
-            <div>
-                {#if $redStore.stepIndex < $redStore.steps.length && 
-                    $redStore.steps[$redStore.stepIndex].outSnapshot}
+        {#if $showStepper}
+            
+            {@render inputInstanceCard(true)}
+            
+            <StepsCard {redStore} {storage}>
+                {#snippet instance(inst, _stepIndex)}
                     <RendererSSP 
-                        ssp={$redStore.steps[$redStore.stepIndex].outSnapshot!} 
-                        style='none'
-                    />
-                {/if}
-            </div>
-        {:else}
-            <span>There are no steps to step through.</span>
-        {/if}
-    {:else}
-        <div class="panes">
-            <div>
-                {#if $redStore.inInstance && !$redStore.inInstance.isEmpty()}
-                    <Renderer3CNF cnf={$redStore.inInstance} />
-                {/if}
-                {#if $redStore.inCert}
-                    <CertRenderer3SAT cert={$redStore.inCert} />
-                {/if}
-            </div>
-            <div>
-                {#if $redStore.outInstance && !$redStore.outInstance.isEmpty()}
-                    <RendererSSP 
-                        ssp={$redStore.outInstance} 
+                        ssp={inst}
                         style='3sat'
                         cnfInstance={$redStore.inInstance ?? undefined}
                     />
-                {/if}
-                {#if $redStore.outCert}
-                    <CertRendererSSP cert={$redStore.outCert}/>
-                {/if}
-            </div>
-        </div>
-    {/if}
+                {/snippet}
+            </StepsCard>
+
+        {:else}
+        
+            {@render inputInstanceCard(false)}
+          
+            <OutputInstanceCard {redStore}>
+                {#snippet title()}
+                    <h2>Output SSP Instance</h2>
+                {/snippet}
+
+                {#snippet instance(inst)}
+                    {#if $redStore.inInstance}
+                        <RendererSSP 
+                            ssp={inst} 
+                            style='3sat'
+                            cnfInstance={$redStore.inInstance}
+                        />
+                    {:else}
+                        <span>Cannot render this SSP isntance without providing CNF instance.</span>
+                    {/if}
+    
+                {/snippet}
+
+                {#snippet certificate(cert)}
+                    <CertRendererSSP {cert} {target}/>
+                {/snippet}
+
+                {#snippet certificatePlaceholder()}
+                    <span class='placeholder'>Certificate for SSP will appear here.</span>
+                {/snippet}
+            </OutputInstanceCard>
+
+        {/if}
+        
+    </div>
 </main>
 
-<style>
-.panes {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-}
+
+{#snippet inputInstanceCard(hideCertificate: boolean)}
+    <InputInstanceCard {redStore} {hideCertificate}>
+        {#snippet title()}
+            <h2>Input 3-SAT Instance</h2>
+        {/snippet}  
+
+        {#snippet instance(inst)}
+            <Renderer3CNF cnf={inst} />
+        {/snippet}
+
+        {#snippet certificate(cert)}
+            <CertRenderer3SAT {cert} />
+        {/snippet}
+
+        {#snippet certificatePlaceholder()}
+            <span>Certificate for 3-SAT will appear here.</span>
+        {/snippet}
+    </InputInstanceCard>
+{/snippet}
+
+
+<style lang="sass">
+    main
+        align-items: center
+
+    .card-list > :global(*) + :global(*)
+        margin-top: 8px
 </style>
+
+

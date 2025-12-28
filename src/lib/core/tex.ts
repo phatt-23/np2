@@ -2,39 +2,51 @@
 
 import * as kx from "katex";
 
-type Token = { type: "text"; value: string } 
-            | { type: "math"; value: string };
+type Token =
+    | { type: "text"; value: string }
+    | { type: "math-inline"; value: string }
+    | { type: "math-display"; value: string };
 
-const INLINE_MATH_REGEX = /(?<!\\)\$(.+?)(?<!\\)\$/gs;
-
+const MATH_REGEX =
+    /(?<!\\)(\$\$(.+?)(?<!\\)\$\$|\$(.+?)(?<!\\)\$)/gs;
+    
 function tokenizeMath(input: string): Token[] {
     const tokens: Token[] = [];
     let lastIndex = 0;
 
-    for (const match of input.matchAll(INLINE_MATH_REGEX)) {
+    for (const match of input.matchAll(MATH_REGEX)) {
         const start = match.index!;
         const end = start + match[0].length;
 
+        // text before math
         tokens.push({
             type: "text",
             value: input.slice(lastIndex, start),
         });
 
-        tokens.push({
-            type: "math",
-            value: match[1],
-        });
+        if (match[2]) {
+            tokens.push({
+                type: "math-display",
+                value: match[2],
+            });
+        } else {
+            tokens.push({
+                type: "math-inline",
+                value: match[3],
+            });
+        }
 
         lastIndex = end;
     }
 
     tokens.push({
         type: "text",
-        value: input.slice(lastIndex)
+        value: input.slice(lastIndex),
     });
 
     return tokens;
 }
+
 
 function escapeHtml(text: string): string {
     return text
@@ -57,23 +69,31 @@ const defaultKatexOptions: KatexOptions = {
     html: false,
 }
 
-export function tex(input: string, opts: KatexOptions = defaultKatexOptions): string {
+export function tex(
+    input: string,
+    opts: KatexOptions = defaultKatexOptions
+): string {
     if (opts.inline) {
         return tokenizeMath(input)
             .map(token => {
-                if (token.type === "text") {
-                    if (opts.html) {
-                        return token.value;
-                    }
-                    else {
-                        return escapeHtml(token.value);
-                    }
-                }
+                switch (token.type) {
+                    case "text":
+                        return opts.html
+                            ? token.value
+                            : escapeHtml(token.value);
 
-                return kx.renderToString(token.value, {
-                    throwOnError: false,
-                    displayMode: false
-                });
+                    case "math-inline":
+                        return kx.renderToString(token.value, {
+                            throwOnError: false,
+                            displayMode: false,
+                        });
+
+                    case "math-display":
+                        return kx.renderToString(token.value, {
+                            throwOnError: false,
+                            displayMode: true,
+                        });
+                }
             })
             .join("");
     }
@@ -84,5 +104,4 @@ export function tex(input: string, opts: KatexOptions = defaultKatexOptions): st
         });
     }
 }
-
 

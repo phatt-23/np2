@@ -3,24 +3,19 @@
 <script lang="ts">
     import { Unsolvable } from "$lib/core/Unsolvable";
     import type { CertificateHCIRCUIT } from "$lib/solve/CertificateHCIRCUIT";
+    import CertRendererGraphPath from "./CertRendererGraphPath.svelte";
 
     type Props = {
         cert: CertificateHCIRCUIT | Unsolvable;
     };
 
-    const { cert }: Props = $props();
+    const { 
+        cert 
+    }: Props = $props();
 </script>
 
-<main>
-    <h2 class="dev">CertRenderer HCIRCUIT</h2>
-
-    {#if cert == Unsolvable}
+<CertRendererGraphPath {cert}>
+    {#snippet unsolvablePlaceholder()}
         <p>The graph doesn't contain a Hamiltonian circuit.</p>
-    {:else}
-        <ul>
-            {#each cert.path as node, i}
-                <li>{node.id}</li>
-            {/each}
-        </ul>
-    {/if}
-</main>
+    {/snippet}
+</CertRendererGraphPath>

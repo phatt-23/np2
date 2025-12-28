@@ -5,6 +5,7 @@
 	import cyCanvas from 'cytoscape-canvas';
 	import cytoscape from 'cytoscape';
     import localStorageKeys from '$lib/core/localStorageKeys';
+	import 'katex/dist/katex.min.css';
 
 	let { children } = $props();
 

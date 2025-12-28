@@ -146,8 +146,9 @@ export class Graph extends ProblemInstance {
     }
 
     public static fromString(text: string): Graph | ErrorMessage {
-        if (text.length == 0)
+        if (text.length == 0) {
             return "Cannot construct a graph from empty string";
+        }
 
         const lines = text.split('\n').map(x => x.trim()).filter(x => x.length).filter(onlyUnique);
         let graph = new Graph();
@@ -159,9 +160,10 @@ export class Graph extends ProblemInstance {
             
             // single node
             if (words.length == 1) {
-                const n = words;
+                const n = words[0];
                 graph.addNode({
                     id: NODE_ID_PREFIX + n,
+                    label: n,
                 });
             }
 
@@ -172,19 +174,39 @@ export class Graph extends ProblemInstance {
 
                 let w = undefined;
                 if (words.length == 3) {
-                    try {
-                        w = Number.parseFloat(words[2]);
-                    } catch (e) {
-                        return `On the line ${i}, couldn't parse the weight: '${words[2]}` +
-                            `Please enter a number (floating allowed)`;
+
+                    function isStringNumber(value: string): boolean {
+                        // Using Number constructor to attempt conversion
+                        for (const c of value) {
+                            if (
+                                c == '0' || c == '1' || c == '2' || c == '3' || 
+                                c == '4' || c == '5' || c == '6' || c == '7' ||
+                                c == '8' || c == '9' 
+                            ) {
+                                continue;
+                            }
+                            return false;
+                        }
+                        return true;
                     }
+
+                    if (!isStringNumber(words[2])) {
+                        return `
+                            Encountered illegal syntax on line ${i}. 
+                            Couldn't parse the weight "${words[2]}".
+                            Please enter an integer.
+                            The line: "${line}"
+                        `;
+                    }
+
+                    w = Number.parseFloat(words[2]);
                 }
 
                 const fromNodeId = NODE_ID_PREFIX + n1;
                 const toNodeId = NODE_ID_PREFIX + n2;
 
-                graph.addNode({ id: fromNodeId });
-                graph.addNode({ id: toNodeId });
+                graph.addNode({ id: fromNodeId, label: n1 });
+                graph.addNode({ id: toNodeId, label: n2 });
 
                 graph.addEdge({
                     id: EDGE_ID_PREFIX + `${fromNodeId}-${toNodeId}`,
@@ -192,6 +214,13 @@ export class Graph extends ProblemInstance {
                     to: toNodeId,
                     weight: w,
                 });
+            }
+
+            else {
+                return `
+                    Encountered illegal syntax on line ${i}. 
+                    Expected of these "{x}" or "{x} {y}" or "{x} {y} {w?}" on a single line, where {x} and {y} are node labels and {w?} is optional weight. 
+                    Instead got: "${line}"`;
             }
         }
 

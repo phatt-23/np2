@@ -6,12 +6,11 @@ Component that renders the graph.
 
 <script lang="ts">
     import cytoscape from "cytoscape";
+    import katex from "katex";
+    import { onMount } from "svelte";
     import { cytoscapeStyles } from "$lib/core/cytoscapeStyles";
     import type { Graph } from "$lib/instance/Graph";
     import type { CytoscapeLayout } from "./RendererGraph";
-    import { onMount } from "svelte";
-    import { getMathjaxSVG } from "$lib/core/svg";
-    import katex from "katex";
 
     type Props = {
         graph: Graph;
@@ -110,6 +109,7 @@ Component that renders the graph.
                 elem.style.position = 'absolute';
                 // elem.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
                 const texHtml = katex.renderToString(label);
+                // const texHtml = getMathjaxSVG(label);
                 elem.innerHTML = texHtml; 
 
                 labelCache!.set(label, elem);         
@@ -126,9 +126,18 @@ Component that renders the graph.
             elem.style.justifyContent = 'center';
             elem.style.alignContent = 'center';
             elem.style.transformOrigin = '0 0';
+            
+            // label below the node
+            // elem.style.transform = `
+            //     translate(${nodePos.x}px, ${nodePos.y}px)
+            //     translate(0px, ${nodeBox.h * 0.75}px)
+            //     translate(${-elemBox.width/2}px, ${-elemBox.height/2}px)
+            //     scale(${zoom})
+            // `;
+
+            // centered label in the node
             elem.style.transform = `
                 translate(${nodePos.x}px, ${nodePos.y}px)
-                translate(0px, ${nodeBox.h * 0.75}px)
                 translate(${-elemBox.width/2}px, ${-elemBox.height/2}px)
                 scale(${zoom})
             `;

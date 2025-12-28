@@ -128,16 +128,19 @@ export class ReducerHCYCLEtoHCIRCUIT extends Reducer<Graph, Graph> {
             const triplet: Record<string, GraphNode> = {
                 'in': {
                     id: HCYCLE_HCIRCUIT_ID.INCOMING_NODE_PREFIX + nodeName,
+                    label: `${nodeName}_{in}`,
                     position: inPos,
                     classes: n.classes
                 },
                 'gap': {
                     id: HCYCLE_HCIRCUIT_ID.GAP_NODE_PREFIX + nodeName,
+                    label: `${nodeName}_{gap}`,
                     position: gapPos,
                     classes: n.classes
                 },
                 'out': {
                     id: HCYCLE_HCIRCUIT_ID.OUTGOING_NODE_PREFIX + nodeName,
+                    label: `${nodeName}_{out}`,
                     position: outPos,
                     classes: n.classes
                 }

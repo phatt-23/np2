@@ -28,6 +28,7 @@ export class DecoderHCIRCUITtoHCYCLE implements Decoder<Graph, CertificateHCIRCU
             p = path[i];
             reconstructed.push({
                 id: NODE_ID_PREFIX + p,
+                label: p,
             });
         }
 

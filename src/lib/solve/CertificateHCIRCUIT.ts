@@ -2,14 +2,10 @@
 
 import Serializer from "$lib/core/Serializer";
 import type { GraphNode } from "$lib/instance/Graph";
-import type { Certificate } from "./Certificate";
+import type { CertificateGraphPath } from "./CertificateGraphPath";
 
 @Serializer.SerializableClass()
-export class CertificateHCIRCUIT implements Certificate {
-    public path: Array<GraphNode>;
-
-    public constructor(circuit: Array<GraphNode>) {
-        this.path = circuit;
+export class CertificateHCIRCUIT implements CertificateGraphPath {
+    public constructor(public path: Array<GraphNode>) {
     }
-
 }
