@@ -1,5 +1,5 @@
 {
-	"name": "np2-new-new",
+	"name": "np2",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
@@ -37,6 +37,7 @@
 		"class-transformer": "^0.5.1",
 		"cytoscape": "^3.33.1",
 		"cytoscape-canvas": "^3.0.1",
+		"dotenv": "^17.2.3",
 		"katex": "^0.16.27",
 		"mathjax": "^4.1.0",
 		"mathjax-full": "^3.2.1",

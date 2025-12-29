@@ -36,7 +36,7 @@
 		<h4>Notes</h4>
 		<ul>
 			<li>HCYCLE - "hamiltonovský cyklus", hamiltonian cycle in a <b>directed</b> graph</li>
-			<li>HCIRCUIT - "hamiltonovská kruznice", hamiltonian cycle in an <b>undirected</b> graph</li>
+			<li>HCIRCUIT - "hamiltonovská kružnice", hamiltonian cycle in an <b>undirected</b> graph</li>
 		</ul>
 	</div>
 

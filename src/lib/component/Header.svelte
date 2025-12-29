@@ -1,13 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/state';
     import { ROUTES } from '$lib/page/routes';
+	import { resolve } from '$app/paths';
 </script>
 
 {#snippet navItem(route: string, name: string)}
-    <li class="nav-item" aria-current={page.url.pathname === route ? 'page' : undefined}>
-        <a href={route}>{name}</a>
+    <li class="nav-item" aria-current={page.url.pathname === resolve(route) ? 'page' : undefined}>
+        <a href={resolve(route)}>{name}</a>
     </li>
 {/snippet}
+
+<!-- {page.url.pathname} -->
 
 <header>
 	<nav>

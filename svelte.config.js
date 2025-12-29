@@ -1,8 +1,14 @@
 // import adapter from '@sveltejs/adapter-auto';
 import adapter from '@sveltejs/adapter-static';
 
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { sveltePreprocess } from "svelte-preprocess";
+import dotenv from 'dotenv';
+
+dotenv.config({
+	debug: true,
+}); // load environment variables from .env
+
+const PUBLIC_BASE_PATH = process.env.PUBLIC_BASE_PATH ?? '';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -27,8 +33,11 @@ const config = {
 			assets: 'build',
 			fallback: undefined,
 			precompress: false,
-			strict: true
+			strict: true,
 		}),
+		paths: {
+			base: PUBLIC_BASE_PATH
+		},
 	}
 };
 
