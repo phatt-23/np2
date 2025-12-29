@@ -556,7 +556,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                         to:     NODE_ID_PREFIX + `${litId}`,
                         classes: 'false_in',
                     });
-                    
+
                     connLitLabels.push({
                         in: litId,
                         out: adjLitId,       
@@ -565,7 +565,6 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                     });
                 }
             });
-
 
 
             interSteps.push({

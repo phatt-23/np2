@@ -167,7 +167,7 @@ export class ReducerHCIRCUITtoTSP extends Reducer<Graph, Graph> {
                     Then, add an edge between each pair a vertices to create a complete graph.
                     
                     $$
-                        E = \\{ \\{ v_1, v_2 \\} | v_1, v_2 \\in V_0 \\}
+                        E = \\{ \\{ v_1, v_2 \\} \\mid v_1, v_2 \\in V_0 \\}
                     $$
 
                     The number of nodes in $G$ is $|V| = ${this.nodeCount}$, 
