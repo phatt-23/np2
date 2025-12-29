@@ -2,6 +2,8 @@
 // Created by phatt-23 on 11/10/2025
 //
 
+import type { Clause } from "$lib/instance/CNF3";
+
 export function onlyUnique(value: any, index: any, array: string | any[]) {
     return array.indexOf(value) === index;
 }
@@ -29,3 +31,5 @@ export function chunkBy<T>(x: T[], chunkSize: number) {
     chunks.push(currentX);
     return chunks;
 }
+
+export const clauseToTriplet = (c: Clause) => `( ${c.literals.map(l => (l.negated ? '\\lnot{}' : '') + l.varName).join(',')} )`;

@@ -87,7 +87,9 @@ export const cytoscapeStyles: Record<string, StylesheetStyle[]> = {
         },
         {
             selector: 'node.guarantee',  // mezi outgoing a incoming hranami
-            style: { 'opacity': 0.5 },
+            style: { 
+                'opacity': 0.5,
+            },
         },
         {
             selector: 'edge',

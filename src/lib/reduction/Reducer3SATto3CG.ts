@@ -1,6 +1,6 @@
 // Created by phatt-23 on 20/12/2025
 
-import { chunkBy } from "$lib/core/filters";
+import { chunkBy, clauseToTriplet } from "$lib/core/filters";
 import { CG3_ID, CNF3_ID, EDGE_ID_PREFIX } from "$lib/core/Id";
 import type { Clause, CNF3 } from "$lib/instance/CNF3";
 import { Graph, type GraphEdge, type GraphNode } from "$lib/instance/Graph";
@@ -16,7 +16,6 @@ const RED = `\\color{red}{red}`
 const GREEN = `\\color{green}{green}`
 const BLUE = `\\color{blue}{blue}`
 
-const clauseToTriplet = (c: Clause) => `( ${c.literals.map(l => (l.negated ? '\\lnot{}' : '') + l.varName).join(',')} )`;
 
 export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
 
@@ -377,7 +376,7 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
                     </p>
                     <p>
                         For some clause $\\kappa = (\\Alpha, \\Beta, \\Gamma)$, 
-                        where $\\Alpha$, $\\Beta$ and $\\Gamma$ are it's literals (they can be negated) 
+                        where $\\Alpha$, $\\Beta$ and $\\Gamma$ are its literals (they can be negated) 
                         and $\\alpha$, $\\beta$ and $\\gamma$ are the variables,
                         a clause gadget $G_{\\kappa} = (V_{\\kappa},E_{\\kappa})$ is defined as:
 
@@ -474,3 +473,4 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
         },
     };
 }
+

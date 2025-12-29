@@ -112,6 +112,10 @@ Created by phatt-23 on 12/10/2025
             {@render outInstRender(stepIndex)}
             
             <Katex inline html text={step.description}></Katex>
+
+            {#if stepIndex != (steps.length - 1)}
+                <hr />
+            {/if}
         {/each}
     {:else}
         {#if stepIndex < steps.length}
@@ -133,6 +137,11 @@ Created by phatt-23 on 12/10/2025
 </main>
 
 <style lang="sass">
+    hr
+        border: none
+        border-top: 1px solid global.$light-border-color
+        margin-top: 32px        
+
     .controls 
         display: flex
         justify-content: space-between
