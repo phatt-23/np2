@@ -1,7 +1,7 @@
 <!-- Created by phatt-23 on 12/10/2025 -->
 
 <script>
-	const reducesInPolyTimeTo = '&le;<sub>p</sub>';
+	const reducesInPolyTimeTo = '&rightarrow;';
 </script>
 
 <svelte:head>
@@ -11,24 +11,24 @@
 
 <main>
 	<h1>
-		NP-Complete problems 2
+		NP-Complete Problems 2
 	</h1>
 
 	<div class='desc'>
 		<p>
-			Showcasing reductions between these NP-complete problems:
+			Showcasing PTIME reductions between these NP-complete problems:
 		</p>
 
-		<ul>
-			<li>3SAT {@html reducesInPolyTimeTo} HCYCLE</li>
-			<ul>
+		<ul class="reduction-list">
+			<li>3-SAT {@html reducesInPolyTimeTo} HCYCLE</li>
+			<ul class="reduction-list">
 				<li>HCYCLE {@html reducesInPolyTimeTo} HCIRCUIT</li>
-				<ul>
+				<ul class="reduction-list">
 					<li>HCIRCUIT {@html reducesInPolyTimeTo} TSP</li>            
 				</ul>
 			</ul>
-			<li>3SAT {@html reducesInPolyTimeTo} SSP</li>
-			<li>3SAT {@html reducesInPolyTimeTo} 3CG</li>
+			<li>3-SAT {@html reducesInPolyTimeTo} SSP</li>
+			<li>3-SAT {@html reducesInPolyTimeTo} 3-CG</li>
 		</ul>
 	</div>
 
@@ -55,5 +55,8 @@ main
 .notes
 	display: flex
 	flex-direction: column
+
+.reduction-list 
+	list-style: none
 
 </style>

@@ -31,6 +31,7 @@
     import OutputInstanceCard from "$lib/component/red-page/OutputInstanceCard.svelte";
     import InputInstanceCard from "$lib/component/red-page/InputInstanceCard.svelte";
     import CertRendererHCYCLE from "$lib/component/CertRendererHCYCLE.svelte";
+    import { DESTINATIONS } from "$lib/page/destinations";
 
 
     let storage = useLocalStorage(
@@ -97,19 +98,20 @@
             cost = $redStore.inInstance.nodes.length;
         }
     });
+
+    const dest = DESTINATIONS['HCIRCUIT_TSP'];
 </script>
 
-
-
-
 <main>
-    <h1>HCIRCUIT to TSP reduction</h1>
+    <h1>
+        {@html dest.title}
+    </h1>
 
     <div class="card-list">
         
         <EditorCard {redStore} {isSolving} {solveMessage} {showStepper} {reduce} {solve}>
             {#snippet title()}
-                <h2>Graph Editor</h2>
+                <h2>Editor</h2>
             {/snippet}
             
             {#snippet editor()}

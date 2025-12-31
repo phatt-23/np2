@@ -9,6 +9,7 @@
     import CertRenderer3CG from "$lib/component/CertRenderer3CG.svelte";
     import CertRenderer3SAT from "$lib/component/CertRenderer3SAT.svelte";
     import Editor3CNF from "$lib/component/Editor3CNF.svelte";
+    import Katex from "$lib/component/Katex.svelte";
     import EditorCard from "$lib/component/red-page/EditorCard.svelte";
     import InputInstanceCard from "$lib/component/red-page/InputInstanceCard.svelte";
     import OutputInstanceCard from "$lib/component/red-page/OutputInstanceCard.svelte";
@@ -23,6 +24,7 @@
     import { Decoder3CGto3SAT } from "$lib/decode/Decoder3CGto3SAT";
     import { CNF3 } from "$lib/instance/CNF3";
     import { Graph } from "$lib/instance/Graph";
+    import { DESTINATIONS } from "$lib/page/destinations";
     import { useReductionController } from "$lib/page/useReductionController.svelte";
     import { Reducer3SATto3CG } from "$lib/reduction/Reducer3SATto3CG";
     import { Certificate3CG, type Coloring } from "$lib/solve/Certificate3CG";
@@ -103,16 +105,20 @@
             });
         }
     });
+
+    let dest = DESTINATIONS['3SAT_3CG'];
 </script>
 
 <main>
-    <h1>3-SAT to 3-CG reduction</h1>
+    <h1>
+        {@html dest.title}
+    </h1>
 
     <div class="card-list">
         
         <EditorCard {redStore} {isSolving} {solveMessage} {showStepper} {reduce} {solve}>
             {#snippet title()}
-                <h2>3-CNF Editor</h2>
+                <h2>Editor</h2>
             {/snippet}
             
             {#snippet editor()}

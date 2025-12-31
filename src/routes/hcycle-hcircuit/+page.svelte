@@ -21,6 +21,7 @@
     import { useLocalStorage } from "$lib/core/useLocalStorage.svelte";
     import { DecoderHCIRCUITtoHCYCLE } from "$lib/decode/DecoderHCIRCUITtoHCYCLE";
     import { Graph } from "$lib/instance/Graph";
+    import { DESTINATIONS } from "$lib/page/destinations";
     import { useReductionController } from "$lib/page/useReductionController.svelte";
     import { ReducerHCYCLEtoHCIRCUIT } from "$lib/reduction/ReducerHCYCLEtoHCIRCUIT";
     import { CertificateHCIRCUIT } from "$lib/solve/CertificateHCIRCUIT";
@@ -82,17 +83,22 @@
             });
         }
     });
+
+
+    const dest = DESTINATIONS['HCYCLE_HCIRCUIT'];
 </script>
 
 
 <main>
-    <h1>HCYCLE to HCIRCUIT reduction</h1>
+    <h1>
+        {@html dest.title}
+    </h1>
 
     <div class="card-list">
         
         <EditorCard {redStore} {isSolving} {solveMessage} {showStepper} {reduce} {solve}>
             {#snippet title()}
-                <h2>Graph Editor</h2>
+                <h2>Editor</h2>
             {/snippet}
             
             {#snippet editor()}

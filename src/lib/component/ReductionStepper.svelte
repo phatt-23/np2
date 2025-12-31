@@ -98,6 +98,15 @@ Created by phatt-23 on 12/10/2025
     </div>
 {/snippet}
 
+{#snippet title(title: string, stepIndex: number)}
+    <h3>
+        <Katex inline html text={`
+            Step #${stepIndex + 1}: ${title}
+        `}>
+        </Katex>
+    </h3>
+{/snippet}
+
 <main bind:this={mainContainer}>
     <h2 class="dev">Reduction Stepper</h2>
 
@@ -107,10 +116,9 @@ Created by phatt-23 on 12/10/2025
     {#if showAll}
         <!-- Loads everything (slow) -->
         {#each steps as step, stepIndex}
-            <h3>Step #{stepIndex + 1}: {step.title}</h3>
-            
+
+            {@render title(step.title, stepIndex)}
             {@render outInstRender(stepIndex)}
-            
             <Katex inline html text={step.description}></Katex>
 
             {#if stepIndex != (steps.length - 1)}
@@ -121,10 +129,8 @@ Created by phatt-23 on 12/10/2025
         {#if stepIndex < steps.length}
             {@const step = steps[stepIndex]}
 
-            <h3>Step #{stepIndex + 1}: {step.title}</h3>
-            
+            {@render title(step.title, stepIndex)}
             {@render outInstRender(stepIndex)}
-                
             {#key stepIndex}
                 <Katex inline html text={step.description}></Katex>
             {/key}

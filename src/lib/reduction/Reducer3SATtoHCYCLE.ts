@@ -569,7 +569,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
 
             interSteps.push({
                 id: `connect-clause-node-${i}`,
-                title: `Connect clause node $${clauseId}$ to variable row nodes`,
+                title: `Connect clause node $\\kappa_{${clauseId}}$ to variable row nodes`,
                 description: `
                     <p>
                         Clause node $${clauseLabel}$ represents the clause $${c.toTexString()}$.
@@ -583,15 +583,15 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                                         ${!l.negated ? (`
                                             isn't negated &mdash;
                                             
-                                            the <u>outgoing</u> node $${l.varName}_{${3 * idx}}$
+                                            the outgoing node $${l.varName}_{${3 * idx}}$
                                             is on the <b>left</b> of
-                                            the <u>incoming</u> node $${l.varName}_{${3 * idx + 1}}$.
+                                            the incoming node $${l.varName}_{${3 * idx + 1}}$.
                                         `) : (`
                                             is <i>negated</i> &mdash;
                                             
-                                            the <u>outgoing</u> node $${l.varName}_{${3 * idx + 1}}$
+                                            the outgoing node $${l.varName}_{${3 * idx + 1}}$
                                             is on the <b>right</b> of
-                                            the <u>incoming</u> node $${l.varName}_{${3 * idx}}$.
+                                            the incoming node $${l.varName}_{${3 * idx}}$.
                                         `)}
                                     </li>
                                 `;

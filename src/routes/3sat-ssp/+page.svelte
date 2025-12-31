@@ -23,6 +23,7 @@
     import { DecoderSSPto3SAT } from "$lib/decode/DecoderSSPto3SAT";
     import { CNF3 } from "$lib/instance/CNF3";
     import { type SSP } from "$lib/instance/SSP";
+    import { DESTINATIONS } from "$lib/page/destinations";
     import { useReductionController } from "$lib/page/useReductionController.svelte";
     import { Reducer3SATtoSSP } from "$lib/reduction/Reducer3SATtoSSP";
     import { Certificate3SAT } from "$lib/solve/Certificate3SAT";
@@ -96,18 +97,22 @@
             target = Number.parseInt($redStore.outInstance.target.join('')); 
         }
     });
+
+    const dest = DESTINATIONS['3SAT_SSP'];
 </script>
 
 
 
 <main>
-    <h1>3-SAT to SSP reduction</h1>
+    <h1>
+        {@html dest.title}
+    </h1>
 
     <div class="card-list">
         
         <EditorCard {redStore} {isSolving} {solveMessage} {showStepper} {reduce} {solve}>
             {#snippet title()}
-                <h2>3-CNF Editor</h2>
+                <h2>Editor</h2>
             {/snippet}
             
             {#snippet editor()}

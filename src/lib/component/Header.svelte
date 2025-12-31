@@ -1,26 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/state';
-    import { ROUTES } from '$lib/page/routes';
+    import { DESTINATIONS } from '$lib/page/destinations';
 	import { resolve } from '$app/paths';
 </script>
-
-{#snippet navItem(route: string, name: string)}
-    <li class="nav-item" aria-current={page.url.pathname === resolve(route) ? 'page' : undefined}>
-        <a href={resolve(route)}>{name}</a>
-    </li>
-{/snippet}
-
-<!-- {page.url.pathname} -->
 
 <header>
 	<nav>
 		<ul class="nav-item-list">
-            {@render navItem(ROUTES['HOME'],            'Home')}
-            {@render navItem(ROUTES['3SAT_HCYCLE'],     '3SAT to HCYCLE')}
-            {@render navItem(ROUTES['HCYCLE_HCIRCUIT'], 'HCYCLE to HCIRCUIT')}
-            {@render navItem(ROUTES['HCIRCUIT_TSP'],    'HCIRCUIT to TSP')}
-            {@render navItem(ROUTES['3SAT_SSP'],        '3SAT to SSP')}
-            {@render navItem(ROUTES['3SAT_3CG'],        '3SAT to 3CG')}
+            {#each Object.values(DESTINATIONS) as item}
+                <li class="nav-item" aria-current={page.url.pathname === resolve(item.route) ? 'page' : undefined}>
+                    <a href={resolve(item.route)}>{@html item.title}</a>
+                </li>
+            {/each}
 		</ul>
 	</nav>
 </header>

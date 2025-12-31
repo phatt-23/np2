@@ -34,6 +34,7 @@
     import InputInstanceCard from "$lib/component/red-page/InputInstanceCard.svelte";
     import OutputInstanceCard from "$lib/component/red-page/OutputInstanceCard.svelte";
     import StepsCard from "$lib/component/red-page/StepsCard.svelte";
+    import { DESTINATIONS } from "$lib/page/destinations";
 
 
     let storage = useLocalStorage(
@@ -86,17 +87,22 @@
             });
         }
     });
+
+
+    let dest = DESTINATIONS['3SAT_HCYCLE'];
 </script>
 
 
 <main>
-    <h1>3-SAT to HCYCLE reduction</h1>
+    <h1>
+        {@html dest.title}
+    </h1>
 
     <div class="card-list">
         
         <EditorCard {redStore} {isSolving} {solveMessage} {showStepper} {reduce} {solve}>
             {#snippet title()}
-                <h2>3-CNF Editor</h2>
+                <h2>Editor</h2>
             {/snippet}
             
             {#snippet editor()}
