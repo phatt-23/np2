@@ -41,6 +41,8 @@
     {#snippet body()}
         {#if $redStore.inInstance && !$redStore.inInstance.isEmpty()}
             {@render instance($redStore.inInstance!)}    
+        {:else}
+            <span class='placeholder'>Input instance will appear here.</span>
         {/if}
     {/snippet}
 

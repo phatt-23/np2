@@ -99,12 +99,14 @@ Created by phatt-23 on 12/10/2025
 {/snippet}
 
 {#snippet title(title: string, stepIndex: number)}
-    <h3>
-        <Katex inline html text={`
-            Step #${stepIndex + 1}: ${title}
-        `}>
-        </Katex>
-    </h3>
+    {#key stepIndex}
+        <h3>
+            <Katex inline html text={`
+                Step #${stepIndex + 1}: ${title}
+            `}>
+            </Katex>
+        </h3>
+    {/key}
 {/snippet}
 
 <main bind:this={mainContainer}>

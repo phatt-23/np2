@@ -80,10 +80,14 @@
 
 {#snippet cnfFormatView(cnfInstance: CNF3)}
     <div>
-        {#each cnfInstance.clauses as clause, i}
-            <Katex text={`\\kappa_{${i}} = ` + clause.toTexString()}>
-            </Katex>
-        {/each}
+        <ul>
+            {#each cnfInstance.clauses as clause, i}
+                <li>
+                    <Katex text={`\\kappa_{${i}} = ` + clause.toTexString()}>
+                    </Katex>
+                </li>
+            {/each}
+        </ul>
     </div>
 
     <div class="sat-table-wrapper">
