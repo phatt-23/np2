@@ -84,10 +84,6 @@ main
 	display: flex
 	flex-direction: column
 
-.notes
-	display: flex
-	flex-direction: column
-
 .reduction-list 
 	list-style: none
 

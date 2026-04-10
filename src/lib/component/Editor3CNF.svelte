@@ -127,11 +127,6 @@
     position: relative
     width: 100%
 
-.comment
-    // display: none
-    padding: 0
-    margin: 0
-
 textarea
     box-sizing: border-box
     width: 100%
