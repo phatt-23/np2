@@ -134,8 +134,6 @@ export class CNF3 extends ProblemInstance {
             for (let j = 0; j < words.length; j++) {
                 let word = words[j];
 
-                if (!isValidLabel(word))
-                    return `${errVariableLabel} The line: ${line}`;
 
                 // find out if its negated literal
                 const negated = word.startsWith("!");
@@ -151,6 +149,8 @@ export class CNF3 extends ProblemInstance {
                     return `Literal ${negated ? "!" : ""}${word} is invalid.`;
                 }
 
+                if (!isValidLabel(word))
+                    return `${errVariableLabel} The line: ${line}`;
 
                 const varId = CNF3_ID.VAR_PREFIX + j;
 

@@ -77,7 +77,8 @@
         "A variable name is a single word containing only letters (a–z, A–Z), digits (0–9), and the symbols _,\\^(){}.",
         "The symbol \\ must be followed by letters (e.g. \\alpha, \\beta^{\\gamma_5}).",
         "Variable names must not include spaces.",
-        "Any duplicate clauses will be removed automatically."
+        `A variable is negated by prefixing it with "!".`,
+        "Any duplicate clauses will be removed automatically.",
     ];
 
 </script>
