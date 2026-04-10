@@ -9,7 +9,22 @@ const selectedNode = {
     },
 };
 
-const solvedNode: StylesheetStyle[] = [
+const solvedEdge: StylesheetStyle[] = [
+    {
+        selector: 'edge.solved',  
+        style: {
+            'line-opacity': 0.25,
+        },
+    },
+    {
+        selector: 'edge.solved.used',  
+        style: {
+            'line-opacity': 1,
+        },
+    },
+];
+
+const solvedEdgeRedUsed: StylesheetStyle[] = [
     {
         selector: 'edge.solved',  
         style: {
@@ -20,6 +35,9 @@ const solvedNode: StylesheetStyle[] = [
         selector: 'edge.solved.used',  
         style: {
             'line-opacity': 1,
+            'line-color': 'red',
+            'target-arrow-color': 'red',
+            // 'width': 4,
         },
     },
 ];
@@ -48,7 +66,7 @@ export const cytoscapeStyles: Record<string, StylesheetStyle[]> = {
                 'width': 2
             }
         },
-        ...solvedNode,
+        ...solvedEdge,
         selectedNode,
     ],
     '3SAT-HCYCLE': [
@@ -155,7 +173,7 @@ export const cytoscapeStyles: Record<string, StylesheetStyle[]> = {
                 "segment-weights": [0.0, 1.0],
             },
         },
-        ...solvedNode,
+        ...solvedEdge,
         selectedNode,
     ],
     'UNDIRECTED': [
@@ -181,7 +199,7 @@ export const cytoscapeStyles: Record<string, StylesheetStyle[]> = {
                 'width': 2
             }
         },
-        ...solvedNode,
+        ...solvedEdgeRedUsed,
         selectedNode,
     ],
     'DIRECTED': [
@@ -211,7 +229,7 @@ export const cytoscapeStyles: Record<string, StylesheetStyle[]> = {
                 'width': 2
             },
         },
-        ...solvedNode,
+        ...solvedEdgeRedUsed,
         selectedNode,
     ],
     'HCIRCUIT': [
@@ -254,7 +272,7 @@ export const cytoscapeStyles: Record<string, StylesheetStyle[]> = {
                 'line-opacity': 0.4,
             }
         },
-        ...solvedNode,
+        ...solvedEdgeRedUsed,
         selectedNode,
     ],
     'TSP': [
@@ -294,11 +312,11 @@ export const cytoscapeStyles: Record<string, StylesheetStyle[]> = {
         {
             selector: 'edge.muted',
             style: {
-                'opacity': 0.4,
-                'line-opacity': 0.4,
+                'opacity': 0.75,
+                'line-opacity': 0.75,
             }
         },
-        ...solvedNode,
+        ...solvedEdgeRedUsed,
         selectedNode,
     ],
     '3SAT-3CG': [
@@ -356,7 +374,7 @@ export const cytoscapeStyles: Record<string, StylesheetStyle[]> = {
                 "width": 4,
             }
         },
-        ...solvedNode,
+        ...solvedEdge,
         selectedNode,
     ]
 };

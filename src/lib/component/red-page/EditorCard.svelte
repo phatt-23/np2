@@ -10,14 +10,15 @@
     import type { Certificate } from "$lib/solve/Certificate";
 
     type Props<I extends ProblemInstance,O extends ProblemInstance,IC extends Certificate,OC extends Certificate> = {
-        title: () => ReturnType<Snippet>,
-        editor: () => ReturnType<Snippet>,
-        redStore: Writable<ReductionStore<I,O,IC,OC>>,
-        isSolving: Writable<boolean>,
-        solveMessage: Writable<string>,
-        reduce: () => void,
-        solve: () => void,
-        showStepper: Writable<boolean>,
+        title: () => ReturnType<Snippet>;
+        editor: () => ReturnType<Snippet>;
+        redStore: Writable<ReductionStore<I,O,IC,OC>>;
+        isSolving: Writable<boolean>;
+        solveMessage: Writable<string>;
+        reduce: () => void;
+        solve: () => void;
+        showStepper: Writable<boolean>;
+        class?: string;
     };
 
     let { 
@@ -29,11 +30,12 @@
         reduce,
         solve,
         showStepper,
+        class: klass = '',
     }: Props<any,any,any,any> = $props();
 
 </script>
 
-<Card>
+<Card class={klass}>
     {#snippet header()}
         {@render title()}    
     {/snippet}

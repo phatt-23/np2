@@ -6,6 +6,7 @@ import { assert, type ErrorMessage } from "$lib/core/assert";
 import { onlyUnique } from "$lib/core/filters";
 import { CNF3_ID, type Id } from "$lib/core/Id";
 import Serializer from "$lib/core/Serializer";
+import { errLabelMessage, isValidLabel } from "./labelValidation";
 import { ProblemInstance } from "./ProblemInstance";
 
 export type VarName = string;
@@ -117,6 +118,8 @@ export class CNF3 extends ProblemInstance {
 
         let cnf = new CNF3();
 
+        const errVariableLabel = `Invalid variable name. ${errLabelMessage}`;
+
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
             const words = line.split(" ").map(word => word.trim()).filter(word => word.length);
@@ -131,16 +134,23 @@ export class CNF3 extends ProblemInstance {
             for (let j = 0; j < words.length; j++) {
                 let word = words[j];
 
+                if (!isValidLabel(word))
+                    return `${errVariableLabel} The line: ${line}`;
+
                 // find out if its negated literal
                 const negated = word.startsWith("!");
                 if (negated) {
                     word = word.replace("!", "");  // replace the first occurence
+                    if (word === ''){
+                        return `No variable name provided after negation sign (!).`;
+                    }
                 }
 
                 // verify that is only has allowed characters
                 if (word.includes("!") || word.includes("||") || word.includes("&&")) {
                     return `Literal ${negated ? "!" : ""}${word} is invalid.`;
                 }
+
 
                 const varId = CNF3_ID.VAR_PREFIX + j;
 

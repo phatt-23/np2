@@ -99,7 +99,7 @@
     </h1>
 
     <div class="card-list">
-        
+
         <EditorCard {redStore} {isSolving} {solveMessage} {showStepper} {reduce} {solve}>
             {#snippet title()}
                 <h2>Editor</h2>

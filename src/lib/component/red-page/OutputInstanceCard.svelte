@@ -9,38 +9,54 @@
     import type { Certificate } from "$lib/solve/Certificate";
 
     type Props<
-        I extends ProblemInstance, 
+        I extends ProblemInstance,
         O extends ProblemInstance,
-        IC extends Certificate, 
+        IC extends Certificate,
         OC extends Certificate,
     > = {
-        title: () => ReturnType<Snippet>,
-        redStore: Writable< ReductionStore<I,O,IC,OC> >,
-        instance: (inst: I) => ReturnType<Snippet>,
-        certificate: (cert: IC) => ReturnType<Snippet>,
-        certificatePlaceholder: () => ReturnType<Snippet>,
+        title: () => ReturnType<Snippet>;
+        redStore: Writable<ReductionStore<I, O, IC, OC>>;
+        instance: (inst: I) => ReturnType<Snippet>;
+        certificate: (cert: IC) => ReturnType<Snippet>;
+        certificatePlaceholder: () => ReturnType<Snippet>;
     };
 
-    let { 
+    let {
         title,
         instance,
         redStore,
         certificate,
         certificatePlaceholder,
-    }: Props<any,any,any,any> = $props();
+    }: Props<any, any, any, any> = $props();
 
+    async function copyToClipboard(text: string) {
+        try {
+            await navigator.clipboard.writeText(text);
+            console.debug("Copied successfully");
+        } catch (err) {
+            console.error("Failed to copy:", err);
+        }
+    }
 </script>
 
 <Card>
     {#snippet header()}
-        {@render title()}    
+        <div class="header">
+            {@render title()}
+
+            {#if $redStore.outInstance && !$redStore.outInstance.isEmpty()}
+                <button onclick={() => copyToClipboard($redStore.outInstance.asString())}>
+                    Copy to clipboard
+                </button>
+            {/if}
+        </div>
     {/snippet}
 
     {#snippet body()}
         {#if $redStore.outInstance && !$redStore.outInstance.isEmpty()}
-            {@render instance($redStore.outInstance!)}    
+            {@render instance($redStore.outInstance!)}
         {:else}
-            <span class='placeholder'>Reduced instance will appear here.</span>
+            <span class="placeholder">Reduced instance will appear here.</span>
         {/if}
     {/snippet}
 
@@ -53,3 +69,10 @@
         {/if}
     {/snippet}
 </Card>
+
+<style lang="sass">
+.header
+    display: flex
+    justify-content: space-between
+    align-items: center
+</style>

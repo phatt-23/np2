@@ -1,6 +1,8 @@
 <!-- Created by phatt-23 on 12/10/2025 -->
 
 <script>
+    import Katex from "$lib/component/Katex.svelte";
+
 	const reducesInPolyTimeTo = '&rightarrow;';
 </script>
 
@@ -32,13 +34,43 @@
 		</ul>
 	</div>
 
-	<div class="notes">
-		<h4>Notes</h4>
-		<ul>
-			<li>HCYCLE - "hamiltonovský cyklus", hamiltonian cycle in a <b>directed</b> graph</li>
-			<li>HCIRCUIT - "hamiltonovská kružnice", hamiltonian cycle in an <b>undirected</b> graph</li>
-		</ul>
-	</div>
+    <div>
+        <h3>
+            Problem definitions 
+        </h3>
+
+        <dl>
+            <dt>3-SAT</dt> 
+            <dd>
+                Can a boolean formula in 3-CNF be satfisfied?
+            </dd>
+            <dt>HCYCLE</dt>
+            <dd>
+                Does a directed graph contain a Hamiltonian cycle?
+            </dd>
+            <dt>HCIRCUIT</dt>
+            <dd>
+                Does an undirected graph contain a Hamiltonian cycle?
+            </dd>
+            <dt>TSP</dt>
+            <dd>
+                Given some positive integer <i>k</i>, 
+                does the undirected graph contain a Hamiltonian cycle 
+                with the cost less than or equal to <i>k</i>?
+            </dd>
+            <dt>3-CG</dt>
+            <dd>
+                Can an undirected graph be colored by 3 colors, 
+                such that there are no neighbouring nodes with the same color?
+            </dd>
+            <dt>SSP</dt>
+            <dd>
+                Given a set of numbers <i>S</i> and a target value <i>t</i>, 
+                can we pick a subset of numbers from <i>S</i>, 
+                such that their sum is equal to <i>t</i>?
+            </dd>
+        </dl>
+    </div>
 
 </main>
 

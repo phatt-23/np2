@@ -15,6 +15,8 @@ export abstract class ProblemInstance {
      * different context to the main thread and the classes are not registered.
      */
     public abstract toSerializedString(): string;
+
+    public abstract asString(): string;
 }
 
 

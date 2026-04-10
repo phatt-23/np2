@@ -7,12 +7,20 @@
         footer?: any,
         children?: any,
         hideFooter?: boolean;
+        class?: string;
     };
 
-    let { header, body, footer, children, hideFooter = false }: Props = $props();
+    let { 
+        header, 
+        body, 
+        footer, 
+        children, 
+        hideFooter = false,
+        class: klass = '',
+    }: Props = $props();
 </script>
 
-<main>
+<main class={klass}>
     {#if header}
         <div class="header">
             {@render header?.()}
@@ -41,6 +49,8 @@
         border-style: solid
         border-radius: 4pt
         border-color: global.$border-color
+
+        box-shadow: 0px 0px 4px 2px #eeeeee
 
     .header
         padding: 8px

@@ -158,14 +158,14 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
 
             ssp.addNumber({
                 id: trueId,
-                label: `${v}_T`,
+                label: `{${v}}_T`,
                 value: [...value],
                 used: false,
             });
 
             ssp.addNumber({
                 id: falseId,
-                label: `${v}_F`,
+                label: `{${v}}_F`,
                 value: [...value],
                 used: false,
             });

@@ -124,7 +124,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                  * that needs to be wired to the inbetween node.
                  */
                 const inbetweenNode = `${variables[i - 1]}_${v}`;
-                const label = `(${variables[i - 1]}, ${v})`;
+                const label = `(${variables[i - 1]},${v})`;
                 inbetweenLabels.push(label);
 
                 /**

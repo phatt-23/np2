@@ -30,6 +30,8 @@ Component that renders the graph.
         editable = false,
     }: Props = $props();
 
+    console.debug(style);
+
 
     let cy: cytoscape.Core; 
     let graphContainer: HTMLElement;

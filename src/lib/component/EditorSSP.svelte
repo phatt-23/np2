@@ -39,5 +39,4 @@
         <label for="numbersTextInput"></label>
         <input type="text" name="numbersTextInput" bind:value={numbersText} onchange={onTextChange}>
     </div>
-
 </main>

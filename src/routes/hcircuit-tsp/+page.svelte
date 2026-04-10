@@ -32,6 +32,7 @@
     import InputInstanceCard from "$lib/component/red-page/InputInstanceCard.svelte";
     import CertRendererHCYCLE from "$lib/component/CertRendererHCYCLE.svelte";
     import { DESTINATIONS } from "$lib/page/destinations";
+    import Katex from "$lib/component/Katex.svelte";
 
 
     let storage = useLocalStorage(
@@ -148,6 +149,9 @@
                 {/snippet}
 
                 {#snippet instance(inst)}
+                    <Katex displayMode text={`k = ${inst.nodes.length}`}>
+                    </Katex>
+
                     <RendererGraph 
                         graph={inst} 
                         style='TSP'

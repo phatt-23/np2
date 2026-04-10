@@ -8,56 +8,61 @@ export class DemoProvider {
     // Predefined demos for CNF3
     private static cnf3TextInput: Record<string, string> = {
         NO_SOLUTION: 
-            'x y z\n' +
-            '!x y z\n' +
-            'x !y z\n' +
-            '!x !y z\n' +
-            'x y !z\n' +
-            '!x y !z\n' +
-            'x !y !z\n' +
-            '!x !y !z\n',
-        BASIC:
-            'x y z\n' +
-            'a b c\n',
-        FALSE: `
-            !x !x !x
-            !y !y x
-            !x !x y
-            `,
-        FALSE_NOSOL: `
-            !x !x !x
-            !y !y x
-            !x !x y
-            x x x
-            `
+`x y z
+!x y z
+x !y z
+!x !y z
+x y !z
+!x y !z
+x !y !z
+!x !y !z
+`,
+        BASIC: 
+`x y z
+a b c
+`,
+        FALSE: 
+`!x !x !x
+!y !y x
+!x !x y
+`,
+        FALSE_NOSOL: 
+`!x !x !x
+!y !y x
+!x !x y
+x x x
+`,
         };
 
     private static graphTextInput : Record<string, string> = {
         CYCLE: 
-            '0 1\n' +
-            '1 2\n' +
-            '2 3\n' +
-            '3 4\n' +
-            '4 0\n',
+`0 1
+1 2
+2 3
+3 4
+4 0
+`,
         PATH:
-            '0 1\n' +
-            '1 2\n' +
-            '2 3\n' +
-            '3 4\n',
+`0 1
+1 2
+2 3
+3 4
+`,
         COMPLETE: 
-            '0 1\n' +
-            '1 2\n' +
-            '2 3\n' +
-            '3 4\n' +
+`0 1
+1 2
+2 3
+3 4
 
-            '0 2\n' +
-            '0 3\n' +
-            '0 4\n' +
+0 2
+0 3
+0 4
 
-            '1 3\n' +
-            '1 4\n' +
+1 3
+1 4
 
-            '2 4\n',
+2 4
+`,
     }
 
     /**

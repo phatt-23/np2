@@ -7,6 +7,7 @@ import Serializer from "$lib/core/Serializer";
 import { EDGE_ID_PREFIX, NODE_ID_PREFIX, PREFIX_AND_ID_DELIM, type Id } from "$lib/core/Id";
 import { assert, type ErrorMessage } from "$lib/core/assert";
 import { onlyUnique } from "$lib/core/filters";
+import { errLabelMessage, isValidLabel } from "./labelValidation";
 
 export type Position = {
     x: number;
@@ -147,8 +148,17 @@ export class Graph extends ProblemInstance {
     }
 
     public asString() : string {
-        const nodeLines = this.nodes.map(n => n.id.slice(NODE_ID_PREFIX.length)).join('\n');
-        const edgeLines = this.edges.map(e => e.from.slice(NODE_ID_PREFIX.length) + ' ' + e.to.slice(NODE_ID_PREFIX.length) + (e.weight != undefined ? ' ' + e.weight : '')).join('\n');
+        // const nodeLines = this.nodes.map(n => n.id.slice(NODE_ID_PREFIX.length)).join('\n');
+        const nodeLines = this.nodes.map(n => n.label!).join('\n');
+        // const edgeLines = this.edges.map(e => e.from.slice(NODE_ID_PREFIX.length) + ' ' + e.to.slice(NODE_ID_PREFIX.length) + (e.weight != undefined ? ' ' + e.weight : '')).join('\n');
+        const edgeLines = this.edges.map(e => 
+              this.nodes.find(n => n.id == e.from)!.label! 
+            + ' ' 
+            + this.nodes.find(n => n.id == e.to)!.label! 
+            + ' ' 
+            + (e.weight != undefined ? ' ' + e.weight : '')
+        ).join('\n');
+
         return nodeLines + '\n' + edgeLines + '\n';
     }
 
@@ -160,14 +170,20 @@ export class Graph extends ProblemInstance {
         const lines = text.split('\n').map(x => x.trim()).filter(x => x.length).filter(onlyUnique);
         let graph = new Graph();
 
+        const errNodeLabel = `Invalid node label. ${errLabelMessage}`;
+
         for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
+            const line = lines[i].trim();
 
             const words = line.split(" ").map(w => w.trim()).filter(w => w.length);
             
             // single node
             if (words.length == 1) {
                 const n = words[0];
+
+                if (!isValidLabel(n)) 
+                    return `${errNodeLabel} The line: ${line}`;
+
                 graph.addNode({
                     id: NODE_ID_PREFIX + n,
                     label: n,
@@ -179,22 +195,14 @@ export class Graph extends ProblemInstance {
                 const n1 = words[0];
                 const n2 = words[1];
 
+                if (!isValidLabel(n1) || !isValidLabel(n2)) 
+                    return `${errNodeLabel} The line: ${line}`;
+
                 let w = undefined;
                 if (words.length == 3) {
 
                     function isStringNumber(value: string): boolean {
-                        // Using Number constructor to attempt conversion
-                        for (const c of value) {
-                            if (
-                                c == '0' || c == '1' || c == '2' || c == '3' || 
-                                c == '4' || c == '5' || c == '6' || c == '7' ||
-                                c == '8' || c == '9' 
-                            ) {
-                                continue;
-                            }
-                            return false;
-                        }
-                        return true;
+                        return /^[0-9]+$/.test(value);
                     }
 
                     if (!isStringNumber(words[2])) {

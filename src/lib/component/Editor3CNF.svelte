@@ -6,6 +6,7 @@
     import type { ErrorMessage } from "$lib/core/assert";
     import { DemoProvider } from "$lib/demo/DemoProvider";
     import { CNF3 } from "$lib/instance/CNF3";
+    import Comments from "./Comments.svelte";
 
     const demos = DemoProvider.getTextInputs(CNF3);
 
@@ -58,21 +59,42 @@
         onTextChange();
     }
 
+    function handleKeydown(e: KeyboardEvent) {
+        if (e.key === "Escape") {
+            onTextChange();
+            (e.target as HTMLTextAreaElement).blur(); 
+        }
+    }
+
     $effect(() => {
         if (cnf) {
             text = cnf.asString()
         }
-    })
+    });
+
+    const comments = [
+        "Each line defines a clause. A clause consists of three variable names separated by spaces.",
+        "A variable name is a single word containing only letters (a–z, A–Z), digits (0–9), and the symbols _,\\^(){}.",
+        "The symbol \\ must be followed by letters (e.g. \\alpha, \\beta^{\\gamma_5}).",
+        "Variable names must not include spaces.",
+        "Any duplicate clauses will be removed automatically."
+    ];
+
 </script>
 
 <div class="editor">
     <h2 class="dev">CNF Editor</h2>
 
-    <p class="comment">Removes duplicate clauses automatically.</p>
+    <Comments {comments} />
 
     <div class="text-wrap">
 
-        <textarea bind:value={text} oninput={onTextInput} onchange={onTextChange} spellcheck="false">
+        <textarea 
+            bind:value={text} 
+            oninput={onTextInput} 
+            onchange={onTextChange} 
+            onkeydown={handleKeydown}
+            spellcheck="false">
         </textarea>
 
         <div class='input-actions'>

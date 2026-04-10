@@ -137,4 +137,10 @@ export class SSP extends ProblemInstance {
 
         return copy;
     }
+
+    public asString(): string {
+        return this.target.join('') 
+            + '\n\n' 
+            + this.numbers.map(x => Number.parseInt(x.value.join(''))).join('\n');
+    }
 }

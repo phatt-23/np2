@@ -104,7 +104,11 @@
             {#snippet editor()}
                 <EditorGraph
                     graph={$redStore.inInstance}
-                    onChange={(graph) => editorChanged(graph)}
+                    onChange={(graph) => { 
+                        if (graph) {
+                            editorChanged(graph)
+                        }
+                    }}
                     displayErrorMessages
                 />
             {/snippet}
