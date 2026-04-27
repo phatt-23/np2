@@ -20,6 +20,7 @@ export class DecoderHCYCLEto3SAT implements Decoder<Graph, CertificateHCYCLE, Ce
 
         for (let i = 0; i < path.length; i++) {
             const p = path[i].id;
+            // OLD:
             // examples of node names. 
             // n%t:some_name_1
             // n%t:some_other_name_1_1
@@ -27,11 +28,19 @@ export class DecoderHCYCLEto3SAT implements Decoder<Graph, CertificateHCYCLE, Ce
             // n%t:some_other_name_2_1
             // n%f:some_other_name_2_3
             
+            // NEW:
+            // examples of node names. 
+            // n%t:some_name_1^{(1)}
+            // n%t:some_other_name_1^{(1)}
+            // n%f:some_other_name_1^{(2)}
+            // n%t:some_other_name_2^{(1)}
+            // n%f:some_other_name_2^{(3)}
+
             if (p.startsWith(NODE_ID_PREFIX_TRUE)) {
                 const varName = p
                     .substring(
                         NODE_ID_PREFIX_TRUE.length, 
-                        p.lastIndexOf('_')
+                        p.lastIndexOf('^')
                     );
 
                 // set to true, only if it wasn't set before
@@ -43,7 +52,7 @@ export class DecoderHCYCLEto3SAT implements Decoder<Graph, CertificateHCYCLE, Ce
                 const varName = p
                     .substring(
                         NODE_ID_PREFIX_FALSE.length, 
-                        p.lastIndexOf('_')
+                        p.lastIndexOf('^')
                     );
 
                 if (!assignment.has(varName)) {

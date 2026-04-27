@@ -32,6 +32,7 @@
     import { ReductionStore } from "$lib/state/ReductionStore.svelte";
     import { WorkerResponseType, type WorkerRequest3CG, type WorkerResponse3CG } from "$lib/workers/types";
     import Worker3CGSolver from "$lib/workers/Worker3CGSolver?worker";
+    import { DEMOS } from "$lib/demo/3sat-3cg";
 
     let storage = useLocalStorage(
         localStorageKeys.LS_3SAT_3CG, 
@@ -126,6 +127,7 @@
                     cnf={$redStore.inInstance} 
                     onChange={(cnf) => editorChanged(cnf)} 
                     displayErrorMessages
+                    demos={DEMOS}
                 />
             {/snippet}
         </EditorCard>

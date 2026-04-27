@@ -171,7 +171,7 @@ export class ReducerHCIRCUITtoTSP extends Reducer<Graph, Graph> {
                     $$
 
                     The number of nodes in $G$ is $|V| = ${this.nodeCount}$, 
-                    which means there will be $ |E| = (${this.nodeCount} \\cdot ${this.nodeCount - 1}) / 2 = ${(this.nodeCount * (this.nodeCount - 1)) / 2} $ edges, 
+                    which means there must be $ |E| = (${this.nodeCount} \\cdot ${this.nodeCount - 1}) / 2 = ${(this.nodeCount * (this.nodeCount - 1)) / 2} $ edges, 
                     for the graph to be complete.
 
                     $$
@@ -205,7 +205,7 @@ export class ReducerHCIRCUITtoTSP extends Reducer<Graph, Graph> {
                 <p>
                     For every edge, that exists in the original instance $G_0$, assign the weight to 1.
                     Otherwise, assign some weight greater than 1.
-                    The function $w(e)$, assigning weights to edges in $E$, may be defined as:
+                    The function $w(e)$ for assigning weights to edges in $E$ may be defined as:
 
                     $$
                     \\begin{aligned}
@@ -226,13 +226,13 @@ export class ReducerHCIRCUITtoTSP extends Reducer<Graph, Graph> {
                 <p>
                     Now, the TSP problem can expressed by a question:
                         
-                    Does the graph $G=(V,E)$ contain a hamiltonian path $P$ of length $|V|$,  
+                    Does the graph $G=(V,E)$ contain a hamiltonian path $P$ of length $|V| + 1$,  
                     such that the cost of the traversed path $k_P$ is less than or equal to $k$?
 
                     In other words, does this statement hold?
 
                     $$
-                        k_P = \\sum_{i = 0}^{|V| - 2} w(\\{ P_i, P_{i + 1} \\}) \\leq k
+                        k_P = \\sum_{i = 0}^{|V|} w(\\{ P_i, P_{i + 1} \\}) \\leq k
                     $$
 
                     If so, the original graph $G_0$ contains a hamiltonian circuit, otherwise it doesn't.

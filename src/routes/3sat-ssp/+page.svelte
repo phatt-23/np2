@@ -31,6 +31,7 @@
     import { ReductionStore } from "$lib/state/ReductionStore.svelte";
     import { WorkerResponseType, type WorkerRequestSSP, type WorkerResponseSSP } from "$lib/workers/types";
     import WorkerSSPSolver from "$lib/workers/WorkerSSPSolver?worker";
+    import { DEMOS } from "$lib/demo/3sat-ssp";
 
 
     let storage = useLocalStorage(
@@ -120,6 +121,7 @@
                     cnf={$redStore.inInstance} 
                     onChange={(cnf) => editorChanged(cnf)} 
                     displayErrorMessages
+                    demos={DEMOS}
                 />
             {/snippet}
         </EditorCard>

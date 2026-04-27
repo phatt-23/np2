@@ -1,3 +1,4 @@
+import { chunkBy } from "$lib/core/filters";
 import { CLAUSE_FILLER_PREFIX_ONE, CLAUSE_FILLER_PREFIX_TWO, VARIABLE_FALSE_PREFIX, VARIABLE_TRUE_PREFIX } from "$lib/core/Id";
 import type { CNF3 } from "$lib/instance/CNF3";
 import { SSP, type SSPNumber } from "$lib/instance/SSP";
@@ -119,24 +120,22 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
                     We start out by defining the target sum $\\tau$. Then we define the numbers.
                 </p>
                 <p>
-                    All these numbers including the target sum $\\tau$ are $k = v + c$ digits long, 
-                    where $v$ is the number of variables 
-                    and $c$ is the number of clauses in the 3-CNF formula.
+                    All these numbers including the target sum $\\tau$ are $k = |\\mathcal{V}| + |\\mathcal{K}|$ digits long, 
+                    where $|\\mathcal{V}|$ is the number of variables 
+                    and $|\\mathcal{K}|$ is the number of clauses in the 3-CNF formula $\\Phi = (\\mathcal{V}, \\mathcal{K})$.
                     
-                    In this case, $k = ${this.V} + ${this.C} = ${this.K}$, 
-                    because $v = ${this.V}$ and $c = ${this.C}$.
+                    In this case, $k = |\\mathcal{V}| + |\\mathcal{K}| = ${this.V} + ${this.C} = ${this.K}$.
                 </p>
                 <p>
                     The target sum $\\tau$ is defined as:
                     $$
-                        \\tau = \\sum_{i = 0}^{${this.V}} (1 \\cdot 10^{i + ${this.C}}) 
-                              + \\sum_{i = 0}^{${this.C}} (3 \\cdot 10^{i})
+                        \\tau = \\sum_{i = 0}^{|\\mathcal{V}| - 1} (1 \\cdot 10^{|\\mathcal{K}| + i}) 
+                              + \\sum_{i = 0}^{|\\mathcal{K}| - 1} (3 \\cdot 10^{i})
                     $$ 
 
                     In this case, $\\tau = ${this.targetSum}$.
                 </p>
             `,  
-            inSnapshot: this.inInstance.copy(),
             outSnapshot: ssp.copy(),
         };
         
@@ -158,66 +157,72 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
 
             ssp.addNumber({
                 id: trueId,
-                label: `{${v}}_T`,
+                label: `${v}^{(T)}`,
                 value: [...value],
                 used: false,
             });
 
             ssp.addNumber({
                 id: falseId,
-                label: `{${v}}_F`,
+                label: `${v}^{(F)}`,
                 value: [...value],
                 used: false,
             });
         });
 
+        // AGENT: fix sentences to the most readable format, keep the double '\' marks dont modify the math notation
         const step: ReductionStep<CNF3, SSP> = {
             id: `create-var-numbers`,
             title: `Create variable numbers`,
             description: `
                 <p>
-                    Create two, at most $k$ digit long, numbers $\\nu_T$ and $\\nu_F$ for every variable $\\nu$ in the boolean formula.
+                    Create two, at most $k$ digit long, 
+                    numbers $v^{(T)}$ and $v^{(F)}$ for every variable $v \\in \\mathcal{V}(\\Phi)$.
                     These numbers enforce boolean assignment for every variable. 
-                    The final subset of numbers $S$ that sum up to $\\tau$ must include either $\\nu_T$, or $\\nu_F$.
-                    Choosing $\\nu_T$ means assigning $\\nu \\coloneqq T$, while choosing $\\nu_F$ means $\\nu \\coloneqq F$.
+                    The final subset of numbers $S$ that sums up to $\\tau$ must include either $v^{(T)}$, or $v^{(F)}$.
+                    Choosing $v^{(T)}$ means assigning $v \\coloneqq T$ while choosing $v^{(F)}$ means $v \\coloneqq F$.
                 </p>
                 <p>
-                    In this case we have $v = ${this.V}$ variables:
+                    In this case we have $|\\mathcal{V}| = ${this.V}$ variables:
+                    
+                    $$
+                    \\begin{aligned} 
+                        ${this.inInstance.variables.map(v => `${v}`).join(',')}
+                    \\end{aligned}
+                    $$
 
-                    <ul>
-                        ${this.inInstance.variables.map(v => `<li>$ ${v} $</li>`).join('')}
-                    </ul>
-
-                    There is $v = ${this.V}$ of them, therefore we will create $2v = ${2 * this.V}$ numbers 
+                    Therefore we will create $2|\\mathcal{V}| = ${2 * this.V}$ numbers 
                     and for now fill them with $k=${this.K}$ zeros.
 
                     $$
                     \\begin{aligned}
                         ${this.inInstance.variables.map(v => `
-                            ${v}_T &= ${numberArray.join('')} \\\\
-                            ${v}_F &= ${numberArray.join('')} \\\\
+                            ${v}^{(T)} &= ${numberArray.join('')} \\\\
+                            ${v}^{(F)} &= ${numberArray.join('')} \\\\
                         `).join('')}
                     \\end{aligned}
                     $$
                 </p>
                 <p>
-                    To enforce that we can choose either $\\nu_{i,T}$, or $\\nu_{i,F}$ of variable $\\nu_i$ for $i \\in [0, v]$, 
-                    we replace the $i$-th digit in the numbers $\\nu_{i,T}$ and $\\nu_{i,F}$ with one.
+                    To enforce that we can choose either $v_{i}^{(T)}$, or $v_{i}^{(F)}$ 
+                    of variable $v_i \\in \\mathcal{V}$ for $i \\in [0, |\\mathcal{V}|)$, 
+                    we set the $i$-th digit 
+                    (indexing from 0, left to right)
+                    in the numbers $v_{i}^{(T)}$ and $v_{i}^{(F)}$ to $1$.
 
                     $$
                     \\begin{aligned}
                         ${this.inInstance.variables.map(v => `
-                            ${v}_T &= ${this.lookup.get(VARIABLE_TRUE_PREFIX + v)?.join('')} \\\\
-                            ${v}_F &= ${this.lookup.get(VARIABLE_FALSE_PREFIX + v)?.join('')} \\\\
+                            ${v}^{(T)} &= ${this.lookup.get(VARIABLE_TRUE_PREFIX + v)?.join('')} \\\\
+                            ${v}^{(F)} &= ${this.lookup.get(VARIABLE_FALSE_PREFIX + v)?.join('')} \\\\
                         `).join('')}
                     \\end{aligned}
                     $$
 
-                    The first $v$ digits in the target sum $ \\tau = ${this.targetSum} $ can be achieved, 
-                    iff either $\\nu_T$, or $\\nu_F$ is present in the final subset $S$. 
+                    The first $|\\mathcal{V}|$ digits in the target sum $\\tau = ${this.targetSum}$ can be achieved, 
+                    iff either $v^{(T)}$, or $v^{(F)}$ of every variable $v$ is present in the final subset $S$. 
                 </p>
             `,  
-            inSnapshot: this.inInstance.copy(),
             outSnapshot: ssp.copy(),
         };
 
@@ -241,43 +246,51 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
             title: `Update variable numbers`,
             description: `
                 <p>
-                   In the 3-CNF formula, there is $C = ${this.C}$ clauses:
+                   In $\\Phi$, there ${this.C == 1 ? 'is' : 'are'} $|\\mathcal{K}| = ${this.C}$ clauses:
                    <ul>
                        ${this.inInstance.clauses.map(c => `<li>$ ${c.toTexString()} $</li>`).join('')}
                    </ul> 
                 </p>
                 <p>
                     To model these clauses being satisfied 
-                    by choosing either variable numbers $\\nu_T$, or $\\nu_F$, 
-                    we must first update these variable numbers we just created.
+                    by choosing either the variable number $v^{(T)}$, or $v^{(F)}$, 
+                    we must update these variable numbers we just created.
                 </p>
                 <p>
-                    For every clause $\\kappa_i$ for $i \\in [0, c]$ we will proceed like this:
-                        
-                    If $\\nu$ appears in the clause $\\kappa_i$ as a literal, 
-                    we replace the $(i + v)$-th digit with one
-                        for the number $\\nu_F$ if the literal is negated (appears as $\\lnot \\nu$), 
-                        otherwise we relace the digit for the number $\\nu_T$.
+                    For every clause $\\kappa_i \\in \\mathcal{K}$ for $i \\in [0, |\\mathcal{K}|)$ 
+                    we will proceed like this:
+                    <br /> 
+                    If $v$ appears in the clause $\\kappa_i$ as a literal, 
+                    we set the $(|\\mathcal{V}| + i)$-th digit to $1$
+                    <ul>
+                        <li>
+                            for the number $v^{(F)}$ if the literal is negated (appears in the clause as $\\lnot v$), 
+                        </li>
+                        <li>
+                            otherwise set the digit for the number $v^{(T)}$.
+                        </li>
+                    </ul>
                 </p>
                 <p>
                     $$
                     \\begin{aligned}
                         ${this.inInstance.variables.map(v => `
-                            ${v}_T &= ${this.lookup.get(VARIABLE_TRUE_PREFIX + v)?.join('')} \\\\
-                            ${v}_F &= ${this.lookup.get(VARIABLE_FALSE_PREFIX + v)?.join('')} \\\\
+                            ${v}^{(T)} &= ${this.lookup.get(VARIABLE_TRUE_PREFIX + v)?.join('')} \\\\
+                            ${v}^{(F)} &= ${this.lookup.get(VARIABLE_FALSE_PREFIX + v)?.join('')} \\\\
                         `).join('')}
                     \\end{aligned}
                     $$
                 </p>
                 <p>
-                    Now, choosing $\\nu_T$ and $\\nu_F$ will also affect the $j$-th digits of the target sum $\\tau$ for $j \\in [v, k)$.
+                    Now, choosing $v^{(T)}$ and $v^{(F)}$ will also affect the last $|\\mathcal{K}|$ digits,
+                    at indices $[|\\mathcal{V}|, k)$,
+                    of the target sum $\\tau$.
                     Namely, it will cause these digits to be greater than zero. 
-                    This corredsponds to a clause being satisfied. 
-                    If the $j$-th digit of $\\tau$, is greater than zero, $digit(\\tau, j) > 0$, 
-                    then the clause $\\kappa_{j - v}$ is satisfied. 
+                    This corredsponds to clauses being satisfied. 
+                    The $(|\\mathcal{V}| + i)$-th digit of $\\tau$ for $i \\in [0, |\\mathcal{K}|)$ 
+                    being greater than zero, means the clause $\\kappa_i$ is satisfied.
                 </p>
             `,  
-            inSnapshot: this.inInstance.copy(),
             outSnapshot: ssp.copy(),
         };
 
@@ -321,22 +334,25 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
             title: `Create buffer numbers`,
             description: `
                 <p>
-                    The $j$-th digits, where $j \\in [v,k)$, of the target sum $\\tau = ${this.targetSum}$, are all $3$.
+                    The $j$-th digits for $j \\in [|\\mathcal{V}|,k)$ of the target sum $\\tau = ${this.targetSum}$, 
+                    are all $3$.
+
                     With our current set of numbers, a $j$-th digit can be $3$ 
-                    iff we choose $\\nu_T$ and $\\nu_F$ 
-                    in such a way that a clause $\\kappa_{j - v}$ has all 3 of it's literals be evaluated to $True$.  
+                    iff we choose the numbers $v^{(T)}$ and $v^{(F)}$ 
+                    in such a way that a clause $\\kappa_{j - |\\mathcal{V}|}$ has all 3 of its literals be evaluated to $True$.  
                 </p>
                 <p>
-                    We know, however, that a clause $\\kappa_{j - v}$ is satisfied, 
+                    We know, however, that a clause $\\kappa_{j - |\\mathcal{V}|}$ is satisfied, 
                     if the $j$-th digit is greater than zero. 
-                    They don't need to achieve being $3$.  
+                    It doesn't have to be $3$.  
                 </p>
                 <p>
-                    Therefore, we add buffer numbers to so that all $j$-th digits greater than zero can achieve being $3$. 
-                    On the otherhand, we must prohibit $j$-th digit that's currently zero from being able to become $3$.  
+                    Therefore, we add <i>filler numbers</i> in such a way, 
+                    that all $j$-th digits greater than zero can achieve being $3$. 
+                    On the otherhand, we must prohibit $j$-th digits that are currently zero from being able to become $3$.  
                 </p>
                 <p>
-                    To achieve this, we add two buffer numbers, $\\kappa_{i,0}$ and $\\kappa_{i,1}$, for each clause $\\kappa_i$.
+                    To achieve this, we add two filler numbers, $\\kappa_{i,0}$ and $\\kappa_{i,1}$, for each clause $\\kappa_i$.
                     
                     $$
                         \\kappa_{i,0} = \\kappa_{i,1} = 10^{i}
@@ -352,9 +368,15 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
                     $$
 
                 </p>
-
+                <p>
+                    <!-- AGENT: uprav tento nove pridany odstavec -->
+                    Now, if the $j$-th digit is $1$, 
+                    then we can choose these filler numbers into the final set $S$ 
+                    to achieve 3 in the final sum matching the target sum $\\tau$.
+                    However, if $j$-th digit is $0$, then choosing these fillers numbers won't help 
+                    as we will be only able to achieve 2 in the final sum.
+                </p>
             `,  
-            inSnapshot: this.inInstance.copy(),
             outSnapshot: ssp.copy(),
         };
 
@@ -473,7 +495,7 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
                     </ul>
                 </p>
                 <p>
-                    For numbers <i>n<sub>v<sub>i</sub></sub></i> the <i>i</i>-th digits are set to 1.
+                    For numbers <i>n<sub>v<sub>i</sub></sub></i> the <i>i</i>-th digits are set to $1$.
                     <ul>
                         ${variables.map((v, i) => `
                             <li>
@@ -494,7 +516,7 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
                 <p>
                     For each clause, <i>c<sub>i</sub></i> with literals <i>a</i>, <i>b</i> and <i>c</i>, 
                     for the numbers corresponding to <i>a</i>, <i>b</i> and <i>c</i>,
-                    set the (i + number of variables)-th digit to 1.
+                    set the (i + number of variables)-th digit to $1$.
                 </p>
                 <p>
                     We have ${clauses.length} clauses: 
@@ -531,7 +553,7 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
                         <li>filler c<sub>i,1</sub></li>
                         <li>filler c<sub>i,2</sub></li>
                     </ul>
-                    both of the same value: number of ${k} digits with i-th digit set to 1.
+                    both of the same value: number of ${k} digits with i-th digit set to $1$.
 
                     <ul>
                         ${(() => {
@@ -549,9 +571,7 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
                     Set the target to ${ssp.target.join('')}.
                 </p>
             `,
-            inSnapshot: this.inInstance.copy(),
             outSnapshot: ssp.copy(),
-            mapping: {},
         });
 
 

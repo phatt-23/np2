@@ -35,6 +35,7 @@
     import OutputInstanceCard from "$lib/component/red-page/OutputInstanceCard.svelte";
     import StepsCard from "$lib/component/red-page/StepsCard.svelte";
     import { DESTINATIONS } from "$lib/page/destinations";
+    import { DEMOS } from "$lib/demo/3sat-hcycle";
 
 
     let storage = useLocalStorage(
@@ -110,6 +111,7 @@
                     cnf={$redStore.inInstance} 
                     onChange={(cnf) => editorChanged(cnf)} 
                     displayErrorMessages
+                    demos={DEMOS}
                 />
             {/snippet}
         </EditorCard>

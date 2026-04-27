@@ -132,7 +132,6 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
                     $$
                 </p>
             `,
-            inSnapshot: this.inInstance,
             outSnapshot: graph.copy(),
         }
 
@@ -283,7 +282,6 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
                     </ul>
                 </p>
             `,
-            inSnapshot: this.inInstance,
             outSnapshot: graph.copy(),
         };
 
@@ -425,7 +423,6 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
                         Since all 3 literals nodes are $${RED}$, this means that they all evaluate to $False$ and the clause $\\kappa$ is not satisfied.
                     </p>
                 `,
-                inSnapshot: this.inInstance,
                 outSnapshot: graph.copy(),
             }
         };

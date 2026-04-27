@@ -4,42 +4,39 @@
 
 <script lang="ts">
     import type { ErrorMessage } from "$lib/core/assert";
-    import { DemoProvider } from "$lib/demo/DemoProvider";
     import { CNF3 } from "$lib/instance/CNF3";
     import Comments from "./Comments.svelte";
-
-    const demos = DemoProvider.getTextInputs(CNF3);
 
     type Props = {
         cnf: CNF3 | null;
         onChange: (cnf: CNF3) => void;
         onWrongFormat?: (message: ErrorMessage) => void;
         displayErrorMessages?: boolean;
-    }
+        demos: Record<string, string>;
+    };
 
-    let { 
-        cnf, 
-        onChange, 
+    let {
+        cnf,
+        onChange,
         onWrongFormat,
+        demos,
         displayErrorMessages = false,
     }: Props = $props();
 
-    
-    let text = $state(cnf?.asString() ?? '');
-    let selectedDemo = $state('');
-    let errorMessage = $state('');
+    let text = $state(cnf?.asString() ?? "");
+    let selectedDemo = $state("");
+    let errorMessage = $state("");
 
     function onTextChange() {
         const result = CNF3.fromString(text);
 
         if (typeof result == "string") {
-            console.debug('wrong');
+            console.debug("wrong");
             onWrongFormat?.(result);
-        }
-        else {
+        } else {
             onChange?.(result);
         }
-    };
+    }
 
     function onTextInput() {
         if (!displayErrorMessages) {
@@ -50,7 +47,7 @@
         if (typeof result == "string") {
             errorMessage = result;
         } else {
-            errorMessage = '';
+            errorMessage = "";
         }
     }
 
@@ -62,25 +59,25 @@
     function handleKeydown(e: KeyboardEvent) {
         if (e.key === "Escape") {
             onTextChange();
-            (e.target as HTMLTextAreaElement).blur(); 
+            (e.target as HTMLTextAreaElement).blur();
         }
     }
 
     $effect(() => {
         if (cnf) {
-            text = cnf.asString()
+            text = cnf.asString();
         }
     });
 
     const comments = [
         "Each line defines a clause. A clause consists of three variable names separated by spaces.",
-        "A variable name is a single word containing only letters (a–z, A–Z), digits (0–9), and the symbols _,\\^(){}.",
-        "The symbol \\ must be followed by letters (e.g. \\alpha, \\beta^{\\gamma_5}).",
+        "A variable name is a single word containing only letters (<span>a–z</span>, <span>A–Z</span>), digits (<span>0–9</span>) " +
+            "and the symbols <span>_</span>, <span>,</span>, <span>\\</span>, <span>(</span>, <span>)</span>, <span>{</span>, <span>}</span>.",
+        "The symbol <span>\\</span> must be followed by letters (e.g. <span>\\alpha</span>, <span>\\beta_{\\gamma_5}</span>).",
         "Variable names must not include spaces.",
-        `A variable is negated by prefixing it with "!".`,
+        "A variable is negated by prefixing it with <span>!</span>.",
         "Any duplicate clauses will be removed automatically.",
     ];
-
 </script>
 
 <div class="editor">
@@ -90,17 +87,20 @@
 
     <div class="text-wrap">
 
-        <textarea 
-            bind:value={text} 
-            oninput={onTextInput} 
-            onchange={onTextChange} 
+        <textarea
+            bind:value={text}
+            oninput={onTextInput}
+            onchange={onTextChange}
             onkeydown={handleKeydown}
-            spellcheck="false">
+            spellcheck="false"
+        >
         </textarea>
 
-        <div class='input-actions'>
+        <div class="input-actions">
             <select onchange={handleSelect} bind:value={selectedDemo}>
-                <option disabled selected value="" hidden>-- choose demo --</option>
+                <option disabled selected value="" hidden
+                    >-- choose demo --</option
+                >
 
                 {#each Object.keys(demos) as demo}
                     <option value={demo}>{demo}</option>
@@ -109,7 +109,7 @@
         </div>
 
         {#if displayErrorMessages && errorMessage}
-            <div class='error-message'>
+            <div class="error-message">
                 <span>{errorMessage}</span>
             </div>
         {/if}

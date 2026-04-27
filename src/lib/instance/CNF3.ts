@@ -144,10 +144,10 @@ export class CNF3 extends ProblemInstance {
                     }
                 }
 
-                // verify that is only has allowed characters
-                if (word.includes("!") || word.includes("||") || word.includes("&&")) {
-                    return `Literal ${negated ? "!" : ""}${word} is invalid.`;
-                }
+                // // verify that is only has allowed characters
+                // if (word.includes("!") || word.includes("||") || word.includes("&&")) {
+                //     return `Literal ${negated ? "!" : ""}${word} is invalid.`;
+                // }
 
                 if (!isValidLabel(word))
                     return `${errVariableLabel} The line: ${line}`;

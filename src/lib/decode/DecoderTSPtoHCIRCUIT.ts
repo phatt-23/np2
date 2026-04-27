@@ -8,7 +8,7 @@ import { CertificateTSP } from "$lib/solve/CertificateTSP";
 import type { Decoder } from "./Decoder";
 
 export class DecoderTSPtoHCIRCUIT implements Decoder<Graph, CertificateHCIRCUIT, CertificateTSP> {
-    decode(outInstance: Graph, outCert: CertificateHCIRCUIT): CertificateTSP {
+    decode(_outInstance: Graph, outCert: CertificateHCIRCUIT): CertificateTSP {
         return new CertificateTSP(outCert.path);
     }
 }

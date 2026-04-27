@@ -36,9 +36,9 @@ export class DecoderHCIRCUITtoHCYCLE implements Decoder<Graph, CertificateHCIRCU
     }
 
     private nodePrefixes = [
-        [HCYCLE_HCIRCUIT_ID.INCOMING_NODE_PREFIX, '_{i}'], 
-        [HCYCLE_HCIRCUIT_ID.OUTGOING_NODE_PREFIX, '_{o}'], 
-        [HCYCLE_HCIRCUIT_ID.GAP_NODE_PREFIX, '_{b}']
+        [HCYCLE_HCIRCUIT_ID.INCOMING_NODE_PREFIX, '^{(i)}'], 
+        [HCYCLE_HCIRCUIT_ID.OUTGOING_NODE_PREFIX, '^{(o)}'], 
+        [HCYCLE_HCIRCUIT_ID.GAP_NODE_PREFIX, '^{(b)}']
     ];
 
     private getNodeId(node: GraphNode) {

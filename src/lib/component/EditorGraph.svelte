@@ -2,23 +2,22 @@
 
 <script lang="ts">
     import type { ErrorMessage } from "$lib/core/assert";
-    import { DemoProvider } from "$lib/demo/DemoProvider";
     import { Graph } from "$lib/instance/Graph";
     import Comments from "./Comments.svelte";
-
-    const demos = DemoProvider.getTextInputs(Graph);
 
     type Props = {
         graph: Graph | null,
         onChange: (graph: Graph) => void;
         onWrongFormat?: (msg: ErrorMessage) => void;
         displayErrorMessages?: boolean;
+        demos: Record<string, string>;
     }
 
     let { 
         graph, 
         onChange, 
         onWrongFormat,
+        demos,
         displayErrorMessages = false,
     } : Props = $props();
 
@@ -72,8 +71,9 @@
 
     const comments = [
         "Write each entry on a new line. Each entry defines either a node, or an edge.",
-        "A node is a single word containing only letters (a–z, A–Z), digits (0–9), and the symbols _,\\^(){}.",
-        "The symbol \\ must be followed by letters (e.g. \\alpha, \\beta^{\\gamma_5}).",
+        "A node is a single word containing only letters (<span>a–z</span>, <span>A–Z</span>), digits (<span>0–9</span>) " +
+            "and the symbols <span>_</span>, <span>,</span>, <span>\\</span>, <span>(</span>, <span>)</span>, <span>{</span>, <span>}</span>.",
+        "The symbol <span>\\</span> must be followed by letters (e.g. <span>\\alpha</span>, <span>\\beta_{\\gamma_5}</span>).",
         "Node names must not include spaces.",
         "To define an edge, write two node names separated by a space.",
         "Any duplicate entries will be removed automatically.",

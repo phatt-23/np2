@@ -9,7 +9,7 @@ import type { CertificateSSP } from "$lib/solve/CertificateSSP";
 import type { Decoder } from "./Decoder";
 
 export class DecoderSSPto3SAT implements Decoder<SSP, CertificateSSP, Certificate3SAT> {
-    decode(outInstance: SSP, outCert: CertificateSSP): Certificate3SAT {
+    decode(_outInstance: SSP, outCert: CertificateSSP): Certificate3SAT {
         const assignment = new Map<VarName, TriBool>()
 
         for (const sspNumber of outCert.numbers) {

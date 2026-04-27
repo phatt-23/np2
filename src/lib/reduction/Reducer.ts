@@ -17,8 +17,7 @@ export abstract class Reducer<
     I extends ProblemInstance, 
     O extends ProblemInstance,
 > {
-    constructor(public inInstance: I) {
-    }
+    constructor(public inInstance: I) {}
 
     public reduce(): ReductionResult<I, O> {
         if (this.inInstance.isEmpty()) {
@@ -28,5 +27,8 @@ export abstract class Reducer<
         return result;
     }
 
+    /*
+    * Implemented by derived classes.
+    */
     protected abstract doReduce(): ReductionResult<I, O>;
 }

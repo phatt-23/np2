@@ -33,6 +33,7 @@
     import CertRendererHCYCLE from "$lib/component/CertRendererHCYCLE.svelte";
     import { DESTINATIONS } from "$lib/page/destinations";
     import Katex from "$lib/component/Katex.svelte";
+    import { DEMOS } from "$lib/demo/hcircuit-tsp";
 
 
     let storage = useLocalStorage(
@@ -120,6 +121,7 @@
                     graph={$redStore.inInstance}
                     onChange={(graph) => editorChanged(graph)}
                     displayErrorMessages
+                    demos={DEMOS}
                 />
             {/snippet}
         </EditorCard>

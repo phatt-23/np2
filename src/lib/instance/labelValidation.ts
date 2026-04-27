@@ -1,10 +1,10 @@
 // 2026-04-10
 
-export const errLabelMessage = `Use only letters, digits, and the symbols _^,\\(){}. Every \\ must be followed by letters (e.g. \\alpha).`;
+export const errLabelMessage = `Use only letters, digits, and the symbols _,\\(){}. Every \\ must be followed by letters (e.g. \\alpha).`;
 
 export function isValidLabel(value: string): boolean {
     // only allowed characters overall
-    if (!/^[a-zA-Z0-9_\\^(){}]+$/.test(value)) {
+    if (!/^[a-zA-Z0-9_\\,(){}]+$/.test(value)) {
         return false;
     }
 

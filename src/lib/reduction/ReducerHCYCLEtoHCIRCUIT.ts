@@ -42,9 +42,9 @@ export class ReducerHCYCLEtoHCIRCUIT extends Reducer<Graph, Graph> {
         const steps: ReductionStep<Graph, Graph>[] = [];
 
         const step1 = this.createNodeTriplets();
-        steps.push(...step1.steps);
-
         const step2 = this.connectEdges(step1.graph.copy());
+
+        steps.push(...step1.steps);
         steps.push(...step2.steps);
         
         const outInstance = step2.graph;
@@ -75,19 +75,19 @@ export class ReducerHCYCLEtoHCIRCUIT extends Reducer<Graph, Graph> {
             const triplet: Record<string, GraphNode> = {
                 'in': {
                     id: HCYCLE_HCIRCUIT_ID.INCOMING_NODE_PREFIX + n.id,
-                    label: `${n.label}_{i}`,
+                    label: `${n.label}^{(i)}`,
                     position: inPos,
                     classes: n.classes
                 },
                 'gap': {
                     id: HCYCLE_HCIRCUIT_ID.GAP_NODE_PREFIX + n.id,
-                    label: `${n.label}_{b}`,
+                    label: `${n.label}^{(b)}`,
                     position: gapPos,
                     classes: n.classes
                 },
                 'out': {
                     id: HCYCLE_HCIRCUIT_ID.OUTGOING_NODE_PREFIX + n.id,
-                    label: `${n.label}_{o}`,
+                    label: `${n.label}^{(o)}`,
                     position: outPos,
                     classes: n.classes
                 }
@@ -115,23 +115,23 @@ export class ReducerHCYCLEtoHCIRCUIT extends Reducer<Graph, Graph> {
             description: `
                 <p> 
                     For every node $v \\in V_0$ of the original graph $G_0 = (V_0,E_0)$,
-                    create three nodes - $v_{i}$, $v_{o}$ and $v_{b}$. 
+                    create three nodes $v^{(i)}$, $v^{(o)}$ and $v^{(b)}$. 
                     Each represents a different attribute of the node $v$:
                     
                     <ul>
                         <li>
-                            $v_{i}$ is the incoming end,
+                            $v^{(i)}$ is the incoming end,
                         </li>
                         <li>
-                            $v_{o}$ is the outgoing end,
+                            $v^{(o)}$ is the outgoing end,
                         </li>
                         <li>
-                            and $v_{b}$ serves as a bridge between the incoming and outgoing ends. 
+                            and $v^{(b)}$ serves as a bridge between the incoming and outgoing ends. 
                         </li>
                     </ul>
                 </p>
                 <p>
-                    Connect the incoming node $v_i$ and the outgoing node $v_o$ with the bridge node $v_b$.
+                    Connect the incoming node $v^{(i)}$ and the outgoing node $v^{(o)}$ with the bridge node $v^{(b)}$.
                 </p>
                 <p>
                     For this particular graph there will be $|V_0| = ${this.nodeCount}$ node ${this.nodeCount == 1 ? 'triplet' : 'triplets'}.
@@ -154,15 +154,13 @@ export class ReducerHCYCLEtoHCIRCUIT extends Reducer<Graph, Graph> {
                     $$
                     \\begin{aligned}
                         ${this.inInstance.nodes.map(n => `
-                            ${n.label} & \\rightarrow (${n.label}_i, ${n.label}_b, ${n.label}_o) \\\\
+                            ${n.label} & \\rightarrow (${n.label}^{(i)}, ${n.label}^{(b)}, ${n.label}^{(o)}) \\\\
                         `).join('')}
                     \\end{aligned}
                     $$
                 </p>
             `,
-            inSnapshot: this.inInstance.copy(),
             outSnapshot: graph.copy(),
-            mapping: {},
         });
 
         return { graph, steps };
@@ -201,7 +199,7 @@ export class ReducerHCYCLEtoHCIRCUIT extends Reducer<Graph, Graph> {
             description: `
                 <p> 
                     For every edge $\\{a,b\\} \\in E_0$ from the original graph $G_0$,
-                    connect the nodes $a_o$ and $b_i$ in the reduced graph $G$.
+                    connect the nodes $a^{(o)}$ and $b^{(i)}$ in the reduced graph $G$.
                 </p>
                 <p>
                     In this particular case, since:
@@ -225,14 +223,15 @@ export class ReducerHCYCLEtoHCIRCUIT extends Reducer<Graph, Graph> {
 
                     $$
                     \\begin{aligned}
-                        ${edgesConns.map(conn => `\\{ ${conn.from.label}_o, ${conn.to.label}_i \\}`).join(' \\\\ ')}
+                        ${
+                            chunkBy(edgesConns.map(conn => `\\{ ${conn.from.label}^{(o)}, ${conn.to.label}^{(i)} \\}`), 5)
+                                .join(' \\\\ ')
+                        }
                     \\end{aligned}
                     $$
                 </p>
             `,
-            inSnapshot: this.inInstance.copy(),
             outSnapshot: graph.copy(),
-            mapping: {},
         });
 
         return { graph, steps };

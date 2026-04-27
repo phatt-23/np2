@@ -14,12 +14,18 @@ import {
     SOURCE_NODE_ID,
     TARGET_NODE_ID
 } from "$lib/core/Id";
-import type { Clause, CNF3, Literal } from "$lib/instance/CNF3";
+import type { CNF3, Literal } from "$lib/instance/CNF3";
 import { Graph, type GraphEdge, type GraphNode } from "$lib/instance/Graph";
 import { Reducer, type ReductionResult } from "./Reducer";
 import type { ReductionStep } from "./ReductionStep";
 
-type ReductionPartResult = { graph: Graph, interSteps: ReductionStep<CNF3, Graph>[] }
+type ReductionPartialResult = { 
+    graph: Graph, 
+    interSteps: ReductionStep<CNF3, Graph>[] 
+}
+
+const SOURCE_NODE_LABEL = `\\alpha^{(source)}`;
+const TARGET_NODE_LABEL = `\\beta^{(target)}`;
 
 export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
     private rowNodeCount: number;
@@ -65,7 +71,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
         }
     }
 
-    private createVarGadgets(): ReductionPartResult {
+    private createVarGadgets(): ReductionPartialResult {
         /**
          * Let k = number of clauses.
          */
@@ -97,7 +103,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                  */
                 secondGraph.addNode({ 
                     id: NODE_ID_PREFIX_SPECIAL + SOURCE_NODE_ID, 
-                    label: `\\alpha`,
+                    label: SOURCE_NODE_LABEL, 
                     position: { x: 0, y: i * this.yDist - this.yDist/2 },
                     classes: 'source'
                 }); 
@@ -106,15 +112,15 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                  * Add edges from source to row ends of this first variable.
                  */
                 secondGraph.addEdge({ 
-                    id:     EDGE_ID_PREFIX + `${SOURCE_NODE_ID}-${v}_1`, 
+                    id:     EDGE_ID_PREFIX + `${SOURCE_NODE_ID}-${v}^{(1)}`, 
                     from:   NODE_ID_PREFIX_SPECIAL + `${SOURCE_NODE_ID}`, 
-                    to:     NODE_ID_PREFIX_TRUE + `${v}_1`, 
+                    to:     NODE_ID_PREFIX_TRUE + `${v}^{(1)}`, 
                     classes: 'muted',
                 });
                 secondGraph.addEdge({ 
-                    id:     EDGE_ID_PREFIX + `${SOURCE_NODE_ID}-${v}_${this.rowNodeCount}`, 
+                    id:     EDGE_ID_PREFIX + `${SOURCE_NODE_ID}-${v}^{(${this.rowNodeCount})}`, 
                     from:   NODE_ID_PREFIX_SPECIAL + `${SOURCE_NODE_ID}`, 
-                    to:     NODE_ID_PREFIX_FALSE + `${v}_${this.rowNodeCount}`,
+                    to:     NODE_ID_PREFIX_FALSE + `${v}^{(${this.rowNodeCount})}`,
                     classes: 'muted',
                 });
 
@@ -123,7 +129,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                  * For other variables, there is layer above it 
                  * that needs to be wired to the inbetween node.
                  */
-                const inbetweenNode = `${variables[i - 1]}_${v}`;
+                const inbetweenNode = `${variables[i - 1]}^{(${v})}`;
                 const label = `(${variables[i - 1]},${v})`;
                 inbetweenLabels.push(label);
 
@@ -142,14 +148,14 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                  */ 
                 const prevVar = variables[i - 1];
                 secondGraph.addEdge({ 
-                    id:     EDGE_ID_PREFIX + `${prevVar}_1-${inbetweenNode}`, 
-                    from:   NODE_ID_PREFIX_TRUE + `${prevVar}_1`, 
+                    id:     EDGE_ID_PREFIX + `${prevVar}^{(1)}-${inbetweenNode}`, 
+                    from:   NODE_ID_PREFIX_TRUE + `${prevVar}^{(1)}`, 
                     to:     NODE_ID_PREFIX_INBETWEEN + inbetweenNode,
                     classes: 'muted'
                 });
                 secondGraph.addEdge({ 
-                    id:     EDGE_ID_PREFIX + `${prevVar}_${this.rowNodeCount}-${inbetweenNode}`, 
-                    from:   NODE_ID_PREFIX_FALSE + `${prevVar}_${this.rowNodeCount}`, 
+                    id:     EDGE_ID_PREFIX + `${prevVar}^{(${this.rowNodeCount})}-${inbetweenNode}`, 
+                    from:   NODE_ID_PREFIX_FALSE + `${prevVar}^{(${this.rowNodeCount})}`, 
                     to:     NODE_ID_PREFIX_INBETWEEN + inbetweenNode,
                     classes: 'muted'
                 });
@@ -158,15 +164,15 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                  * Connect this inbetween node to current variable's row ends.
                  */ 
                 secondGraph.addEdge({ 
-                    id:     EDGE_ID_PREFIX + `${inbetweenNode}-${v}_1`, 
+                    id:     EDGE_ID_PREFIX + `${inbetweenNode}-${v}^{(1)}`, 
                     from:   NODE_ID_PREFIX_INBETWEEN + `${inbetweenNode}`,
-                    to:     NODE_ID_PREFIX_TRUE + `${v}_1`, 
+                    to:     NODE_ID_PREFIX_TRUE + `${v}^{(1)}`, 
                     classes: 'muted'
                 });
                 secondGraph.addEdge({ 
-                    id:     EDGE_ID_PREFIX + `${inbetweenNode}-${v}_${this.rowNodeCount}`, 
+                    id:     EDGE_ID_PREFIX + `${inbetweenNode}-${v}^{(${this.rowNodeCount})}`, 
                     from:   NODE_ID_PREFIX_INBETWEEN + `${inbetweenNode}`,
-                    to:     NODE_ID_PREFIX_FALSE + `${v}_${this.rowNodeCount}`, 
+                    to:     NODE_ID_PREFIX_FALSE + `${v}^{(${this.rowNodeCount})}`, 
                     classes: 'muted'
                 });
             }
@@ -175,10 +181,10 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
              * Create row nodes and connect them bidirectionally.
              */
             for (let j = 1; j <= this.rowNodeCount - 1; j++) {
-                const current = `${v}_${j}`;
-                const currentLabel = `${v}_{${j}}`;
-                const next = `${v}_${j + 1}`;
-                const nextLabel = `${v}_{${j + 1}}`;
+                const current = `${v}^{(${j})}`;
+                const currentLabel = `${v}^{(${j})}`;
+                const next = `${v}^{(${j + 1})}`;
+                const nextLabel = `${v}^{(${j + 1})}`;
 
                 let classes = ''; 
                 let currentPrefix = NODE_ID_PREFIX;
@@ -253,7 +259,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                  */
                 secondGraph.addNode({ 
                     id: NODE_ID_PREFIX_SPECIAL + TARGET_NODE_ID,
-                    label: `\\beta`,
+                    label: TARGET_NODE_LABEL,
                     position: { 
                         x: 0, 
                         y: i * this.yDist + this.yDist/2
@@ -265,14 +271,14 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                  * Connect the row ends to the target.
                  */
                 secondGraph.addEdge({ 
-                    id:     EDGE_ID_PREFIX + `${v}_1-${TARGET_NODE_ID}`,
-                    from:   NODE_ID_PREFIX_TRUE + `${v}_1`,
+                    id:     EDGE_ID_PREFIX + `${v}^{(1)}-${TARGET_NODE_ID}`,
+                    from:   NODE_ID_PREFIX_TRUE + `${v}^{(1)}`,
                     to:     NODE_ID_PREFIX_SPECIAL + `${TARGET_NODE_ID}`,
                     classes: 'muted',
                 });
                 secondGraph.addEdge({ 
-                    id:     EDGE_ID_PREFIX + `${v}_${this.rowNodeCount}-${TARGET_NODE_ID}`,
-                    from:   NODE_ID_PREFIX_FALSE + `${v}_${this.rowNodeCount}`,
+                    id:     EDGE_ID_PREFIX + `${v}^{(${this.rowNodeCount})}-${TARGET_NODE_ID}`,
+                    from:   NODE_ID_PREFIX_FALSE + `${v}^{(${this.rowNodeCount})}`,
                     to:     NODE_ID_PREFIX_SPECIAL + `${TARGET_NODE_ID}`,
                     classes: 'muted',
                 });
@@ -295,20 +301,23 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
             }  
         });
 
+
         interSteps.push({
             id: `create-variable-gadgets`,
             title: `Create variable gadgets`,
             description: `
                 <p>
-                    Let $\\Phi = (\\Nu, \\Kappa)$ be the input boolean formula, where $\\Nu$ is the set of variables and $\\Kappa$ is the set of clauses.
+                    Let $\\Phi = (\\mathcal{V}, \\mathcal{K})$ 
+                    be the input boolean formula, 
+                    where $\\mathcal{V}$ is the set of variables and $\\mathcal{K}$ is the set of clauses.
 
                     $$
-                        \\Nu = \\{ ${this.inInstance.variables.join(',')} \\}
+                        \\mathcal{V} = \\{ ${this.inInstance.variables.join(',')} \\}
                     $$
 
                     $$
                     \\begin{aligned}
-                        \\Kappa = \\{ 
+                        \\mathcal{K} = \\{ 
                             ${ 
                                 chunkBy(this.inInstance.clauses.map(c => clauseToTriplet(c)), 3)
                                     .map(x => `& ${x.join(',')}`)
@@ -319,51 +328,50 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                     $$
                 </p>
                 <p>
-                    For every variable $\\nu \\in \\Nu$, we create a row variable gadget $G_{\\nu} = (V_{\\nu}, E_{\\nu})$.
-                    This gadget consists of $ k = ${this.rowNodeCount} $ row nodes.            
+                    For every variable $v \\in \\mathcal{V}$, 
+                    we create a row variable gadget $G_v = (V_v, E_v)$.
+                    This gadget consists of $k = ${this.rowNodeCount}$ row nodes.            
 
                     $$
-                        V_{\\nu} = \\{ \\nu_1, \\nu_2, \\ldots, \\nu_{k = ${this.rowNodeCount}} \\} 
+                        V_v = \\{ v^{(1)}, v^{(2)}, \\ldots, v^{(k = ${this.rowNodeCount})} \\} 
                     $$
                     
                     They are connected birectionally creating a path graph.
 
                     $$
-                        E_{\\nu} = \\{ \\{ \\nu_i, \\nu_{i+1} \\}, \\{ \\nu_{i + 1}, \\nu_{i} \\} \\mid 0 \\leq i \\leq k - 1 \\}
+                        E_v = \\{ \\{ v^{(i)}, v^{(i+1)} \\}, \\{ v^{(i + 1)}, v^{(i)} \\} \\mid 0 \\leq i \\leq k - 1 \\}
                     $$
 
-                    There will be $|\\Nu| = ${this.varCount}$ of these variable gadgets.
-
+                    There will be $|\\mathcal{V}| = ${this.varCount}$ of these variable gadgets.
                 </p>
                 <p>
                     The number $k$ is derived as follows: 
 
                     <p>
-                        For every clause $\\kappa \\in \\Kappa$ we need $2$ nodes - an incoming and outgoing node.
+                        For every clause $\\kappa \\in \\mathcal{K}$ we need $2$ nodes - an incoming and outgoing node.
                         Each of these $2$ nodes must be padded by at least one pad nodes, we choose to have $1$ pad node.
                         The rows themselves also need two nodes for the $True$ and $False$ ends.
                     </p>
 
                     <ul>
-                        <li>$ 2 |\\Kappa| $ incoming and outgoing nodes</li>
-                        <li>$ |\\Kappa| + 1 $ pad nodes</li>
+                        <li>$ 2 |\\mathcal{K}| $ incoming and outgoing nodes</li>
+                        <li>$ |\\mathcal{K}| + 1 $ pad nodes</li>
                         <li>$2$ nodes for $True$ and $False$ ends</li>
                     </ul>
 
                     $$
-                        k = (2 |\\Kappa|) + (|\\Kappa| + 1) + 2 = 3|\\Kappa| + 3
+                        k = (2 |\\mathcal{K}|) + (|\\mathcal{K}| + 1) + 2 = 3|\\mathcal{K}| + 3
                     $$
 
                     $$
                     \\begin{aligned}
-                        |\\Kappa| &= ${this.clauseCount} \\\\
+                        |\\mathcal{K}| &= ${this.clauseCount} \\\\
                         k &= 3 \\cdot ${this.clauseCount} + 3 \\\\
                         k &= ${3 * this.clauseCount + 3}
                     \\end{aligned}
                     $$
                 </p>
             `,
-            inSnapshot: this.inInstance,
             outSnapshot: firstGraph.copy(),
         });
 
@@ -372,7 +380,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
             title: `Create inbetween nodes`,
             description: `
                 <p>
-                    Create the source node $\\alpha$, target node $\\beta$ 
+                    Create the source node $${SOURCE_NODE_LABEL}$, target node $${TARGET_NODE_LABEL}$ 
                     and the inbetween nodes:
 
                     $$
@@ -383,37 +391,35 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
 
                 </p>
                 <p>
-                    Connect the source node $\\alpha$ 
+                    Connect the source node $${SOURCE_NODE_LABEL}$ 
                     to the row ends 
-                    - 
-                        $ ${this.inInstance.variables[0]}_1 $ 
-                        and $ ${this.inInstance.variables[0]}_{${this.rowNodeCount + 1}} $
-                    - 
+                        $ ${this.inInstance.variables[0]}^{(1)} $ 
+                        and $ ${this.inInstance.variables[0]}^{(${this.rowNodeCount + 1})} $
                     of the first variable $ ${this.inInstance.variables[0]} $.
                     
                     Then, connect these row ends to the inbetween or target node below. 
                     Repeat for the rest of the graph. 
                 </p>
                 <p>
-                    Finally connect the target node $\\beta$ to source node $\\alpha$ to close the loop.
+                    Finally connect the target node $${TARGET_NODE_LABEL}$ to source node $${SOURCE_NODE_LABEL}$ to close the loop.
                 </p>
                 <p>
                     Why did we do this?
                 </p>
                 <p>
-                    Going from the source node $\\alpha$ or an inbetween node $(\\nu_{i-1}, \\nu)$ 
-                    to one of the row end nodes of a variable $\\nu$ 
+                    Going from the source node $${SOURCE_NODE_LABEL}$ or an inbetween node $(v^{(i-1)}, v^{(i)})$ 
+                    to one of the row end nodes of a variable $v$ 
                     is equivalent to assigning 
-                    a boolean value that corresponding variable $\\nu$.
+                    a boolean value that corresponding variable $v$.
                 </p>
                 <p>
                     Here,
                     <ul>
                         <li> 
-                            going through the <b>left</b> edge means $\\nu = True$
+                            going through the <b>left</b> edge means $v = True$
                         </li>
                         <li>
-                            and going though the <b>right</b> edge means $\\nu = False$.
+                            and going though the <b>right</b> edge means $v = False$.
                         </li>
                     </ul>
                 </p>
@@ -425,32 +431,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                     After going through either the right or left edge, 
                     we must visit the row nodes, for the final cycle to be Hamiltonian.
                 </p>
-
-                <!--
-                <ul>
-                    <li>
-                        If we chose the <b>left edge</b>, then we end up on the <b>'true'</b> node 
-                        and have to traverse the row nodes from <u>left to right</u> until 
-                        we end up at the 'false' node.
-                    </li>
-
-                    <li>
-                        If we chose the <b>right</b> edge, then we end up on the <b>'false'</b> node 
-                        and have to traverse the row nodes from <u>right to left</u> until
-                        we end up at the 'true' node.
-                    </li>
-
-                    <li>
-                        Onwards, the only choice is to continue 
-                        to the next <i>inbetween</i>/<i>target</i> node below.
-                    </li>
-                </ul>
-                <p>
-                    The last step is to go from the <i>target</i> node back to the <i>source</i> node.
-                </p>
-                -->
             `,
-            inSnapshot: this.inInstance,
             outSnapshot: secondGraph.copy(),
         });
 
@@ -460,7 +441,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
         };
     }
 
-    private createClauseGadgets(graph: Graph): ReductionPartResult {
+    private createClauseGadgets(graph: Graph): ReductionPartialResult {
         const { clauses } = this.inInstance;
         let interSteps: ReductionStep<CNF3, Graph>[] = [];
 
@@ -485,7 +466,7 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
         clauses.forEach((c,i) => {
             const idx = i + 1;
             const clauseId = `${idx}`;
-            const clauseLabel = `\\kappa_{${idx}}`;
+            const clauseLabel = `\\kappa^{({${idx}})}`;
 
             // Create clause node
             const node : GraphNode = {
@@ -506,8 +487,8 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
 
             // For its literals.
             c.literals.forEach((l) => {
-                const litId = `${l.varName}_${3 * idx}`;
-                const adjLitId = `${l.varName}_${3 * idx + 1}`;
+                const litId = `${l.varName}^{(${3 * idx})}`;
+                const adjLitId = `${l.varName}^{(${3 * idx + 1})}`;
 
                 if (
                     connLitLabels.find(x => x.in == litId && x.out == adjLitId) ||
@@ -583,15 +564,15 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                                         ${!l.negated ? (`
                                             isn't negated &mdash;
                                             
-                                            the outgoing node $${l.varName}_{${3 * idx}}$
+                                            the outgoing node $${l.varName}^{(${3 * idx})}$
                                             is on the <b>left</b> of
-                                            the incoming node $${l.varName}_{${3 * idx + 1}}$.
+                                            the incoming node $${l.varName}^{(${3 * idx + 1})}$.
                                         `) : (`
                                             is <i>negated</i> &mdash;
                                             
-                                            the outgoing node $${l.varName}_{${3 * idx + 1}}$
+                                            the outgoing node $${l.varName}^{(${3 * idx + 1})}$
                                             is on the <b>right</b> of
-                                            the incoming node $${l.varName}_{${3 * idx}}$.
+                                            the incoming node $${l.varName}^{(${3 * idx})}$.
                                         `)}
                                     </li>
                                 `;
@@ -606,7 +587,6 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
                         $$
                     </p>
                 `,
-                inSnapshot: this.inInstance,
                 outSnapshot: graph.copy(),
             });
         });
@@ -619,69 +599,72 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
             title: `Create clause nodes`,
             description: `
                 <p>
-                    For every clause $\\kappa \\in \\Kappa$, 
+                    For every clause $\\kappa \\in \\mathcal{K}$, 
                     create one clause node $\\kappa'$. 
                     This node must be visited exactly once. 
                     Visiting this node corresponds to the clause $\\kappa$ being satisfied.
-                    There are $|\\Kappa| = ${this.clauseCount}$ clause nodes.
+                    ${this.clauseCount == 1 
+                        ? `There is $|\\mathcal{K}| = ${this.clauseCount}$ clause node.`
+                        : `There are $|\\mathcal{K}| = ${this.clauseCount}$ clause nodes.`
+                    }
                 </p>
                 <p>
                     For each clause node $\\kappa'$, 
-                        
-                        representing some clause $\\kappa = (\\Alpha, \\Beta, \\Gamma) \\in \\Kappa$,
-                            where $\\Alpha$, $\\Beta$ and $\\Gamma$ are its literals (they can be negated) 
-                            and $\\alpha$, $\\beta$ and $\\gamma$ are the variables,
- 
-                    create edges to and from the variable row gadgets - $G_{\\alpha}$, $G_{\\beta}$ and $G_{\\gamma}$ -
-                    as follows:
+                        representing some clause $\\kappa = (X, Y, Z) \\in \\mathcal{K}$,
+                            where $X$, $Y$ and $Z$ are its literals (they can be negated) 
+                            and $x$, $y$ and $z$ are the variables,
+  
+                    create edges to and from the variable row gadgets $G_{x}$, $G_{y}$ and $G_{z}$ as follows:
                 </p>
                 <p>
-                    For each literal $\\Chi$ of the clause $\\kappa$
-                        pick a free row node $\\chi_i$
+                    For each literal $X$ of the clause $\\kappa$
+                        pick a free row node $x^{(i)}$
                             (one that hasn't been used yet in this step) 
                         and connect it to $\\kappa'$.
 
                         This selected node is the <u>outgoing</u> node.
 
-                    Then, if the literal is negated, 
-                        connect $\\kappa'$ back to row node $\\chi_{i - 1}$ (adjacent, on the left of $\\chi_i$),
-                        
-                        otherwise
-                        
-                        connect $\\kappa'$ back to row node $\\chi_{i + 1}$ (adjacent, on the right of $\\chi_i$).
+                    If the literal is negated:
+                    <ul>
+                        <li>
+                            connect $\\kappa'$ back to row node $x^{(i - 1)}$ (adjacent, on the left of $x^{(i)}$),
+                        </li>
+                        <li>
+                            otherwise
+                            connect $\\kappa'$ back to row node $x^{(i + 1)}$ (adjacent, on the right of $x^{(i)}$).
+                        </li>
+                    </ul>
 
-                    This node, be it $\\chi_{i-1}$ or $\\chi_{i+1}$, is the <u>incoming</u> node.
+                    This node, be it $x^{(i-1)}$ or $x^{(i+1)}$, is the <u>incoming</u> node.
                 </p>
                 <p>
                     This way, we gaurantee for each clause node $\\kappa'$ that:
                     
                     <ul>
                         <li>
-                            If some literal $\\Chi$ of variable $\\chi$ in the clause $\\kappa$ 
+                            If some literal $X$ of variable $x$ in the clause $\\kappa$ 
                             <b>isn't negated</b>,
                             
                                 then we can reach it 
-                                    from some node $\\chi_i$ of the variable gadget $G_{\\chi}$
-                                    and come back to $\\chi_{i+1}$ (on the right),
+                                    from some node $x^{(i)}$ of the variable gadget $G_{x}$
+                                    and come back to $x^{(i+1)}$ (on the right),
                             
-                                if we approach it from the left (we assinged $\\chi$ to be $True$).
+                                if we approach it from the left (we assinged $x$ to be $True$).
                         </li>
                         <li>
-                            Otherwise, the literal $\\Chi$ <b>is negated</b>
+                            Otherwise, the literal $X$ <b>is negated</b>
                                 and we can reach it  
-                                    from some node $\\chi_i$ of the variable gadget $G_{\\chi}$
-                                    and come back to $\\chi_{i-1}$ (on the left),
+                                    from some node $x^{(i)}$ of the variable gadget $G_{x}$
+                                    and come back to $x^{(i-1)}$ (on the left),
 
-                                if we approach it from the right (we assigned $\\chi$ to be $False$).
+                                if we approach it from the right (we assigned $x$ to be $False$).
                         </li>
                     </ul>
                 </p>
                 <p>
-                    Note: In the graph, the clause nodes are named $\\kappa_i$, not $\\kappa_i'$.
+                    Note: In the graph, the clause nodes are named $\\kappa^{(i)}$, not $\\kappa'$.
                 </p>
             `,
-            inSnapshot: this.inInstance,
-            // btw this graph is modified later by the code below
             outSnapshot: firstGraph.copy(),
         });
 

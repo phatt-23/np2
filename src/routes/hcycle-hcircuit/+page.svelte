@@ -29,6 +29,7 @@
     import { ReductionStore } from "$lib/state/ReductionStore.svelte";
     import { WorkerResponseType, type WorkerRequestHCIRCUIT, type WorkerResponseHCIRCUIT } from "$lib/workers/types";
     import WorkerHCIRCUITSolver from "$lib/workers/WorkerHCIRCUITSolver?worker";
+    import { DEMOS } from "$lib/demo/hcycle-hcircuit";
 
 
     let storage = useLocalStorage(
@@ -110,6 +111,7 @@
                         }
                     }}
                     displayErrorMessages
+                    demos={DEMOS}
                 />
             {/snippet}
         </EditorCard>

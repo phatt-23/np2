@@ -59,43 +59,6 @@ Component that renders the graph.
 
         console.debug('render');
 
-        /*
-        const overlayContext = overlayCanvas.getContext('2d')!
-        overlayContext.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
-
-        cy.nodes().forEach(node => {
-            const label = node.data('label');
-            if (!label) {
-                return;
-            }
-
-            const nodePos = node.renderedPosition();
-            const zoom = cy.zoom();
-
-            const texSVG = getMathjaxSVG(label);
-            const svgBlob = new Blob([texSVG], {type: "image/svg+xml"})
-            const url = URL.createObjectURL(svgBlob)
-            const img = new Image();
-     
-            if (overlayContext) {
-                console.debug(overlayCanvas.width, overlayCanvas.height)
-
-                img.onload = () => {
-                    overlayContext.drawImage(
-                        img, 
-                        nodePos.x, 
-                        nodePos.y, 
-                        20 * zoom, 
-                        20 * zoom
-                    )
-
-                    URL.revokeObjectURL(url)
-                }
-                img.src = url
-            }
-        })
-        */
-
         cy.nodes().forEach(node => {
             const label = node.data('label');
             if (!label) {
@@ -113,7 +76,6 @@ Component that renders the graph.
                 elem.style.position = 'absolute';
                 // elem.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
                 const texHtml = katex.renderToString(label);
-                // const texHtml = getMathjaxSVG(label);
                 elem.innerHTML = texHtml; 
 
                 labelCache!.set(label, elem);         
@@ -265,7 +227,7 @@ Component that renders the graph.
         
             <label class="checkbox-wrapper">
                 <input type="checkbox" bind:checked={moveEnabled}>
-                Move Enabled
+                Move enabled
             </label>
         
         </div>
