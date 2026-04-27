@@ -50,7 +50,10 @@
                         || $redStore.hasOutInstance() 
                         || $redStore.inInstance?.isEmpty()
                         || $isSolving} 
-                    onclick={reduce}
+                    onclick={() => { 
+                        reduce();  
+                        solveMessage.update(m => "Output instance created");
+                    }}
                 >
                     Reduce
                 </button>

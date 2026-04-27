@@ -52,8 +52,10 @@
     }
 
     function handleSelect() {
-        text = demos[selectedDemo];
-        onTextChange();
+        if (Object.keys(demos).includes(selectedDemo)) {
+            text = demos[selectedDemo];
+            onTextChange();
+        }
     }
 
     function handleKeydown(e: KeyboardEvent) {
@@ -98,9 +100,7 @@
 
         <div class="input-actions">
             <select onchange={handleSelect} bind:value={selectedDemo}>
-                <option disabled selected value="" hidden
-                    >-- choose demo --</option
-                >
+                <option disabled selected value="" hidden>-- choose demo --</option>
 
                 {#each Object.keys(demos) as demo}
                     <option value={demo}>{demo}</option>

@@ -57,8 +57,10 @@
     }
 
     function handleSelect() {
-        text = demos[selectedDemo];
-        onTextChange();
+        if (Object.keys(demos).includes(selectedDemo)) {
+            text = demos[selectedDemo];
+            onTextChange();
+        }
     }
 
     $effect(() => {
@@ -97,7 +99,7 @@
 
         <div class='input-actions'>
             <select onchange={handleSelect} bind:value={selectedDemo}>
-                <option value="">-- choose demo --</option>
+                <option disabled selected value="" hidden>-- choose demo --</option>
 
                 {#each Object.keys(demos) as demo}
                     <option value={demo}>{demo}</option>
