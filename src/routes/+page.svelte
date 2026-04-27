@@ -1,15 +1,24 @@
 <!-- Created by phatt-23 on 12/10/2025 -->
 
-<script>
+<script lang="ts">
     import Katex from "$lib/component/Katex.svelte";
+    import { PROBLEM_DEFINITIONS } from "$lib/page/problemDefinitions";
 
-	const reducesInPolyTimeTo = '&rightarrow;';
+	import { page } from '$app/state';
+    import { DESTINATIONS, type Destination } from '$lib/page/destinations';
+	import { resolve } from '$app/paths';
 </script>
 
 <svelte:head>
 	<title>Home</title>
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
+
+{#snippet link(item: Destination)}
+    <li class="nav-item" aria-current={page.url.pathname === resolve(item.route) ? 'page' : undefined}>
+        <a href={resolve(item.route)}>{@html item.title}</a>
+    </li>
+{/snippet}
 
 <main>
 	<h1>
@@ -22,15 +31,28 @@
 		</p>
 
 		<ul class="reduction-list">
-			<li>3-SAT {@html reducesInPolyTimeTo} HCYCLE</li>
+
+			<li>
+                {@render link(DESTINATIONS["3SAT_HCYCLE"])}
+            </li>
+
 			<ul class="reduction-list">
-				<li>HCYCLE {@html reducesInPolyTimeTo} HCIRCUIT</li>
+				<li>
+                    {@render link(DESTINATIONS["HCYCLE_HCIRCUIT"])}
+                </li>
 				<ul class="reduction-list">
-					<li>HCIRCUIT {@html reducesInPolyTimeTo} TSP</li>            
+					<li>
+                        {@render link(DESTINATIONS["HCIRCUIT_TSP"])}
+                    </li>            
 				</ul>
 			</ul>
-			<li>3-SAT {@html reducesInPolyTimeTo} SSP</li>
-			<li>3-SAT {@html reducesInPolyTimeTo} 3-CG</li>
+
+			<li>
+                {@render link(DESTINATIONS["3SAT_SSP"])}
+            </li>
+			<li>
+                {@render link(DESTINATIONS["3SAT_3CG"])}
+            </li>
 		</ul>
 	</div>
 
@@ -40,35 +62,10 @@
         </h3>
 
         <dl>
-            <dt>3-SAT</dt> 
-            <dd>
-                Can a boolean formula in 3-CNF be satfisfied?
-            </dd>
-            <dt>HCYCLE</dt>
-            <dd>
-                Does a directed graph contain a Hamiltonian cycle?
-            </dd>
-            <dt>HCIRCUIT</dt>
-            <dd>
-                Does an undirected graph contain a Hamiltonian cycle?
-            </dd>
-            <dt>TSP</dt>
-            <dd>
-                Given some positive integer <i>k</i>, 
-                does the undirected graph contain a Hamiltonian cycle 
-                with the cost less than or equal to <i>k</i>?
-            </dd>
-            <dt>3-CG</dt>
-            <dd>
-                Can an undirected graph be colored by 3 colors, 
-                such that there are no neighbouring nodes with the same color?
-            </dd>
-            <dt>SSP</dt>
-            <dd>
-                Given a set of numbers <i>S</i> and a target value <i>t</i>, 
-                can we pick a subset of numbers from <i>S</i>, 
-                such that their sum is equal to <i>t</i>?
-            </dd>
+            {#each Object.entries(PROBLEM_DEFINITIONS) as problem}
+                <dt>{@html problem[0]}</dt>
+                <dd><Katex html inline text={problem[1]}/></dd>
+            {/each}
         </dl>
     </div>
 

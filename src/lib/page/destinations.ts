@@ -27,8 +27,8 @@ export const DESTINATIONS: Record<string, Destination> = {
     },
 };
 
-type Destination  = {
+export type Destination  = {
     route: string;
-    title:  string;
+    title: string;
 };
 

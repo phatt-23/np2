@@ -36,6 +36,8 @@
     import StepsCard from "$lib/component/red-page/StepsCard.svelte";
     import { DESTINATIONS } from "$lib/page/destinations";
     import { DEMOS } from "$lib/demo/3sat-hcycle";
+    import Katex from "$lib/component/Katex.svelte";
+    import { PROBLEM_DEFINITIONS } from "$lib/page/problemDefinitions";
 
 
     let storage = useLocalStorage(
@@ -98,6 +100,13 @@
     <h1>
         {@html dest.title}
     </h1>
+
+    <dl>
+        {#each ["3-SAT", "HCYCLE"] as name}
+            <dt>{@html name}</dt>
+            <dd><Katex html inline text={PROBLEM_DEFINITIONS[name]}/></dd>
+        {/each}
+    </dl>
 
     <div class="card-list">
 

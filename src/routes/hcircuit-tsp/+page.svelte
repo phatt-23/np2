@@ -34,6 +34,7 @@
     import { DESTINATIONS } from "$lib/page/destinations";
     import Katex from "$lib/component/Katex.svelte";
     import { DEMOS } from "$lib/demo/hcircuit-tsp";
+    import { PROBLEM_DEFINITIONS } from "$lib/page/problemDefinitions";
 
 
     let storage = useLocalStorage(
@@ -108,6 +109,13 @@
     <h1>
         {@html dest.title}
     </h1>
+
+    <dl>
+        {#each ["HCIRCUIT", "TSP"] as name}
+            <dt>{@html name}</dt>
+            <dd><Katex html inline text={PROBLEM_DEFINITIONS[name]}/></dd>
+        {/each}
+    </dl>
 
     <div class="card-list">
         

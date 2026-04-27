@@ -33,6 +33,7 @@
     import { WorkerResponseType, type WorkerRequest3CG, type WorkerResponse3CG } from "$lib/workers/types";
     import Worker3CGSolver from "$lib/workers/Worker3CGSolver?worker";
     import { DEMOS } from "$lib/demo/3sat-3cg";
+    import { PROBLEM_DEFINITIONS } from "$lib/page/problemDefinitions";
 
     let storage = useLocalStorage(
         localStorageKeys.LS_3SAT_3CG, 
@@ -107,13 +108,20 @@
         }
     });
 
-    let dest = DESTINATIONS['3SAT_3CG'];
+    const dest = DESTINATIONS['3SAT_3CG'];
 </script>
 
 <main>
     <h1>
         {@html dest.title}
     </h1>
+
+    <dl>
+        {#each ["3-SAT", "3-CG"] as name}
+            <dt>{@html name}</dt>
+            <dd><Katex html inline text={PROBLEM_DEFINITIONS[name]}/></dd>
+        {/each}
+    </dl>
 
     <div class="card-list">
         
