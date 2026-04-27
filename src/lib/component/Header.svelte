@@ -14,6 +14,7 @@
             {/each}
 		</ul>
 	</nav>
+
 </header>
 
 <style>
@@ -23,6 +24,7 @@
 		justify-content: center;
         margin: 10 0;
         padding: 0 0;
+        align-items: center;
 	}
 
 

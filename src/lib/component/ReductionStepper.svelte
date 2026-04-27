@@ -77,7 +77,7 @@ Created by phatt-23 on 12/10/2025
 </script>
 
 {#snippet controls()}
-    <div class="controls">
+    <div class="flex-apart">
         <label class="checkbox-wrapper">
             <input type="checkbox" bind:checked={showAll}>
             <span>Show all</span>
@@ -115,10 +115,15 @@ Created by phatt-23 on 12/10/2025
 
     {@render controls()}
 
-    <Comments comments={[
-        "Showing all steps might take a while for bigger instances.",
-        "Use arrow keys to move to the next and previous steps.",
-    ]}/> 
+    <div class="flex-apart">
+        <Comments comments={[
+            "Showing all steps might take a while for bigger instances.",
+        ]}/> 
+
+        <Comments comments={[
+            "Use arrow keys to move to the next and previous steps.",
+        ]}/> 
+    </div>
 
     {#if showAll}
         <!-- Loads everything (slow) -->
@@ -155,13 +160,9 @@ Created by phatt-23 on 12/10/2025
         border-top: 1px solid global.$light-border-color
         margin-top: 32px        
 
-    .controls 
+    .flex-apart 
         display: flex
         justify-content: space-between
-
-    .vert-left
-        display: flex
-        justify-content: flex-end
 
     span.disabled
         color: gray

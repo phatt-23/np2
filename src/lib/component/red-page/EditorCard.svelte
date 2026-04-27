@@ -8,6 +8,7 @@
     import type { Writable } from "svelte/store";
     import type { ProblemInstance } from "$lib/instance/ProblemInstance";
     import type { Certificate } from "$lib/solve/Certificate";
+    import Comments from "../Comments.svelte";
 
     type Props<I extends ProblemInstance,O extends ProblemInstance,IC extends Certificate,OC extends Certificate> = {
         title: () => ReturnType<Snippet>;
@@ -43,7 +44,24 @@
     {#snippet body()}
         {@render editor()}
 
-        <div class="controls">
+        <div class="flex-apart">
+            <div>
+                <Comments comments={[
+                    `Click "Reduce" to reduce the input instance to the output instance.`,
+                    `Click "Solve" to run an solver the output problem instance.`,
+                    `If a solution is found, it is then decoded to the input problem as well.`,
+                ]}/> 
+            </div>
+
+            <div class="right-col">
+                <Comments comments={[
+                    `Shows how the reduction is done step by step.`,
+                ]}/> 
+            </div>
+        </div>
+
+        <div class="flex-apart">
+
             <div class="left-controls">
                 <button 
                     disabled={!$redStore.hasInInstance() 
@@ -108,12 +126,13 @@
                 </label>
             </div>
         </div>
+
     {/snippet}
 </Card>
 
 <style lang="sass">
 
-.controls
+.flex-apart
     display: flex
     justify-content: space-between
 
@@ -121,6 +140,11 @@
     display: flex
     align-items: center
     gap: 0.25rem
+
+.right-col
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 
 .right-controls
     align-items: center

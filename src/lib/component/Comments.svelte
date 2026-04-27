@@ -1,11 +1,22 @@
 <script lang="ts">
     let { comments } = $props();
+    // let hideComments = $state(false);
 </script>
 
 <div>
-    {#each comments as comment}
-        <p class="comment">{@html comment}</p>
-    {/each}
+    <!-- <button -->
+    <!--     onclick={() => { -->
+    <!--         hideComments = !hideComments; -->
+    <!--     }} -->
+    <!-- > -->
+    <!--     {hideComments ? 'Hide comments' : 'Show comments'} -->
+    <!-- </button> -->
+
+    <!-- {#if hideComments} -->
+        {#each comments as comment}
+            <p class="comment">{@html comment}</p>
+        {/each}
+    <!-- {/if} -->
 </div>
 
 <style lang="sass">
