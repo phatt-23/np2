@@ -89,6 +89,7 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
                         $${GREEN}$ 
                         and $${BLUE}$.
                 </p>
+                <!--
                 <p>
                     The colors hold some semantic meaning:
 
@@ -104,6 +105,7 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
                         </li>
                     </ul>
                 </p>
+                -->
                 <p>
                     We start by creating the core gadget $G_C = (V_C,E_C)$. 
                     The core gadget has three nodes and they are all connected to one another.
@@ -223,18 +225,19 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
             title: 'Create variable gadgets',
             description: `
                 <p>
-                    Create a variable gadget for each variable $\\nu \\in \\Nu$ of the boolean formula $\\Phi = (\\Nu, \\Kappa)$, 
-                    where $\\Nu$ is the set of variables
+                    Create a variable gadget for each variable $v \\in \\mathcal{V}(\\Phi)$ 
+                    of the boolean formula $\\Phi = (\\mathcal{V}, \\mathcal{K})$, 
+                    where $\\mathcal{V}$ is the set of variables:
 
                     $$
-                        \\Nu = \\{ ${this.inInstance.variables.join(',')} \\}
+                        \\mathcal{V} = \\{ ${this.inInstance.variables.join(',')} \\}
                     $$
 
-                    and $\\Kappa$ is the set of clauses
+                    and $\\mathcal{K}$ is the set of clauses:
 
                     $$
                     \\begin{aligned}
-                        \\Kappa = \\{ 
+                        \\mathcal{K} = \\{ 
                             ${ 
                                 chunkBy(this.inInstance.clauses.map(c => clauseToTriplet(c)), 3)
                                     .map(x => `& ${x.join(',')}`)
@@ -244,40 +247,34 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
                     \\end{aligned}
                     $$
 
-                    There will be $|\\Nu| = ${this.inInstance.variables.length}$ variable gadgets.
+                    There will be $|\\mathcal{V}| = ${this.inInstance.variables.length}$ variable gadgets.
                 </p>
                 <p>
-                    A variable gadget $ G_{\\nu} = (V_{\\nu},E_{\\nu}) $ for a variable $\\nu$ 
+                    A variable gadget $G_{v} = (V_{v},E_{v})$ for a variable $v$ 
                     consists of three nodes,
 
                     $$
-                        V_{\\nu} = \\{ \\nu, \\lnot{\\nu}, B \\}
+                        V_{v} = \\{v, \\lnot{v}, B \\}
                     $$
 
-                    where the node $B$ is the blue "buffer" node.
+                    where the node $B$ is the blue node from the core gadget $G_C$.
 
-                    These nodes are each connected to one another,  
+                    These nodes are each connected to one another:
                     $$ 
-                        E = \\{ \\{ \\nu, \\lnot{\\nu} \\}, \\{ \\nu, B \\}, \\{ \\lnot{\\nu}, B \\} \\}
+                        E_{v} = \\{ \\{ \\nu, \\lnot{\\nu} \\}, \\{ \\nu, B \\}, \\{ \\lnot{\\nu}, B \\} \\}
                     $$
-
-                    making it a complete graph.
                 </p>
                 <p>
-                    Since the nodes $\\nu$ and $\\lnot{\\nu}$ are connected to the $B$ node that is colored $${BLUE}$, 
+                    Since the nodes $v$ and $\\lnot{v}$ are connected to the $B$ node that is colored $${BLUE}$, 
                     they themselves can only be colored either $${GREEN}$, or $${RED}$. 
 
-                    This encodes the truth assignment for the variable $\\nu$, because only these 2 cases can occur.
+                    This encodes the truth assignment for the variable $v$, as only these 2 cases can occur:
                     <ul>
                         <li>
-                            If the node $\\nu$ is $${GREEN}$
-                            then the node $\\lnot{\\nu}$ must be $${RED}$, 
-                            meaning $\\nu = True$.
+                            The node $v$ is $${GREEN}$ and the node $\\lnot{v}$ is $${RED}$. This means $v \\coloneqq True$.
                         </li>
                         <li>
-                            If the node $\\nu$ is $${RED}$
-                            then the node $\\lnot{\\nu}$ must be $${GREEN}$, 
-                            meaning $\\nu = False$.
+                            The the node $v$ is $${RED}$ and the node $\\lnot{v}$ is $${GREEN}$. This means $v \\coloneqq False$.
                         </li>
                     </ul>
                 </p>
@@ -360,7 +357,7 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
                 title: 'Add clause gadgets',
                 description: `
                     <p>
-                        Create a clause gadget for each clause $\\kappa \\in \\Kappa$ in the formula $\\Phi$, namely:
+                        Create a clause gadget for each clause $\\kappa \\in \\mathcal{K}(\\Phi)$:
 
                         $$
                         \\begin{aligned}
@@ -370,16 +367,22 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
                         \\end{aligned}
                         $$
 
-                        There will be $|\\Kappa| = ${this.inInstance.clauses.length}$ clause gadgets.
+                        There will be $|\\mathcal{K}| = ${this.inInstance.clauses.length}$ clause gadgets.
                     </p>
                     <p>
-                        For some clause $\\kappa = (\\Alpha, \\Beta, \\Gamma)$, 
+                        A clause gadget $G_{\\kappa} = (V_{\\kappa},E_{\\kappa})$ 
+                        for some clause $\\kappa = (\\Alpha, \\Beta, \\Gamma)$, 
                         where $\\Alpha$, $\\Beta$ and $\\Gamma$ are its literals (they can be negated) 
-                        and $\\alpha$, $\\beta$ and $\\gamma$ are the variables,
-                        a clause gadget $G_{\\kappa} = (V_{\\kappa},E_{\\kappa})$ is defined as:
+                        and $\\alpha$, $\\beta$ and $\\gamma$ are the respective variables,
+                        is defined as follows:
 
                         $$
-                            V_{\\kappa} = \\{ \\Alpha, \\Beta, \\Gamma, \\kappa_0, \\kappa_1, \\kappa_2, \\kappa_3, \\kappa_4, \\kappa_5, T, F \\}
+                            V_{\\kappa} = \\{ 
+                                \\Alpha, \\Beta, \\Gamma, 
+                                \\kappa_0, \\kappa_1, \\kappa_2, 
+                                \\kappa_3, \\kappa_4, \\kappa_5, 
+                                T, F 
+                            \\}
                         $$
 
                         $$
@@ -409,18 +412,24 @@ export class Reducer3SATto3CG extends Reducer<CNF3, Graph> {
                             \\}
                         \\end{aligned}
                         $$
+    
+                        where the nodes $T$ and $F$ come from the core gadget $G_C$.
                     </p>
                     <p>
                         Note that the nodes $\\kappa_0,\\kappa_1,\\ldots,\\kappa_5$ are unique for each clause gadget.
                     </p>
                     <p>
                         A valid 3-coloring for the gadget $G_{\\kappa}$ exist,
-                        iff at least one of the literal nodes, $\\Alpha$, $\\Beta$ or $\\Gamma$, is $${GREEN}$,
-                        This would correspond to the clause $\\kappa$ being satisfied, because at least one of its literals is evaluated to $True$.
+                        iff at least one of the literal nodes $\\Alpha$, $\\Beta$ or $\\Gamma$ is $${GREEN}$,
+                        This would correspond to the clause $\\kappa$ being satisfied, 
+                        because having at least one of the literal nodes being $${GREEN}$ 
+                        means that at least one of its literals is evaluated to $True$.
                     </p>
                     <p>
-                        However, if all the 3 literal nodes are $${RED}$, then a valid 3-coloring for the gadget $G_{\\kappa}$ doesn't exist.
-                        Since all 3 literals nodes are $${RED}$, this means that they all evaluate to $False$ and the clause $\\kappa$ is not satisfied.
+                        However, if all the 3 literal nodes are $${RED}$, 
+                        then a valid 3-coloring for the gadget $G_{\\kappa}$ doesn't exist.
+                        Since all 3 literals nodes are $${RED}$, 
+                        this means that all the literals evaluate to $False$ and the clause $\\kappa$ is not satisfied.
                     </p>
                 `,
                 outSnapshot: graph.copy(),

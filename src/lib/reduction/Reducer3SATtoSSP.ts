@@ -369,12 +369,11 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
 
                 </p>
                 <p>
-                    <!-- AGENT: uprav tento nove pridany odstavec -->
-                    Now, if the $j$-th digit is $1$, 
-                    then we can choose these filler numbers into the final set $S$ 
-                    to achieve 3 in the final sum matching the target sum $\\tau$.
-                    However, if $j$-th digit is $0$, then choosing these fillers numbers won't help 
-                    as we will be only able to achieve 2 in the final sum.
+                    Now, if the $j$-th digit is greater than zero, 
+                    we can choose the filler numbers $\\kappa_{j,0}$ and $\\kappa_{j,1}$ to add to our subset $S$
+                    to achieve the target value of $3$ in that position.
+                    However, if the $j$-th digit is zero, adding these filler numbers won't help 
+                    since the maximum we could achieve is $2$, not $3$.
                 </p>
             `,  
             outSnapshot: ssp.copy(),

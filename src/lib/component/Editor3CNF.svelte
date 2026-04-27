@@ -31,7 +31,7 @@
         const result = CNF3.fromString(text);
 
         if (typeof result == "string") {
-            console.debug("wrong");
+            // console.debug("wrong");
             onWrongFormat?.(result);
         } else {
             onChange?.(result);
