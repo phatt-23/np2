@@ -7,6 +7,7 @@ Created by phatt-23 on 12/10/2025
     import type { ReductionStep } from '$lib/reduction/ReductionStep';
     import { onDestroy, onMount, type Snippet } from 'svelte';
     import Katex from './Katex.svelte';
+    import Comments from './Comments.svelte';
 
     type Props<
         I extends ProblemInstance, 
@@ -114,6 +115,10 @@ Created by phatt-23 on 12/10/2025
 
     {@render controls()}
 
+    <Comments comments={[
+        "Showing all steps might take a while for bigger instances.",
+        "Use arrow keys to move to the next and previous steps.",
+    ]}/> 
 
     {#if showAll}
         <!-- Loads everything (slow) -->
@@ -153,6 +158,10 @@ Created by phatt-23 on 12/10/2025
     .controls 
         display: flex
         justify-content: space-between
+
+    .vert-left
+        display: flex
+        justify-content: flex-end
 
     span.disabled
         color: gray

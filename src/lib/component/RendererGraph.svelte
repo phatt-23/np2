@@ -31,7 +31,7 @@ Component that renders the graph.
         editable = false,
     }: Props = $props();
 
-    console.debug(style);
+    // console.debug(style);
 
 
     let cy: cytoscape.Core; 
@@ -56,9 +56,9 @@ Component that renders the graph.
     }
 
     function onCytoRender() {
-        console.debug('label.length', Array.from(labelCache.entries()).length);
+        // console.debug('label.length', Array.from(labelCache.entries()).length);
 
-        console.debug('render');
+        // console.debug('render');
 
         cy.nodes().forEach(node => {
             const label = node.data('label');
@@ -72,7 +72,7 @@ Component that renders the graph.
 
             // create svg once, cache it
             if (!elem) {
-                console.debug('creating svg');
+                // console.debug('creating svg');
                 elem = document.createElement('div');
                 elem.style.position = 'absolute';
                 // elem.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
@@ -113,7 +113,7 @@ Component that renders the graph.
     }
 
     function onCytoResize() {
-        console.debug('resize');
+        // console.debug('resize');
         if (!mathLabelLayer){
             return;
         }
@@ -186,7 +186,7 @@ Component that renders the graph.
         let layoutInstance: cytoscape.Layouts = cy.layout({ name: layout });
 
         layoutInstance.pon('layoutstop').then(() => {
-            console.debug('layoutstop');
+            // console.debug('layoutstop');
             enableMovement(true);  // without this enabled the fitting won't take effect
 
             cy.resize();
