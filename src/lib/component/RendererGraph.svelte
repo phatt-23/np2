@@ -11,6 +11,7 @@ Component that renders the graph.
     import { cytoscapeStyles } from "$lib/core/cytoscapeStyles";
     import type { Graph } from "$lib/instance/Graph";
     import type { CytoscapeLayout } from "./RendererGraph";
+    import Comments from "./Comments.svelte";
 
     type Props = {
         graph: Graph;
@@ -207,6 +208,13 @@ Component that renders the graph.
 <main>
     <h2 class="dev">Graph Renderer</h2>
 
+    {#if editable}
+        <Comments comments={[
+            "Click on two nodes to add an edge between them.",
+            "Click on an edge to remove it.",
+        ]}/>
+    {/if}
+    
     <div class="graph-wrapper">
         
         <div bind:this={graphContainer} id="cy" class:no-events={!editable && !moveEnabled}>
