@@ -30,7 +30,7 @@ div
 
     :global(span)
         background-color: #f0f0f0
-        border-radius: 3px
+        // border-radius: 3px
         padding: 0.1em 0.3em
         font-family: monospace
         font-size: 0.9em

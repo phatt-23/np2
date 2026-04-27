@@ -254,7 +254,7 @@ Component that renders the graph.
         height: 40em
         border-width: 1px
         border-style: solid
-        border-radius: 4pt
+        // border-radius: 4pt
         border-color: global.$border-color
         overflow: hidden
 
@@ -273,7 +273,7 @@ Component that renders the graph.
         border-color: color.scale(global.$border-color, $alpha: -50%)
         border-width: 1px
         border-style: solid
-        border-radius: 4pt
+        // border-radius: 4pt
         padding: 2px
 
     #math-label-layer 

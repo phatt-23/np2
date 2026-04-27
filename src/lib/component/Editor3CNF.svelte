@@ -134,7 +134,7 @@ textarea
     resize: vertical
     border-width: 1px
     border-style: solid
-    border-radius: 4pt
+    // border-radius: 4pt
     border-color: global.$border-color
 
 .input-actions
@@ -153,7 +153,7 @@ textarea
     padding: 8px
     color: rgba(200, 0, 0, 1)
     background-color: color.scale(rgb(255,0,0), $alpha: -90%)
-    border-radius: 4pt
+    // border-radius: 4pt
     border-style: solid
     border-color: color.scale(rgb(255,0,0), $alpha: -80%)
     border-width: 1px

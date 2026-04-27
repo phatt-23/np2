@@ -47,9 +47,8 @@
         width: 100%
         border-width: 1px
         border-style: solid
-        border-radius: 4pt
         border-color: global.$border-color
-
+        // border-radius: 4pt
         box-shadow: 0px 0px 4px 2px #eeeeee
 
     .header
