@@ -7,13 +7,19 @@ export const WEIGHTED_UNDIRECTED_STYLES: StylesheetStyle[] = [
     {
         selector: 'edge',
         style: {
-            'label': 'data(weight)',
             'curve-style': 'bezier',
             'line-color': 'black',
             'text-background-color': '#fff',
             'text-background-opacity': 1,
             'text-background-padding': '2',
             'width': 2
+        }
+    },
+    {
+        // This applies labels only to edges that actually have a weight field.
+        selector: 'edge[weight]',
+        style: {
+            'label': 'data(weight)',
         }
     },
     {
