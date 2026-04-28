@@ -1,17 +1,10 @@
 import type { StylesheetStyle } from "cytoscape";
 import { BLUE, selectedNode, solvedEdgeRedUsed } from "./common";
-import { defaultNode } from "./default";
+import { defaultEdge, defaultNode } from "./default";
 
 export const UNDIRECTED_STYLES: StylesheetStyle[] = [
     ...defaultNode,
-    {
-        selector: 'edge',
-        style: {
-            'curve-style': 'bezier',
-            'line-color': 'black',
-            'width': 2
-        }
-    },
+    ...defaultEdge,
     ...solvedEdgeRedUsed,
     ...selectedNode,
 ]

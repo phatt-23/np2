@@ -5,11 +5,12 @@ export const RED     = '#EA6C73'
 export const BLUE    = '#53BDFA'
 export const GREEN   = '#91B362'
 
-// const GREEN   = '#a7c080'
+// const GREEN = '#a7c080'
 // const RED = '#ff7272';
 // const BLUE = '#74a4ff'; 
 
 export const ORANGE = '#FFBC5D'
+
 
 export const selectedNode: StylesheetStyle[] = [
     {

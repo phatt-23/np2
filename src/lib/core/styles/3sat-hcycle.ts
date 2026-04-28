@@ -1,20 +1,9 @@
 import type { StylesheetStyle } from "cytoscape";
 import { BLUE, GREEN, ORANGE, RED, selectedNode, solvedEdge } from "./common";
+import { defaultNode } from "./default";
 
 export const SAT_HCYCLE_STYLES: StylesheetStyle[] = [
-    {
-        selector: 'node',
-        style: {
-            // 'label': 'data(id)',
-            // 'label': 'data(label)',
-            'font-size': 12,
-            'text-valign': 'top',
-            'background-color': BLUE,
-            'border-color': 'black',
-            'border-style': 'solid',
-            'border-width': 2,
-        }
-    },
+    ...defaultNode,
     {
         selector: 'node.true',  // vrchol na konci rady 
         style: { 'background-color': GREEN, },

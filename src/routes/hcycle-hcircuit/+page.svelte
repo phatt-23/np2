@@ -132,7 +132,7 @@
             
             <StepsCard {redStore} {storage}>
                 {#snippet instance(inst)}
-                    <RendererGraph graph={inst} style='HCIRCUIT' layout='preset'/>
+                    <RendererGraph graph={inst} style='UNDIRECTED' layout='preset'/>
                 {/snippet}
             </StepsCard>
 
@@ -148,7 +148,7 @@
                 {#snippet instance(inst)}
                     <RendererGraph 
                         graph={inst} 
-                        style='HCIRCUIT'
+                        style='UNDIRECTED'
                         layout='preset'
                     />
                 {/snippet}

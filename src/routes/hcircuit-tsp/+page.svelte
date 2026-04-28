@@ -143,7 +143,7 @@
                 {#snippet instance(inst)}
                     <RendererGraph 
                         graph={inst} 
-                        style='TSP'
+                        style='UNDIRECTED'
                         layout='circle'
                     />
                 {/snippet}
@@ -164,7 +164,7 @@
 
                     <RendererGraph 
                         graph={inst} 
-                        style='TSP'
+                        style='UNDIRECTED'
                         layout='circle'
                     />
                 {/snippet}

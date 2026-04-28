@@ -29,7 +29,6 @@ export const defaultEdge: StylesheetStyle[] = [
     },
 ]
 
-
 export const DEFAULT_STYLES: StylesheetStyle[] = [
     ...defaultNode,
     ...defaultEdge,

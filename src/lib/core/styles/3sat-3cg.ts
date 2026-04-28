@@ -1,26 +1,9 @@
 import type { StylesheetStyle } from "cytoscape";
 import { BLUE, GREEN, RED, selectedNode, solvedEdge } from "./common";
+import { defaultNode } from "./default";
 
 export const SAT_3CG_STYLES: StylesheetStyle[] = [
-    {
-        selector: 'node',
-        style: {
-            // 'label': 'data(id)',
-            'font-size': 12,
-            'text-valign': 'top',
-            'background-color': 'white',
-            'border-color': 'black',
-            'border-style': 'solid',
-            'border-width': 2,
-        },
-    },
-    {
-        selector: 'edge.muted',  // hrany, u kterych neni dulezite jejich viditelnost
-        style: {
-            'line-opacity': 0.2,
-            'line-color': 'black',
-        },
-    },
+    ...defaultNode,
     {
         selector: 'node.green, node.T',
         style: {
@@ -45,6 +28,13 @@ export const SAT_3CG_STYLES: StylesheetStyle[] = [
             'curve-style': 'bezier',
             'line-color': 'black',
             'width': 1,
+        },
+    },
+    {
+        selector: 'edge.muted',  // hrany, u kterych neni dulezite jejich viditelnost
+        style: {
+            'line-opacity': 0.2,
+            'line-color': 'black',
         },
     },
     {
