@@ -24,7 +24,10 @@
 
 	<footer>
 		<p>
-			Written by TRA0163, <a href="https://github.com/phatt-23">github</a>
+			Written by TRA0163 
+            <!--
+            <a href="https://github.com/phatt-23">github</a>
+            -->
 		</p>
 
 		<div class='dev'>

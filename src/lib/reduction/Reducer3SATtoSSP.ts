@@ -186,9 +186,7 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
                     In this case we have $|\\mathcal{V}| = ${this.V}$ variables:
                     
                     $$
-                    \\begin{aligned} 
                         ${this.inInstance.variables.map(v => `${v}`).join(',')}
-                    \\end{aligned}
                     $$
 
                     Therefore we will create $2|\\mathcal{V}| = ${2 * this.V}$ numbers 

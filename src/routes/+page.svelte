@@ -15,9 +15,9 @@
 </svelte:head>
 
 {#snippet link(item: Destination)}
-    <li class="nav-item" aria-current={page.url.pathname === resolve(item.route) ? 'page' : undefined}>
+    <div class="nav-item" aria-current={page.url.pathname === resolve(item.route) ? 'page' : undefined}>
         <a href={resolve(item.route)}>{@html item.title}</a>
-    </li>
+    </div>
 {/snippet}
 
 <main>

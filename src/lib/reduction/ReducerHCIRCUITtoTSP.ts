@@ -208,13 +208,11 @@ export class ReducerHCIRCUITtoTSP extends Reducer<Graph, Graph> {
                     The function $w(e)$ for assigning weights to edges in $E$ may be defined as:
 
                     $$
-                    \\begin{aligned}
                         w(e) =
                         \\begin{cases}
                             1 & \\text{if} \\mathbin{} e \\in E_0 \\\\
                             2 & \\text{otherwise}  
                         \\end{cases}
-                    \\end{aligned}
                     $$
                 </p>
                 <p>

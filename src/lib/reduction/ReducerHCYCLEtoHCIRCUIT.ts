@@ -224,8 +224,10 @@ export class ReducerHCYCLEtoHCIRCUIT extends Reducer<Graph, Graph> {
                     $$
                     \\begin{aligned}
                         ${
-                            chunkBy(edgesConns.map(conn => `\\{ ${conn.from.label}^{(o)}, ${conn.to.label}^{(i)} \\}`), 5)
-                                .join(' \\\\ ')
+                            chunkBy(
+                                edgesConns.map(conn => `\\{ ${conn.from.label}^{(o)}, ${conn.to.label}^{(i)} \\}`), 
+                                5
+                            ).map(x => `& ${x}`).join('\\\\')
                         }
                     \\end{aligned}
                     $$

@@ -56,7 +56,7 @@
         solve,
     } = useReductionController({ 
         storage: storage,
-        workerFactory: () => new WorkerHCYCLESolver(),  
+       workerFactory: () => new WorkerHCYCLESolver(),  
         reducerFactory: (inInstance) => new Reducer3SATtoHCYCLE(inInstance),
         decoderFactory: () => new DecoderHCYCLEto3SAT(),
         createWorkerRequest: (outInst) => {
