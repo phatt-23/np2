@@ -130,6 +130,7 @@
                     onChange={(graph) => editorChanged(graph)}
                     displayErrorMessages
                     demos={DEMOS}
+                    directed={false}
                 />
             {/snippet}
         </EditorCard>
@@ -143,7 +144,7 @@
                 {#snippet instance(inst)}
                     <RendererGraph 
                         graph={inst} 
-                        style='TSP'
+                        style="WEIGHTED_UNDIRECTED"
                         layout='circle'
                     />
                 {/snippet}
@@ -164,7 +165,7 @@
 
                     <RendererGraph 
                         graph={inst} 
-                        style='TSP'
+                        style="WEIGHTED_UNDIRECTED"
                         layout='circle'
                     />
                 {/snippet}

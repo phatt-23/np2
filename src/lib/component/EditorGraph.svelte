@@ -11,6 +11,7 @@
         onWrongFormat?: (msg: ErrorMessage) => void;
         displayErrorMessages?: boolean;
         demos: Record<string, string>;
+        directed: boolean;
     }
 
     let { 
@@ -19,6 +20,7 @@
         onWrongFormat,
         demos,
         displayErrorMessages = false,
+        directed,
     } : Props = $props();
 
     let text = $state(graph?.asString() ?? '');
@@ -38,7 +40,7 @@
     }
 
     function validateInput() {
-        const result = Graph.fromString(text);
+        const result = Graph.fromString(text, directed);
 
         if (typeof result == "string") {
             instance = null;

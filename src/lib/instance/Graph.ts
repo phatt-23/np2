@@ -63,10 +63,16 @@ export class Graph extends ProblemInstance {
 
         this._nodes.add(node);
     }
-    public addEdge(edge: GraphEdge) {
+    public addEdge(edge: GraphEdge, directed: boolean = true) {
         if (edge.classes == undefined) {
             edge.classes = '';
         }
+
+        // if the graph is undirected and aleady has an edge between nodes n1 and n2, don't add it
+        const n1 = edge.to;
+        const n2 = edge.from;
+        if (!directed && this.edges.find(e => e.to == n1 && e.from == n2 || e.to == n2 && e.from == n1)) 
+            return;
 
         // doesn't matter how many control points
         // if (edge.controlPointDistances == undefined) {
@@ -155,14 +161,13 @@ export class Graph extends ProblemInstance {
               this.nodes.find(n => n.id == e.from)!.label! 
             + ' ' 
             + this.nodes.find(n => n.id == e.to)!.label! 
-            + ' ' 
             + (e.weight != undefined ? ' ' + e.weight : '')
         ).join('\n');
 
         return nodeLines + '\n' + edgeLines + '\n';
     }
 
-    public static fromString(text: string): Graph | ErrorMessage {
+    public static fromString(text: string, directed: boolean): Graph | ErrorMessage {
         if (text.length == 0) {
             return "Cannot construct a graph from empty string";
         }
@@ -217,6 +222,7 @@ export class Graph extends ProblemInstance {
                     w = Number.parseFloat(words[2]);
                 }
 
+
                 const fromNodeId = NODE_ID_PREFIX + n1;
                 const toNodeId = NODE_ID_PREFIX + n2;
 
@@ -228,9 +234,8 @@ export class Graph extends ProblemInstance {
                     from: fromNodeId,
                     to: toNodeId,
                     weight: w,
-                });
+                }, directed);
             }
-
             else {
                 return `
                     Encountered illegal syntax on line ${i}. 

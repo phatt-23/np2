@@ -121,6 +121,7 @@
                     }}
                     displayErrorMessages
                     demos={DEMOS}
+                    directed={true}
                 />
             {/snippet}
         </EditorCard>
