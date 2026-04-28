@@ -145,7 +145,7 @@ Component that renders the graph.
     onMount(() => {
         cy = cytoscape({
             container: graphContainer,
-            wheelSensitivity: 5.0,          // TODO: Only for debugging to make it faster.
+            // wheelSensitivity: 5.0,          // TODO: Only for debugging to make it faster.
             style: cytoscapeStyles[style],
         });
 
@@ -208,13 +208,6 @@ Component that renders the graph.
 <main>
     <h2 class="dev">Graph Renderer</h2>
 
-    {#if editable}
-        <Comments comments={[
-            "Click on two nodes to add an edge between them.",
-            "Click on an edge to remove it.",
-        ]}/>
-    {/if}
-    
     <div class="graph-wrapper">
         
         <div bind:this={graphContainer} id="cy" class:no-events={!editable && !moveEnabled}>
@@ -231,20 +224,28 @@ Component that renders the graph.
         </div>
 
         
-        <div class='actions'>
+        <div class='top-right-overlay'>
         
             <label class="checkbox-wrapper">
                 <input type="checkbox" bind:checked={moveEnabled}>
                 Move enabled
             </label>
-        
+
         </div>
+
+        {#if editable}
+            <div class='top-left-overlay'>
+                <Comments comments={[
+                    "Click on two nodes to add an edge between them.",
+                    "Click on an edge to remove it.",
+                ]}/>
+            </div>
+        {/if}
     </div>
 </main>
 
 <style lang="sass">
     @use "sass:color"
-
 
     main 
         height: 100%
@@ -264,11 +265,23 @@ Component that renders the graph.
     .graph-wrapper
         position: relative
 
-    .actions
-        z-index: 999
-        position: absolute
+    .top-right-overlay
         top: 1em
         right: 1em
+        z-index: 999
+        position: absolute
+        background-color: rgba(255,255,255,0.8)
+        border-color: color.scale(global.$border-color, $alpha: -50%)
+        border-width: 1px
+        border-style: solid
+        // border-radius: 4pt
+        padding: 2px
+
+    .top-left-overlay
+        top: 1em
+        left: 1em
+        z-index: 999
+        position: absolute
         background-color: rgba(255,255,255,0.8)
         border-color: color.scale(global.$border-color, $alpha: -50%)
         border-width: 1px

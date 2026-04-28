@@ -4,24 +4,14 @@
 </script>
 
 <div>
-    <!-- <button -->
-    <!--     onclick={() => { -->
-    <!--         hideComments = !hideComments; -->
-    <!--     }} -->
-    <!-- > -->
-    <!--     {hideComments ? 'Hide comments' : 'Show comments'} -->
-    <!-- </button> -->
-
-    <!-- {#if hideComments} -->
-        {#each comments as comment}
-            <p class="comment">{@html comment}</p>
-        {/each}
-    <!-- {/if} -->
+    {#each comments as comment}
+        <p class="comment">{@html comment}</p>
+    {/each}
 </div>
 
 <style lang="sass">
 div
-    padding-block: 16px
+    padding: 0.25em
 
 .comment
     color: gray

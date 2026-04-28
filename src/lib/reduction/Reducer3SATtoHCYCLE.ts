@@ -581,9 +581,9 @@ export class Reducer3SATtoHCYCLE extends Reducer<CNF3, Graph> {
 
                         Add these edges:
                         $$
-                        ${
-                            connLitLabels.map(x => ` (${x.outLabel}, ${clauseLabel}), (${clauseLabel}, ${x.inLabel}) `).join('\\\\')
-                        }
+                            ${
+                                connLitLabels.map(x => `(${x.outLabel}, ${clauseLabel}), (${clauseLabel}, ${x.inLabel})`).join('')
+                            }
                         $$
                     </p>
                 `,
