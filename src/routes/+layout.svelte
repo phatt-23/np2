@@ -25,9 +25,6 @@
 	<footer>
 		<p>
 			Written by TRA0163 
-            <!--
-            <a href="https://github.com/phatt-23">github</a>
-            -->
 		</p>
 
 		<div class='dev'>
@@ -66,7 +63,4 @@
 		justify-content: center
 		align-items: center
 		padding: 12px
-
-	footer a
-		font-weight: bold
 </style>
