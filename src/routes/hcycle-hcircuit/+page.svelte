@@ -104,7 +104,7 @@
         {/each}
     </dl>
 
-    <div class="card-list">
+    <div class="card-list" data-screenshot-card-list>
         
         <EditorCard {redStore} {isSolving} {solveMessage} {showStepper} {reduce} {solve}>
             {#snippet title()}

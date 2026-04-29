@@ -20,48 +20,52 @@
     }: Props = $props();
 </script>
 
-<main class={klass}>
-    {#if header}
-        <div class="header">
-            {@render header?.()}
-        </div>
-    {/if}
+<div class="wrapper" data-screenshot-card>
+    <main class={klass} >
+        {#if header}
+            <div class="header">
+                {@render header?.()}
+            </div>
+        {/if}
 
-    {#if body || children}
-        <div class="body">
-            {@render body?.()}
-            {@render children?.()}
-        </div>
-    {/if}
+        {#if body || children}
+            <div class="body">
+                {@render body?.()}
+                {@render children?.()}
+            </div>
+        {/if}
 
-    {#if footer && !hideFooter}
-        <div class="footer">
-            {@render footer?.()}
-        </div>
-    {/if}
-</main>
+        {#if footer && !hideFooter}
+            <div class="footer">
+                {@render footer?.()}
+            </div>
+        {/if}
+    </main>
+</div>
 
 <style lang="sass">
-    main 
-        align-content: center
-        width: 100%
-        border-width: 1px
-        border-style: solid
-        border-color: global.$border-color
-        // border-radius: 4pt
-        box-shadow: 0px 0px 4px 2px #eeeeee
+.wrapper
+    padding-right: 2px
 
-    .header
-        padding: 8px
-        padding-inline: 16px
-        border-bottom: 1px solid global.$light-border-color
+main 
+    align-content: center
+    width: 100%
+    border-width: 1px
+    border-style: solid
+    border-color: global.$border-color
+    box-shadow: 0px 0px 4px 2px #eeeeee
 
-    .body
-        padding-inline: 16px
-        padding-block: 8px
+.header
+    padding: 8px
+    padding-inline: 16px
+    border-bottom: 1px solid global.$light-border-color
 
-    .footer
-        padding: 8px
-        padding-inline: 16px
-        border-top: 1px solid global.$light-border-color
+.body
+    padding-inline: 16px
+    padding-block: 8px
+
+.footer
+    padding: 8px
+    padding-inline: 16px
+    border-top: 1px solid global.$light-border-color
 </style>

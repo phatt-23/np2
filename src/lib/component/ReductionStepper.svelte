@@ -84,7 +84,7 @@ Created by phatt-23 on 12/10/2025
         </label>
 
         <div class="stepper">
-            <button disabled={showAll} onclick={prevClick}>
+            <button disabled={showAll || stepIndex <= 0} onclick={prevClick}>
                 Previous
             </button>
             
@@ -92,7 +92,7 @@ Created by phatt-23 on 12/10/2025
                 {stepIndex + 1}/{totalStepCount}
             </span>
             
-            <button disabled={showAll} onclick={nextClick}>
+            <button disabled={showAll || stepIndex >= totalStepCount - 1} onclick={nextClick}>
                 Next
             </button>
         </div>

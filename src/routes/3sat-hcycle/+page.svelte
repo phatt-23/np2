@@ -96,7 +96,7 @@
 </script>
 
 
-<main>
+<main >
     <h1>
         {@html dest.title}
     </h1>
@@ -108,8 +108,7 @@
         {/each}
     </dl>
 
-    <div class="card-list">
-
+    <div class="card-list" data-screenshot-card-list>
         <EditorCard {redStore} {isSolving} {solveMessage} {showStepper} {reduce} {solve}>
             {#snippet title()}
                 <h2>Editor</h2>
@@ -125,11 +124,9 @@
             {/snippet}
         </EditorCard>
 
-
         {#if $showStepper}
-            
             {@render inputInstanceCard(true)}
-            
+
             <StepsCard {redStore} {storage}>
                 {#snippet instance(inst, _stepIndex)}
                     <RendererGraph 
@@ -138,11 +135,9 @@
                     />
                 {/snippet}
             </StepsCard>
-
         {:else}
-        
             {@render inputInstanceCard(false)}
-          
+
             <OutputInstanceCard {redStore}>
                 {#snippet title()}
                     <h2>Output HCYCLE Instance</h2>

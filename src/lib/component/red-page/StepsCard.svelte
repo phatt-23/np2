@@ -29,41 +29,43 @@
 
 </script>
 
-<Card>
-    {#snippet header()}
-        <h2>Steps</h2>                
-    {/snippet}
+<div data-screenshot-steps-card>
+    <Card>
+        {#snippet header()}
+            <h2>Steps</h2>                
+        {/snippet}
 
-    {#snippet body()}
-        {#if $redStore.steps.length}
+        {#snippet body()}
+            {#if $redStore.steps.length}
 
-            <ReductionStepper 
-                steps={$redStore.steps} 
-                stepIndex={$redStore.stepIndex}
-                onPrevClick={() => {
-                    redStore.update(rs => { 
-                        rs.prevStep();
-                        return rs;
-                    });
-                    storage.save();
-                }}
-                onNextClick={() => { 
-                    redStore.update(rs => { 
-                        rs.nextStep();
-                        return rs;
-                    });
-                    storage.save();
-                }}
-            >
-                {#snippet outInstRender(stepIndex)}
-                    {#if $redStore.steps[stepIndex].outSnapshot}
-                        {@render instance($redStore.steps[stepIndex].outSnapshot, stepIndex)}
-                    {/if}
-                {/snippet}
-            </ReductionStepper>
+                <ReductionStepper 
+                    steps={$redStore.steps} 
+                    stepIndex={$redStore.stepIndex}
+                    onPrevClick={() => {
+                        redStore.update(rs => { 
+                            rs.prevStep();
+                            return rs;
+                        });
+                        storage.save();
+                    }}
+                    onNextClick={() => { 
+                        redStore.update(rs => { 
+                            rs.nextStep();
+                            return rs;
+                        });
+                        storage.save();
+                    }}
+                >
+                    {#snippet outInstRender(stepIndex)}
+                        {#if $redStore.steps[stepIndex].outSnapshot}
+                            {@render instance($redStore.steps[stepIndex].outSnapshot, stepIndex)}
+                        {/if}
+                    {/snippet}
+                </ReductionStepper>
 
-        {:else}
-            <span>There are no steps to step through.</span>
-        {/if}
-    {/snippet}
-</Card>
+            {:else}
+                <span>There are no steps to step through.</span>
+            {/if}
+        {/snippet}
+    </Card>
+</div>
