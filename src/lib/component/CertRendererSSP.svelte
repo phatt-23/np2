@@ -25,7 +25,7 @@
     <h2 class="dev">CertRenderer SSP</h2>
 
     {#if cert == Unsolvable}
-        <p>SSP doesn't have a solution.</p>
+        <p>The SSP instance doesn't have a solution.</p>
     
     {:else} 
         {@const numbers = cert.numbers.map(num => trimStartingZeros(num.value.join('')))}
