@@ -25,7 +25,7 @@ npm run build
 
 This will produce static files into `build/` directory.
 The build directory contains `index.html`.
-Serve this files.
+Serve these files.
 
 For example, serve on homel.
 
