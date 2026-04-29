@@ -3,7 +3,10 @@
 <script lang="ts">
     import { trimStartingZeros } from "$lib/core/filters";
     import { Unsolvable } from "$lib/core/Unsolvable";
+    import { SSP } from "$lib/instance/SSP";
     import type { CertificateSSP } from "$lib/solve/CertificateSSP";
+    import Katex from "./Katex.svelte";
+    import SSPTable from "./SSPTable.svelte";
 
     type Props = {
         cert: CertificateSSP | Unsolvable;
@@ -14,6 +17,8 @@
         cert,
         target, 
     }: Props = $props();
+
+    let displayAsTable = $state(false);
 </script>
 
 <main>
@@ -23,23 +28,35 @@
         <p>SSP doesn't have a solution.</p>
     
     {:else} 
+        {@const numbers = cert.numbers.map(num => trimStartingZeros(num.value.join('')))}
+
+        <label class="checkbox-wrapper">
+            <input type="checkbox" bind:checked={displayAsTable}>
+            <span>Display as table</span>
+        </label>
+
         <p>
             Subset of numbers summing to the target of {target}: 
         </p>
 
-        <div class="center">
-            <table>
-                <tbody>
-                    {#each cert.numbers as num, i}
-                        <tr>
-                            <td>
-                                {trimStartingZeros(num.value.join(''))}
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
-        </div>
+        {#if !displayAsTable}
+            <Katex html inline text={`
+                $$
+                    S' = \\{ ${numbers.join(',')} \\} 
+                $$
+            `}/>
+        {:else}
+            <div class="center">
+                <SSPTable 
+                    trimLeadingZeros
+                    ssp={(() => {
+                        const ssp = new SSP(); 
+                        ssp.numbers = cert.numbers;
+                        return ssp;
+                    })()} 
+                />
+            </div>
+        {/if}
     {/if}
 </main>
 
@@ -49,14 +66,5 @@
     justify-content: center;
 }
 
-table {
-    border-collapse: collapse;
-    margin-bottom: 1rem;
-}
-
-table td {
-    padding: 4px 8px;
-    text-align: right;
-    border: 1px solid #ccc;
-}
 </style>
+
