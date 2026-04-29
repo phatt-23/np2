@@ -39,8 +39,13 @@ export function useLocalStorage<
     onMount(() => {
         const currentValue = localStorage.getItem(key);
         if (currentValue) {
-            const revived = opt.revive(JSON.parse(currentValue))
-            value.set(revived);
+            try {
+                const revived = opt.revive(JSON.parse(currentValue))
+                value.set(revived);
+            }
+            catch (e) {
+                console.log(e)
+            }
         }
     });
 
