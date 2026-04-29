@@ -26,49 +26,57 @@
     }
 </script>
 
-<table class="sat-ssp-table">
-    <thead>
-        <tr>
-            <th></th>
+<div class="wrapper">
+    <table class="sat-ssp-table">
+        <thead>
+            <tr>
+                <th></th>
 
-            {#each cnfInstance.variables as variable}
-                <th class={'sat-ssp-var-col'}>
-                    <Katex displayMode text={variable} />
-                </th>
-            {/each}
+                {#each cnfInstance.variables as variable}
+                    <th class={'sat-ssp-var-col'}>
+                        <Katex displayMode text={variable} />
+                    </th>
+                {/each}
 
-            {#each cnfInstance.clauses as clause, i}
-                <th class='sat-ssp-clause-col'>
-                    <Katex text={`\\kappa_{${i}}`} />
-                </th>
-            {/each}
-        </tr>
-    </thead>
-
-    <tbody>
-        {#each ssp.numbers as num}
-            <tr class="sat-ssp-var-row" class:ssp-used={num.used}>
-                <td>
-                    <Katex text={num.label ?? 'NULL'} />
-                </td>
-                {#each leadingZerosToEmptyString(num.value) as digit}
-                    <td>
-                        {digit}
-                    </td>
+                {#each cnfInstance.clauses as clause, i}
+                    <th class='sat-ssp-clause-col'>
+                        <Katex text={`\\kappa_{${i}}`} />
+                    </th>
                 {/each}
             </tr>
-        {/each}
+        </thead>
 
-        <tr>
-            <td>Target:</td>
-            {#each ssp.target as digit}
-                <td>{digit}</td>
+        <tbody>
+            {#each ssp.numbers as num}
+                <tr class="sat-ssp-var-row" class:ssp-used={num.used}>
+                    <td>
+                        <Katex text={num.label ?? 'NULL'} />
+                    </td>
+                    {#each leadingZerosToEmptyString(num.value) as digit}
+                        <td>
+                            {digit}
+                        </td>
+                    {/each}
+                </tr>
             {/each}
-        </tr>
-    </tbody>
-</table>
+
+            <tr>
+                <td>Target:</td>
+                {#each ssp.target as digit}
+                    <td>{digit}</td>
+                {/each}
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <style>
+
+.wrapper {
+    padding-bottom: 24px;
+}
+
+
 .sat-ssp-table {
     width: max-content;
     /* min-width: 100%; */

@@ -26,31 +26,38 @@
     
 </script>
 
-<table class="ssp-table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Value</th>
-        </tr>
-    </thead>
-    <tbody>
-        {#each ssp.numbers as num, i}
+<div class="wrapper">
+    <table class="ssp-table">
+        <thead>
             <tr>
-                <td>
-                    <Katex text={num.label ?? 'NULL'}></Katex>
-                </td>
-                <td 
-                    class:ssp-used={highlightUsed && ssp.numbers[i].used} 
-                    class={num.classes ?? '' + ' number-td'}
-                >
-                    <span>{preprocessNumber(num.value)}</span>
-                </td>
+                <th>Name</th>
+                <th>Value</th>
             </tr>
-        {/each}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {#each ssp.numbers as num, i}
+                <tr>
+                    <td>
+                        <Katex text={num.label ?? 'NULL'}></Katex>
+                    </td>
+                    <td 
+                        class:ssp-used={highlightUsed && ssp.numbers[i].used} 
+                        class={num.classes ?? '' + ' number-td'}
+                    >
+                        <span>{preprocessNumber(num.value)}</span>
+                    </td>
+                </tr>
+            {/each}
+        </tbody>
+    </table>
+</div>
 
 <style>
+
+.wrapper {
+    padding-bottom: 24px;
+}
+
 .ssp-table {
     border-collapse: collapse;
     margin-top: 1rem;

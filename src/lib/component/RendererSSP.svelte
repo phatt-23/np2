@@ -52,7 +52,7 @@
         </ul>
     </div>
 
-    <div class="sat-table-wrapper">
+    <div class="table-wrapper">
         <SATSSPTable {ssp} {cnfInstance} {trimLeadingZeros} />
     </div>
 {/snippet}
@@ -98,16 +98,7 @@
 .table-wrapper {
     overflow-x: auto;
     max-width: 100%;
-    padding-bottom: 24px;
     display: flex;
     justify-content: center;
-}
-
-/* SAT format */
-
-.sat-table-wrapper {
-    overflow-x: auto;
-    max-width: 100%;
-    padding-bottom: 24px;
 }
 </style>
