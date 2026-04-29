@@ -122,7 +122,6 @@ export class Graph extends ProblemInstance {
         return this.nodes.length == 0; 
     }
 
-    // why the FUUUUCK doesn't typescript have copying objects figured out tf
     public copy(): Graph {
         const newGraph = new Graph();
 
