@@ -6,11 +6,13 @@
     type Props = {
         ssp: SSP;
         trimLeadingZeros?: boolean;
+        highlightUsed?: boolean;
     };
 
     let { 
         ssp, 
-        trimLeadingZeros = false
+        trimLeadingZeros = false,
+        highlightUsed = false,
     }: Props = $props();
 
 
@@ -37,8 +39,11 @@
                 <td>
                     <Katex text={num.label ?? 'NULL'}></Katex>
                 </td>
-                <td class:ssp-used={ssp.numbers[i].used} class={num.classes ?? '' + ' number-td'}>
-                    <span>{ preprocessNumber(num.value) }</span>
+                <td 
+                    class:ssp-used={highlightUsed && ssp.numbers[i].used} 
+                    class={num.classes ?? '' + ' number-td'}
+                >
+                    <span>{preprocessNumber(num.value)}</span>
                 </td>
             </tr>
         {/each}

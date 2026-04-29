@@ -37,7 +37,7 @@
                 </th>
             {/each}
 
-            {#each cnfInstance.clauses as clause}
+            {#each cnfInstance.clauses as clause, i}
                 <th class='sat-ssp-clause-col'>
                     <Katex text={`\\kappa_{${i}}`} />
                 </th>

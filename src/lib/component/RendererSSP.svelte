@@ -35,7 +35,7 @@
     
     {#if ssp.numbers.length}
         <div class="table-wrapper">
-            <SSPTable {ssp} {trimLeadingZeros} />
+            <SSPTable highlightUsed {ssp} {trimLeadingZeros} />
         </div>
     {/if}
 {/snippet}
