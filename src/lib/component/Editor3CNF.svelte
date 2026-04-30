@@ -67,6 +67,12 @@
         }
     }
 
+    $effect(() => {
+        if ( cnf && (!instance || !cnf.isEqual(instance)) ) {
+            text = cnf.asString()
+        }
+    })
+
     const comments = [
         "Each line defines a clause. A clause consists of three variable names separated by spaces.",
         "A variable name is a single word containing only letters (<span>a–z</span>, <span>A–Z</span>), digits (<span>0–9</span>) " +

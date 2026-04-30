@@ -43,6 +43,12 @@ export class Literal {
     public toTexString(): string {
         return (this.negated ? ' \\lnot ' : "") + this.varName;
     }
+
+    public isEqual(other: Literal) {
+        if (this.varName === other.varName && this.negated === other.negated)
+            return true;
+        return false;
+    }
 }
 
 @Serializer.SerializableClass("Clause")
@@ -76,6 +82,10 @@ export class Clause {
 
     public toTexString(): string {
         return '(' + this.literals.map(l => l.toTexString()).join(' \\lor ') + ')';
+    }
+
+    public isEqual(other: Clause) {
+        return other.literals.some(otherLit => !this.literals.find(lit => lit.isEqual(otherLit)))
     }
 }
 
@@ -204,5 +214,20 @@ export class CNF3 extends ProblemInstance {
 
     public toTexString(): string {
         return this.clauses.map(c => c.toTexString()).join(' \\land ');
+    }
+
+    public isEqual(other: CNF3) {
+        if (other.variables.length != this.variables.length)
+            return false;
+        if (other.clauses.length != this.clauses.length)
+            return false;
+
+        if (this.variables.some(v => !other.variables.find(ov => ov === v)))
+            return false;
+
+        if (this.clauses.some(clause => !other.clauses.find(otherClause => clause.isEqual(otherClause) ) ) )
+            return false;
+
+        return true;
     }
 }

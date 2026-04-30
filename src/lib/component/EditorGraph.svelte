@@ -69,7 +69,7 @@
     }
 
     $effect(() => {
-        if (instance && graph && !graph.isEqual(instance)) {
+        if ( graph && (!instance || !graph.isEqual(instance)) ) {
             text = graph.asString();
         }
     })
