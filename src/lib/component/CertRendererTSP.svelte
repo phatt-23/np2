@@ -4,6 +4,7 @@
     import { Unsolvable } from "$lib/core/Unsolvable";
     import type { CertificateHCIRCUIT } from "$lib/solve/CertificateHCIRCUIT";
     import CertRendererGraphPath from "./CertRendererGraphPath.svelte";
+    import Katex from "./Katex.svelte";
 
     type Props = {
         cert: CertificateHCIRCUIT | Unsolvable;
@@ -18,6 +19,14 @@
 
 <CertRendererGraphPath {cert}>
     {#snippet unsolvablePlaceholder()}
-        <p>The graph doesn't contain a Hamiltonian cycle with the given cost of {cost}.</p>
+        <p>
+            <Katex
+                inline html
+                text={`
+                    The graph doesn't contain a Hamiltonian cycle with a cost less than or equal to 
+                    $k = ${cost}$.
+                `}
+            />
+        </p>
     {/snippet}
 </CertRendererGraphPath>
