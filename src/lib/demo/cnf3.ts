@@ -12,8 +12,7 @@ x !y z
 
 
 'Yes(3)':
-`
-a b c 
+`a b c 
 !a b c 
 a !b !c
 !a !b c
@@ -48,8 +47,7 @@ x !y !z
 `,
 
 'Yes-TeX(2)':
-`
-\\alpha !\\alpha \\beta
+`\\alpha !\\alpha \\beta
 \\beta \\alpha !\\beta
 `,
 
