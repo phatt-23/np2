@@ -114,6 +114,10 @@ export class CNF3 extends ProblemInstance {
     }
 
     public static fromString(text: string): CNF3 | ErrorMessage {
+        if (text.trim().length === 0) {
+            return "Cannot contruct a formula from an empty string.";
+        }
+
         const lines = text.split("\n").map(x => x.trim()).filter(x => x.length).filter(onlyUnique);
 
         let cnf = new CNF3();
@@ -162,6 +166,10 @@ export class CNF3 extends ProblemInstance {
 
             const clause = new Clause(clauseId, lits);
             cnf.addClause(clause);
+        }
+
+        if (cnf.isEmpty()) {
+            return "The formula is empty.";
         }
 
         return cnf;

@@ -168,7 +168,7 @@ export class Graph extends ProblemInstance {
 
     public static fromString(text: string, directed: boolean): Graph | ErrorMessage {
         if (text.length == 0) {
-            return "Cannot construct a graph from empty string";
+            return "Cannot construct a graph from an empty string.";
         }
 
         const lines = text.split('\n').map(x => x.trim()).filter(x => x.length).filter(onlyUnique);
@@ -241,6 +241,10 @@ export class Graph extends ProblemInstance {
                     Expected of these "{x}" or "{x} {y}" or "{x} {y} {w?}" on a single line, where {x} and {y} are node labels and {w?} is optional weight. 
                     Instead got: "${line}"`;
             }
+        }
+
+        if (graph.isEmpty()) {
+            return "The graph is empty.";
         }
 
         return graph;
