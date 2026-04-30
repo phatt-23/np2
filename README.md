@@ -33,9 +33,13 @@ This will produce static files into `build/` directory.
 The build directory contains `index.html`.
 Serve these files.
 
-For example, serve on homel.
+## Homel Deploy
+
+Replace the login `tra0163` with your login.
 
 ```
+npm install
+npm run build
 scp -r build/* tra0163@homel.vsb.cz:~/public_html
 ```
 
