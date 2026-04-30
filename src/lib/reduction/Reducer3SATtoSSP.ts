@@ -170,7 +170,6 @@ export class Reducer3SATtoSSP extends Reducer<CNF3, SSP> {
             });
         });
 
-        // AGENT: fix sentences to the most readable format, keep the double '\' marks dont modify the math notation
         const step: ReductionStep<CNF3, SSP> = {
             id: `create-var-numbers`,
             title: `Create variable numbers`,
