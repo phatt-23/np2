@@ -17,6 +17,12 @@ Install packages.
 npm install
 ```
 
+Run locally.
+
+```
+npm run dev
+```
+
 Build the application. 
 
 ```
