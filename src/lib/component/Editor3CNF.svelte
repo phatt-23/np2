@@ -26,27 +26,26 @@
     let text = $state(cnf?.asString() ?? "");
     let selectedDemo = $state("");
     let errorMessage = $state("");
+    let instance: CNF3 | null = null;
 
     function onTextChange() {
-        const result = CNF3.fromString(text);
+        validateInput();
 
-        if (typeof result == "string") {
-            // console.debug("wrong");
-            onWrongFormat?.(result);
+        if (instance) {
+            onChange?.(instance);
         } else {
-            onChange?.(result);
+            onWrongFormat?.(errorMessage);
         }
     }
 
-    function onTextInput() {
-        if (!displayErrorMessages) {
-            return;
-        }
-
+    function validateInput() {
         const result = CNF3.fromString(text);
+
         if (typeof result == "string") {
+            instance = null;
             errorMessage = result;
         } else {
+            instance = result;
             errorMessage = "";
         }
     }
@@ -59,17 +58,14 @@
     }
 
     function handleKeydown(e: KeyboardEvent) {
-        if (e.key === "Escape") {
+        if (e.key === "Enter") {
+            onTextChange();
+        }
+        else if (e.key === "Escape") {
             onTextChange();
             (e.target as HTMLTextAreaElement).blur();
         }
     }
-
-    $effect(() => {
-        if (cnf) {
-            text = cnf.asString();
-        }
-    });
 
     const comments = [
         "Each line defines a clause. A clause consists of three variable names separated by spaces.",
@@ -91,7 +87,7 @@
 
         <textarea
             bind:value={text}
-            oninput={onTextInput}
+            oninput={validateInput}
             onchange={onTextChange}
             onkeydown={handleKeydown}
             spellcheck="false"

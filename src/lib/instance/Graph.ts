@@ -160,7 +160,7 @@ export class Graph extends ProblemInstance {
               this.nodes.find(n => n.id == e.from)!.label! 
             + ' ' 
             + this.nodes.find(n => n.id == e.to)!.label! 
-            + (e.weight != undefined ? ' ' + e.weight : '')
+            + (e.weight === undefined ? '' : ' ' + e.weight)
         ).join('\n');
 
         return nodeLines + '\n' + edgeLines + '\n';
@@ -351,5 +351,23 @@ export class Graph extends ProblemInstance {
             e.classes = e.classes.replaceAll('used', '');
             e.classes = e.classes.replaceAll('solved', '');
         })
+    }
+
+    public isEqual(other: Graph) {
+        if (other.nodes.length != this.nodes.length)
+            return false;
+        if (other.edges.length != this.edges.length)
+            return false;
+
+        const otherNodeIds = other.nodes.map(n => n.id);
+        const otherEdgeIds = other.edges.map(e => e.id);
+
+        if (this.nodes.map(n => n.id).some(id => otherNodeIds.find(on => on === id) === undefined))
+            return false;
+
+        if (this.edges.map(n => n.id).some(id => otherEdgeIds.find(on => on === id) === undefined))
+            return false;
+
+        return true;
     }
 }

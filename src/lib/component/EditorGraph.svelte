@@ -52,9 +52,12 @@
     }
 
     function handleKeydown(e: KeyboardEvent) {
-        if (e.key === "Escape") {
+        if (e.key === "Enter") {
             onTextChange();
-            (e.target as HTMLTextAreaElement).blur(); 
+        }
+        else if (e.key === "Escape") {
+            onTextChange();
+            (e.target as HTMLTextAreaElement).blur();
         }
     }
 
@@ -66,12 +69,12 @@
     }
 
     $effect(() => {
-        if (graph) {
+        if (instance && graph && !graph.isEqual(instance)) {
             text = graph.asString();
         }
-    });
+    })
 
-    // allowed symbols a-zA-Z0–9,_^\(){}
+    // allowed symbols a-zA-Z0–9,_\(){}
 
     const comments = [
         "Write each entry on a new line. Each entry defines either a node, or an edge.",
