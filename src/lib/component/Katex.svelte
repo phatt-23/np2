@@ -10,6 +10,7 @@
 
 <script lang="ts">
     import { tex } from "$lib/core/tex";
+    import "../../../static/katex.min.css";
 
     export type Props = {   
         text: string; 
@@ -34,14 +35,6 @@
     });
 
 </script>
-
-<svelte:head>
-    <link 
-        rel="stylesheet" 
-        href="https://cdn.jsdelivr.net/npm/katex@0.16.27/dist/katex.min.css" 
-        integrity="sha384-Pu5+C18nP5dwykLJOhd2U4Xen7rjScHN/qusop27hdd2drI+lL5KvX7YntvT8yew" 
-        crossorigin="anonymous">
-</svelte:head>
 
 <div style={style}>
     {@html htmlString}

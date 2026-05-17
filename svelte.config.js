@@ -38,6 +38,13 @@ const config = {
 		paths: {
 			base: PUBLIC_BASE_PATH
 		},
+        csp: {
+            directives: {
+                'default-src': ["'self'"],
+                'script-src': ["'self'"],
+                'style-src': ["'self'"]
+            }
+        },
 	}
 };
 
